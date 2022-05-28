@@ -1,0 +1,28 @@
+# ./promit
+
+show 'Enter the number of fibonacci: ';
+
+take a = recieve(num);
+
+fn fib(n) {
+	if(n < 2) 
+		return n;
+
+	return fib(n - 1) + fib(n - 2);
+}
+
+fn getPosition(n) {
+	switch(n) {
+		case 1: return 'st';
+		case 2: return 'nd';
+		case 3: return 'rd';
+	}
+	
+	return 'th';
+}
+
+take start_time = time();
+
+showl 'The $a' + getPosition(a) + ' fibonacci number is: ${ fib(a) }!';
+showl 'Time took: ${ time() - start_time } seconds.';
+

@@ -1,0 +1,9 @@
+show 'Enter the size of the triangle: ';
+
+take a = recieve(num);
+
+for(take i = 0; i < a; i++) {
+	show(a - i) ' ';
+	show(i * 2 + 1) '*';
+	showl;
+}

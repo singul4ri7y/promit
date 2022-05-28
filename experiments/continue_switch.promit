@@ -1,0 +1,15 @@
+take a = 10;
+
+switch(a) {
+	case 10: {
+		showl 'This will print!';
+		continue;
+		showl 'This will not!';
+	}
+	case 20: { showl 'The number is 20. Exiting from fallthrough!';
+		break;
+	}
+	case 30:
+		showl 'A number!';
+	default: showl 'Default!';
+}

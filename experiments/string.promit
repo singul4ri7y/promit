@@ -1,0 +1,10 @@
+'string';
+
+take a = 'string';
+
+take s = '';
+
+for(take i = 0; i < 6; i++) 
+	s += a;
+
+showl s;

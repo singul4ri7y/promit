@@ -1,0 +1,37 @@
+// First a simple loop.
+
+for(take i = 0; i < 10; i++) {
+	showl 'Current index: $i';
+}
+
+take factorial = 5;
+
+showl 'Loop to identify the factorial of $factorial.';
+
+for(take i = factorial - 1; i > 0; i--) 
+	factorial *= i;
+
+showl 'Ans is: $factorial.';
+
+take size = 10;
+
+showl 'Loop to print a triangle of size $size!';
+
+for(take i = 0; i < size; i++) {
+	show((size - i) / 2) ' ';
+	for(take j = 0; j < i; j++) 
+		show "*";
+	
+	showl;
+}
+
+showl 'Now a simple loop to print Promit 10 times!';
+
+while(size--) showl 'Promit Programming language!';
+
+take exp = 1 << 16;
+
+showl 'Loop to print 2\'s exponential power until $exp!';
+
+for(take i = 1; i <= exp; i <<= 1) 
+	showl 'The current power of 2 is: $i';

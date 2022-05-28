@@ -1,0 +1,17 @@
+// A simple example of Object Oriented Programming in Promit
+
+class ToastMaker {
+	init(jam) {
+		this.jam = jam;
+	}
+	
+	make(quantity) {
+		showl 'Enjoy $quantity toasts with ${this.jam} jam!';
+		
+		this.jam = null;
+	}
+}
+
+take maker = ToastMaker("Peanut");
+
+maker.make(100);

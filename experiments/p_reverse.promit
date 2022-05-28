@@ -1,0 +1,11 @@
+take number = recieve(num);
+
+take result = 0,
+	length = Math::ceil(Math::log10(number + 1));
+
+while(length--) {
+	result += Math::floor(number % 10) * Math::pow(10, length);
+	number /= 10;
+}
+
+showl result;

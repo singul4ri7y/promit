@@ -1,0 +1,102 @@
+class Node {
+	init(value) {
+		this.value  = value;
+		this.right  = null;
+		this.left   = null;
+		this.parent = null;
+	}
+}
+
+class BST {
+	init(node) {
+		this.root = node ? node : Node(null);
+	}
+
+	add(value) {
+		take previous, current  = this.root;
+
+		while(current) {
+			previous = current;
+
+			if(value < current.value) 
+				current = current.left;
+			else if(value > current.value) 
+				current = current.right;
+		}
+
+		if(value < previous.value) 
+			previous.left = Node(value);
+		else if(value > previous.value) 
+			previous.right = Node(value);
+	}
+
+	inorder(callback, root) {
+		if(root == null) 
+			root = this.root;
+
+		if(root.left) 
+			this.inorder(callback, root.left); 
+
+		callback(root.value);
+
+		if(root.right) 
+			this.inorder(callback, root.right);
+	}
+
+	const static construct(list, rootIndex) {
+		if(!(len(list) & 1) && !(rootIndex & 1) || !list) 
+			return null;
+
+		take root = Node(list[rootIndex]);
+
+		take node;
+
+		if(rootIndex == 1) 
+			node = Node(list[0]);
+
+		for(take i = 1; i < rootIndex; i += 2) {
+			take n = Node(list[i]);	
+
+			n.left  = node ? node : Node(list[i - 1]);
+			n.right = Node(list[i + 1]);
+
+			node = n;
+		}
+
+		root.left = node;
+
+		node = null;
+
+		if(rootIndex == len(list) - 2) 
+			node = Node(list[rootIndex + 1]);
+
+		for(take i = rootIndex + 2; i < len(list); i += 2) {
+			take n = Node(list[i]);
+
+			n.left  = node ? node : Node(list[i - 1]);
+			n.right = Node(list[i + 1]);
+
+			node = n;
+		}
+
+		root.right = node;
+
+		return BST(root);
+	}
+}
+
+take bst = BST::construct([1, 3, 4, 5, 7, 10, 12, 17, 19], 5);
+
+fn callback(value) {
+	show '$value, ';
+}
+
+bst.inorder(callback);
+
+showl;
+
+bst.add(15);
+
+bst.inorder(callback);
+
+showl;

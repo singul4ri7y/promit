@@ -1,0 +1,238 @@
+/**
+ * Binary Search Tree class with a BST construction algorithm.
+ * 
+ * The BST::construct(list, root_index) constructs a BST from a sorted
+ * list and a arbitrary root denoted by index.
+ * 
+ * Part of Promit Test Suit, location /test/Algorithms/ConstructBST.promit
+ * 
+ * Created by SD Asif Hossein on 27 April, 2022 (Wednesday) at 8:00 PM.
+ */
+
+/** The Node class for node information */
+
+class Node {
+	init(value) {
+		this.value = value;
+
+		// Initial left and right values are null.
+		// Can be assigned with a Node instance.
+
+		this.left  = null;
+		this.right = null;
+	}
+}
+
+/** The BST class */
+
+class BST {
+	// Initialize the BST with the root node.
+
+	init(node, size) {
+		this.root = node instof Node ? node : Node(null);
+
+		// To store the number of elements in BST.
+		
+		this.size = size && size || 0;
+	}
+
+	/**
+	 * Adds a new value to the BST.
+	 *
+	 * Note: Comparisons only works on numbers. Though, technically it should
+	 *       take any type of value as an input, but number type input is expected.
+	 *
+	 * @param {Number} value
+	 * @returns Boolean
+	 */
+
+	add(value) {
+		take current = this.root, previous;
+
+		// Create a loop where it finds out an empty (null) spot to store
+		// the number (right or left depending on the number.
+
+		while(current) {
+			previous = current;
+
+			if(value < current.value) 
+				current = current.left;
+			else if(value > current.value) 
+				current = current.right;
+			else {
+				System::stderr.write_line('The provided value already exists in the BST!');
+
+				return false;
+			}
+		}
+
+		if(value < previous.value) 
+			previous.left = Node(value);
+		else previous.right = Node(value);
+
+		// Increase the BST size.
+
+		this.size++;
+
+		return true;
+	}
+
+	/**
+	 * Does inorder traversal from a specific node.
+	 *
+	 * @param {Function} callback
+	 * @param {Node} root
+	 * @param {BST} bst
+	 * @returns null
+	 */
+
+	static inorder(callback, root, bst) {
+		if(!(root instof Node)) 
+			return;
+
+		if(root.left) 
+			BST::inorder(callback, root.left, bst);
+
+		callback(root.value, bst);
+
+		if(root.right) 
+			BST::inorder(callback, root.right, bst);
+	}
+
+	/**
+	 * Does inorder traversal to print all the values in BST in sorted (ascending) way.
+	 *
+	 * @param {Function} callback
+	 * @returns null
+	 */
+
+	inorder(callback) {
+		BST::inorder(callback, this.root, this);
+	}
+
+	/**
+	 * Constructs a Binary Search Tree from a sorted list and an arbitrary root value
+	 * denoted by index.
+	 *
+	 * Singleton method.
+	 *
+	 * @param {List} list
+	 * @param {Number} root_index
+	 * @returns BST | null
+	 */
+
+	static construct(list, root_index) {
+		if(!list) return null;
+
+		take length = len(list);
+
+		if(root_index >= length) {
+			System::stderr.write_line('Root index is out of bound!');
+
+			return null;
+		}
+
+		take root = Node(list[root_index]);
+
+		take node = null;    // Temporary node.
+
+		// Left subtree of the root node.
+
+		if(root_index == 1) root.left = Node(list[0]);
+		else {
+			for(take i = root_index - 2; i >= 0; i -= 2) {
+				take n = Node(list[i]);
+
+				// Add the right node.
+
+				n.right = Node(list[i + 1]);
+
+				if(i - 2 < 0 && i - 1 >= 0) 
+					n.left = Node(list[i - 1]);
+
+				if(node != null) 
+					node.left = n;
+				
+				node = n;
+
+				// Add the root left while it's null and we have the greatest right
+				// node after root set in the 'node' variable.
+
+				if(root.left == null) 
+					root.left = node;
+			}
+
+			// Clear 'node' for right subtree processing.
+
+			node = null;
+		}
+
+		// Right subtree of root node.
+
+		if(root_index == length - 2) root.right = Node(list[length - 1]);
+		else {
+			for(take i = root_index + 2; i < length; i += 2) {
+				take n = Node(list[i]);
+
+				// Add the left node.
+
+				n.left = Node(list[i - 1]);
+
+				if(i + 2 >= length && i + 1 < length) 
+					n.right = Node(list[i + 1]);
+
+				if(node != null) 
+					node.right = n;
+				
+				node = n;
+
+				if(root.right == null) 
+					root.right = node;
+			}
+		}
+
+		return BST(root, length);
+	}
+}
+
+// Benchmarking.
+
+take start_time = Time::now();
+
+take bst = BST::construct([ 2, 4, 7, 8, 9, 10, 11, 19, 24, 27, 30 ], 5);
+
+// If the function can't construct the BST, means something has gone wrong.
+
+if(!bst) System::exit(System::EXIT_FAILURE);
+
+take count = 0;
+
+fn callback(value, bst) {
+	count++;
+
+	show value;
+	
+	if(count < bst.size) 
+		show ', ';
+}
+
+showl 'The BST is as follows : ';
+
+bst.inorder(callback);
+
+showl;
+showl '\nAdding 15 to the tree...';
+
+if(!bst.add(15))
+	System::exit(System::EXIT_FAILURE);
+
+showl 'Added!';
+
+showl '\nThe BST after the addition : ';
+
+count = 0;
+
+bst.inorder(callback);
+
+showl;
+showl '\nTook ${Time::now() - start_time} seconds (CPU)!';

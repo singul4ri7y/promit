@@ -1,0 +1,13 @@
+take a = {
+	name : 'SD Asif Hossein',
+	age: 19, list : [ 1, 2, 3 ],
+	call : fn(n) {
+		if(n == null) 
+			n = { name : 'anonymous', age : null, list : [] };
+		
+		show "The person is ${n.name} and he is ${n.age} years old and the list is ";
+		showl n.list;
+	}
+};
+
+a['call'](a);

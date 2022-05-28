@@ -1,0 +1,73 @@
+fn reduce(list, callback, start) {
+	for(take i = 0; i < len(list); i++) {
+		start = callback(start, list[i]);
+	}
+
+	return start;
+}
+
+fn slice(list, start, quantity) {
+	quantity = quantity || len(list);
+
+	take l = [];
+
+	for(take i = start; i < quantity; i++) 
+		l[len(l)] = list[i];
+	
+	return l;
+}
+
+fn map(list, callback) {
+	take l = [];
+
+	for(take i = 0; i < len(list); i++) {
+		l[len(l)] = callback(list[i]);
+	}
+
+	return l;
+}
+
+fn concat(list, anotherList) {
+	for(take i = 0; i < len(anotherList); i++) 
+		list[len(list)] = anotherList[i];
+	
+	return list;
+}
+
+fn Combination(list, r) {
+	take length = len(list);
+
+	if(!length || r > length || !r) 
+		return [ [] ];
+	else if(r == length) 
+		return [ list ];
+
+	if(r == 1) {
+		return reduce(list, fn(x, elem) {
+			x[len(x)] = [elem];
+			return x;
+		}, [] );
+	}
+	
+	take head = list[0];
+
+	list = slice(list, 1);
+
+	return concat(map(Combination(list, r - 1), fn(x) {
+		x = concat([head], x);
+
+		return x;
+	} ), Combination(list, r));
+}
+
+take start_time = time();
+
+take combinations = Combination(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'], 7);
+
+take length = len(combinations);
+
+for(take i = 0; i < length; i++) 
+ 	showl combinations[i];
+
+showl 'Generated $length combinations!';
+showl 'Took ${time() - start_time} seconds!';

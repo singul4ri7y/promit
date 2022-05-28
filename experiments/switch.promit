@@ -1,0 +1,7 @@
+take a = 100;
+
+switch(a) {
+	case 10: showl 'The number is 10!'; break;
+	case 20: showl 'The number is 20!'; break;
+	default: showl 'Unknown number!';
+}
