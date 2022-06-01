@@ -4170,6 +4170,8 @@ InterpretResult run(VM* vm) {
 				Value value = *peek(vm, 2);
 				
 				Value string = *peek(vm, 1);
+
+				bool isConst = READ_BYTE();
 				
 				if(IS_LIST(value) || (IS_INSTANCE(value) &&
 				!strcmp(VALUE_INSTANCE(value) -> klass -> name -> buffer, "List")) || IS_BYTELIST(value) || IS_STRING(value)) {
@@ -4289,8 +4291,6 @@ InterpretResult run(VM* vm) {
 						break;
 					}
 				}
-
-				bool isConst = READ_BYTE();
 
 				char* result = toString(vm, (Value* const) &string);
 				size_t size  = strlen(result);
