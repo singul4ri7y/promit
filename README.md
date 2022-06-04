@@ -20,7 +20,7 @@ take name = recieve(string);
 // Now print the name.
 showl 'Your name is : $name!';
 ```
-- Fast, stack-based bytecode interpreter and rich single-pass compiler.
+- Fast, stack-based bytecode interpreter with rich single-pass compiler.
 - Fully Object Oriented with class and instances.
 ```dart
 const cities = [ 'New York', 'Constantinople', 'Sin City (Vegas)' ];
@@ -127,7 +127,7 @@ switch(bird) {
 	default : break;
 }
 ```
- - Has loops (while, for, do ... while), control flow (if, else and ternary operator ( condition ? expr : else_expr ) and many more!
+ - Has loops (``while``, ``for``, ```do ... while```), control flow (``if``, ``else`` and ternary operator ```condition ? expr : else_expr```) and many more!
 
 ## Why
 Well the idea is very simple. I started my programming journey as a Web Developer. As I got deeper inside the computer science stuff and programming languages, I reinvented my interests in Low-Level things such as kernel development, memory managements, operating systems, compiler design, etc. At the same time, I got into high school (At the time of writing, I'm 19 BTW). I met a very fascinating person, who is one of my dearest friends named <b>Meraj Hossain Promit</b>. He was a real inspiration. A lot of thing went through. Long story short, when I was a first year at high school, I promised him that I would make a full fledged programming language with the honor of his name under age of 20. You can see the rest.
