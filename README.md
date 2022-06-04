@@ -148,6 +148,7 @@ pacman --sync git base-devel
 apt install git build-essential
 ```
 **Windows :**
+
 Switch to linux 😁. Nah, just kidding.
 
 Install ``MinGW-w64``, ``Cygwin`` or ``TDM GCC`` which has ``make`` baked within it.
