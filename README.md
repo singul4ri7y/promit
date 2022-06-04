@@ -127,4 +127,4 @@ switch(bird) {
 	default : break;
 }
 ```
- - Has loops (while, for, do ... while), control flow (if, else and ternary operator ( condition ? expr : else_expr ) and many more!
+ - Has loops (``while``, ``for``, ```do ... while```), control flow (``if``, ``else`` and ternary operator ```condition ? expr : else_expr``` and many more!
