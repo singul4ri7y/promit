@@ -78,39 +78,34 @@ ifneq ($(findstring Linux, $(shell uname -s)),)
 	DESCRIPTION := "ELF Binary"
 endif
 
+.PHONY : 
 build_debug_x64 : project_promit all
 
 all : $(OBJ_FILES)
 	@echo -e "\n$(BLUE_BOLD)Linking C translations and building $(DESCRIPTION) '$(EXE_NAME)' ($(OS_NAME)).\n$(RESET)"
 	$(CC) $^ $(ARCH) -o $(OUTPUT_DIR)$(EXE_NAME) -lm
-
-.PHONY : build_debug_x64
 	
+.PHONY : 
 build_debug_x86 : build_debug_x64
 
-.PHONY : build_debug_x86
-
+.PHONY :
 build_release_x64: build_debug_x64
-	
-.PHONY : build_release_x64
 
+.PHONY :
 build_release_x86: build_debug_x64
-
-.PHONY : build_release_x86
 
 .SILENT : 
 $(OBJ_DIR)%.c.obj : $(SRC_DIR)%.c
 	@echo -e "$(GREEN)Building C translation '$(patsubst $(SRC_DIR)%.c,%.c, $<)', generating object '$@'$(RESET)"
 	$(CC) -c $(LFLAGS) $(patsubst $(SRC_DIR)%.c,$(DEPENDENCY_DIR)%.d, $<) -I$(INCLUDE) $< -o $@
 
-$(SRC_DIR)%.c : project_promit
-
 project_promit : 
 	@echo -e "$(PURPLE_BOLD)<=======================================| Project Promit |=======================================>$(RESET)\n"
 	@echo -e "$(CYAN)Building Project Promit 'promit' on $(shell date) with configuration $(CONFIG).$(RESET)\n"
+	@mkdir -p $(OBJ_DIR) $(OUTPUT_DIR) $(DEPENDENCY_DIR)
 
 clean : 
-	
+	rm -rf $(PRE_OUTPUT_DIR)
 
 .PHONY : clean
 
