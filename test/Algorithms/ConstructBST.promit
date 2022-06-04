@@ -197,7 +197,7 @@ class BST {
 
 // Benchmarking.
 
-take start_time = Time::now();
+take start_time = Time::snap();
 
 take bst = BST::construct([ 2, 4, 7, 8, 9, 10, 11, 19, 24, 27, 30 ], 5);
 
@@ -235,4 +235,4 @@ count = 0;
 bst.inorder(callback);
 
 showl;
-showl '\nTook ${Time::now() - start_time} seconds (CPU)!';
+showl '\nTook ${Time::snap() - start_time} seconds (CPU)!';
