@@ -20,7 +20,7 @@ take name = recieve(string);
 // Now print the name.
 showl 'Your name is : $name!';
 ```
-- Fast, stack-based bytecode interpreter and rich single-pass compiler.
+- Fast, stack-based bytecode interpreter with rich single-pass compiler.
 - Fully Object Oriented with class and instances.
 ```dart
 const cities = [ 'New York', 'Constantinople', 'Sin City (Vegas)' ];
