@@ -108,7 +108,7 @@ showl typeof result;    // Expected 'closure'.
 
 result();
 ```
- - Has ```continue ``` in switch.
+ - Has ```continue``` in switch.
 ```dart
 take bird = 'Duck';
 
