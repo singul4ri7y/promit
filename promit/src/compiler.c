@@ -1905,11 +1905,8 @@ static void defineVariable(size_t var, bool isConst) {
 	DEFINE(OP_DEFINE_GLOBAL, var, isConst);
 }
 
-// Fix take a = something, take b = something issue.
-//                         ^^^^
-
 #define VARIABLE(cnst, inLoop) \
-	while(!check(TOKEN_SEMICOLON) && !check(TOKEN_EOF)) {\
+	while(!check(TOKEN_SEMICOLON) && !check(TOKEN_EOF) && !parser.hadError) {\
 		size_t var = parseVariable("Expected a variable name!", cnst);\
 		if(match(TOKEN_EQUAL)) \
 			expression();\

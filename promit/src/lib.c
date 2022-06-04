@@ -1982,9 +1982,7 @@ static ObjClass* timeClass;
 	getField(instance, secField, timeContainer);\
 	time_t sec = (time_t) VALUE_NUMBER(timeContainer.value);\
 	getField(instance, usecField, timeContainer);\
-	int usec = (int) VALUE_NUMBER(timeContainer.value);\
-	getField(instance, tzoneField, timeContainer);\
-	int tzone = (int) VALUE_NUMBER(timeContainer.value);
+	int usec = (int) VALUE_NUMBER(timeContainer.value);
 
 int gettzoffset(void) {
 	int offset = 0;
@@ -2029,7 +2027,6 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 
 		setField(instance, secField, NUMBER_VAL((double) tv.tv_sec));
 		setField(instance, usecField, NUMBER_VAL((double) tv.tv_usec));
-		setField(instance, tzoneField, NUMBER_VAL((double) gettzoffset()));
 	}
 	
 	pack.value = values[0];
@@ -2074,16 +2071,10 @@ static NativePack timeStringifyISO(VM* vm, int argCount, Value* values) {
 
 	char* buffer = ALLOCATE(char, 30u * sizeof(char));
 
-	int wrote = sprintf(buffer, "%d-%.2d-%.2dT%.2d:%.2d:%.2d.%dZ", _time -> tm_year + 1900, _time -> tm_mon + 1, _time -> tm_mday,
+	int wrote = sprintf(buffer, "%d-%.2d-%.2dT%.2d:%.2d:%.2d.%.6dZ", _time -> tm_year + 1900, _time -> tm_mon + 1, _time -> tm_mday,
 		_time -> tm_hour, _time -> tm_min, _time -> tm_sec, usec);
 	
 	pack.value = OBJECT_VAL(TAKE_STRING(buffer, wrote, true));
-
-	return pack;
-}
-
-static  NativePack timeSleep(VM* vm, int argCount, Value* values) {
-	initNativePack;
 
 	return pack;
 }
@@ -2471,7 +2462,7 @@ static NativePack timeSetUTCMonth(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetHour(VM* vm, int argCount, Value* values) {
+static NativePack timeGetHours(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2483,7 +2474,7 @@ static NativePack timeGetHour(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCHour(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCHours(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2495,7 +2486,7 @@ static NativePack timeGetUTCHour(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeSetHour(VM* vm, int argCount, Value* values) {
+static NativePack timeSetHours(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	pack.value = NUMBER_VAL(0);
@@ -2504,13 +2495,13 @@ static NativePack timeSetHour(VM* vm, int argCount, Value* values) {
 		return pack;
 	
 	if(!IS_NUMBER(values[1])) {
-		NATIVE_R_ERR("Expected hour to be a number in Time.set_hour(hour)!");
+		NATIVE_R_ERR("Expected hour to be a number in Time.set_hours(hour)!");
 	}
 
 	double hour = trunc(VALUE_NUMBER(values[1]));
 
 	if(hour < 0 || hour > 23 || isnan(hour)) {
-		NATIVE_R_ERR("Invalid hour provided in Time.set_hour(hour)!");
+		NATIVE_R_ERR("Invalid hour provided in Time.set_hours(hour)!");
 	}
 
 	timeInstanceTime;
@@ -2528,7 +2519,7 @@ static NativePack timeSetHour(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeSetUTCHour(VM* vm, int argCount, Value* values) {
+static NativePack timeSetUTCHours(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	pack.value = NUMBER_VAL(0);
@@ -2537,13 +2528,13 @@ static NativePack timeSetUTCHour(VM* vm, int argCount, Value* values) {
 		return pack;
 	
 	if(!IS_NUMBER(values[1])) {
-		NATIVE_R_ERR("Expected hour to be a number in Time.set_utc_hour(hour)!");
+		NATIVE_R_ERR("Expected hour to be a number in Time.set_utc_hours(hour)!");
 	}
 
 	double hour = trunc(VALUE_NUMBER(values[1]));
 
 	if(hour < 0 || hour > 23 || isnan(hour)) {
-		NATIVE_R_ERR("Invalid hour provided in Time.set_utc_hour(hour)!");
+		NATIVE_R_ERR("Invalid hour provided in Time.set_utc_hours(hour)!");
 	}
 
 	timeInstanceTime;
@@ -2607,7 +2598,7 @@ static NativePack timeSet(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetMinute(VM* vm, int argCount, Value* values) {
+static NativePack timeGetMinutes(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2619,7 +2610,7 @@ static NativePack timeGetMinute(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCMinute(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCMinutes(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2631,7 +2622,7 @@ static NativePack timeGetUTCMinute(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeSetMinute(VM* vm, int argCount, Value* values) {
+static NativePack timeSetMinutes(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	pack.value = NUMBER_VAL(0);
@@ -2640,13 +2631,13 @@ static NativePack timeSetMinute(VM* vm, int argCount, Value* values) {
 		return pack;
 	
 	if(!IS_NUMBER(values[1])) {
-		NATIVE_R_ERR("Expected minute value to be a number in Time.set_minute(minute)!");
+		NATIVE_R_ERR("Expected minute value to be a number in Time.set_minutes(minute)!");
 	}
 
 	double minute = trunc(VALUE_NUMBER(values[1]));
 
 	if(minute < 0 || minute > 59 || isnan(minute)) {
-		NATIVE_R_ERR("Invalid minute provided in Time.set_minute(minute)!");
+		NATIVE_R_ERR("Invalid minute provided in Time.set_minutes(minute)!");
 	}
 
 	timeInstanceTime;
@@ -2664,7 +2655,7 @@ static NativePack timeSetMinute(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeSetUTCMinute(VM* vm, int argCount, Value* values) {
+static NativePack timeSetUTCMinutes(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	pack.value = NUMBER_VAL(0);
@@ -2673,13 +2664,13 @@ static NativePack timeSetUTCMinute(VM* vm, int argCount, Value* values) {
 		return pack;
 	
 	if(!IS_NUMBER(values[1])) {
-		NATIVE_R_ERR("Expected minute value to be a number in Time.set_utc_minute(minute)!");
+		NATIVE_R_ERR("Expected minute value to be a number in Time.set_utc_minutes(minute)!");
 	}
 
 	double minute = trunc(VALUE_NUMBER(values[1]));
 
 	if(minute < 0 || minute > 59 || isnan(minute)) {
-		NATIVE_R_ERR("Invalid minute provided in Time.set_utc_minute(minute)!");
+		NATIVE_R_ERR("Invalid minute provided in Time.set_utc_minutes(minute)!");
 	}
 
 	timeInstanceTime;
@@ -2697,7 +2688,7 @@ static NativePack timeSetUTCMinute(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetSecond(VM* vm, int argCount, Value* values) {
+static NativePack timeGetSeconds(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2709,7 +2700,7 @@ static NativePack timeGetSecond(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCSecond(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCSeconds(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2717,6 +2708,220 @@ static NativePack timeGetUTCSecond(VM* vm, int argCount, Value* values) {
 	struct tm* _time = gmtime(&sec);
 
 	pack.value = NUMBER_VAL((double) _time -> tm_sec);
+
+	return pack;
+}
+
+static NativePack timeSetSeconds(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected second to be a number in Time.set_seconds(second)!");
+	}
+
+	double second = trunc(VALUE_NUMBER(values[1]));
+
+	if(second < 0 || second > 59 || isnan(second)) {
+		NATIVE_R_ERR("Invalid second value passed in Time.set_seconds(second)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	_time -> tm_sec = (int) second;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeSetUTCSeconds(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected second to be a number in Time.set_utc_seconds(second)!");
+	}
+
+	double second = trunc(VALUE_NUMBER(values[1]));
+
+	if(second < 0 || second > 59 || isnan(second)) {
+		NATIVE_R_ERR("Invalid second value passed in Time.set_utc_seconds(second)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	_time -> tm_sec = (int) second;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeGetMilliseconds(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	pack.value = NUMBER_VAL(usec / 1000);
+
+	return pack;
+}
+
+static NativePack timeGetUTCMilliseconds(VM* vm, int argCount, Value* values) {
+	return timeGetMilliseconds(vm, argCount, values);
+}
+
+static NativePack timeSetMilliseconds(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected second to be a number in Time.set_milliseconds(ms)!");
+	}
+
+	double ms = trunc(VALUE_NUMBER(values[1]));
+
+	if(ms < 0 || ms > 999 || isnan(ms)) {
+		NATIVE_R_ERR("Invalid second value passed in Time.set_milliseconds(ms)!");
+	}
+
+	timeInstanceTime;
+
+	time_t uusec = (usec % 1000) + ((int) ms) * 1000;
+
+	setField(instance, usecField, NUMBER_VAL(uusec));
+
+	pack.value = NUMBER_VAL((uusec - usec) / 1000);
+
+	return pack;
+}
+
+static NativePack timeSetUTCMilliseconds(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected second to be a number in Time.set_utc_milliseconds(ms)!");
+	}
+
+	double ms = trunc(VALUE_NUMBER(values[1]));
+
+	if(ms < 0 || ms > 999 || isnan(ms)) {
+		NATIVE_R_ERR("Invalid second value passed in Time.set_utc_milliseconds(ms)!");
+	}
+
+	timeInstanceTime;
+
+	time_t uusec = (usec % 1000) + ((int) ms) * 1000;
+
+	setField(instance, usecField, NUMBER_VAL(uusec));
+
+	pack.value = NUMBER_VAL((uusec - usec) / 1000);
+
+	return pack;
+}
+
+static NativePack timeGetMicroseconds(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	pack.value = NUMBER_VAL(usec % 1000);
+
+	return pack;
+}
+
+static NativePack timeGetUTCMicroseconds(VM* vm, int argCount, Value* values) {
+	return timeGetUTCMicroseconds(vm, argCount, values);
+}
+
+static NativePack timeSetMicroseconds(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected second to be a number in Time.set_microseconds(usec)!");
+	}
+
+	double us = trunc(VALUE_NUMBER(values[1]));
+
+	if(us < 0 || us > 999 || isnan(us)) {
+		NATIVE_R_ERR("Invalid second value passed in Time.set_microseconds(usec)!");
+	}
+
+	timeInstanceTime;
+
+	pack.value = NUMBER_VAL(us - (usec / 1000));
+
+	setField(instance, usecField, NUMBER_VAL((usec / 1000) * 1000 + us));
+
+	return pack;
+}
+
+static NativePack timeSetUTCMicroseconds(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected second to be a number in Time.set_utc_microseconds(usec)!");
+	}
+
+	double us = trunc(VALUE_NUMBER(values[1]));
+
+	if(us < 0 || us > 999 || isnan(us)) {
+		NATIVE_R_ERR("Invalid second value passed in Time.set_utc_microseconds(usec)!");
+	}
+
+	timeInstanceTime;
+
+	pack.value = NUMBER_VAL(us - (usec / 1000));
+
+	setField(instance, usecField, NUMBER_VAL((usec / 1000) * 1000 + us));
+
+	return pack;
+}
+
+static NativePack timeCurrentTimezoneBias(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL((double) gettzoffset() / 3600);
 
 	return pack;
 }
@@ -2724,7 +2929,6 @@ static NativePack timeGetUTCSecond(VM* vm, int argCount, Value* values) {
 void initTimeLib(VM* vm) {
 	usecField   = TAKE_STRING("_p_usec__", 9u, false);
 	secField    = TAKE_STRING("_p_sec__", 8u, false);
-	tzoneField  = TAKE_STRING("_p_tzone__", 10u, false);
 	
 	ObjString* name = TAKE_STRING("Time", 4u, false);
 	
@@ -2746,14 +2950,24 @@ void initTimeLib(VM* vm) {
 	defineMethod(timeClass, TAKE_STRING("get_utc_month", 13u, false), timeGetUTCMonth);
 	defineMethod(timeClass, TAKE_STRING("set_month", 9u, false), timeSetMonth);
 	defineMethod(timeClass, TAKE_STRING("set_utc_month", 13u, false), timeSetUTCMonth);
-	defineMethod(timeClass, TAKE_STRING("get_hour", 8u, false), timeGetHour);
-	defineMethod(timeClass, TAKE_STRING("get_utc_hour", 12u, false), timeGetUTCHour);
-	defineMethod(timeClass, TAKE_STRING("set_hour", 8u, false), timeSetHour);
-	defineMethod(timeClass, TAKE_STRING("set_utc_hour", 12u, false), timeSetUTCHour);
-	defineMethod(timeClass, TAKE_STRING("get_minute", 10u, false), timeGetMinute);
-	defineMethod(timeClass, TAKE_STRING("get_utc_minute", 14u, false), timeGetUTCMinute);
-	defineMethod(timeClass, TAKE_STRING("get_second", 10u, false), timeGetSecond);
-	defineMethod(timeClass, TAKE_STRING("get_utc_second", 14u, false), timeGetUTCSecond);
+	defineMethod(timeClass, TAKE_STRING("get_hours", 9u, false), timeGetHours);
+	defineMethod(timeClass, TAKE_STRING("get_utc_hours", 13u, false), timeGetUTCHours);
+	defineMethod(timeClass, TAKE_STRING("set_hours", 9u, false), timeSetHours);
+	defineMethod(timeClass, TAKE_STRING("set_utc_hours", 13u, false), timeSetUTCHours);
+	defineMethod(timeClass, TAKE_STRING("get_minutes", 11u, false), timeGetMinutes);
+	defineMethod(timeClass, TAKE_STRING("get_utc_minutes", 15u, false), timeGetUTCMinutes);
+	defineMethod(timeClass, TAKE_STRING("get_seconds", 11u, false), timeGetSeconds);
+	defineMethod(timeClass, TAKE_STRING("get_utc_seconds", 15u, false), timeGetUTCSeconds);
+	defineMethod(timeClass, TAKE_STRING("set_seconds", 11u, false), timeSetSeconds);
+	defineMethod(timeClass, TAKE_STRING("set_utc_seconds", 15u, false), timeSetUTCSeconds);
+	defineMethod(timeClass, TAKE_STRING("get_milliseconds", 16u, false), timeGetMilliseconds);
+	defineMethod(timeClass, TAKE_STRING("get_utc_milliseconds", 20u, false), timeGetUTCMilliseconds);
+	defineMethod(timeClass, TAKE_STRING("set_milliseconds", 16u, false), timeSetMilliseconds);
+	defineMethod(timeClass, TAKE_STRING("set_utc_milliseconds", 20u, false), timeSetUTCMilliseconds);
+	defineMethod(timeClass, TAKE_STRING("get_microseconds", 16u, false), timeGetMicroseconds);
+	defineMethod(timeClass, TAKE_STRING("get_utc_microseconds", 20u, false), timeGetMicroseconds);
+	defineMethod(timeClass, TAKE_STRING("set_microseconds", 16u, false), timeSetMicroseconds);
+	defineMethod(timeClass, TAKE_STRING("set_utc_microseconds", 20u, false), timeSetMicroseconds);
 	defineMethod(timeClass, TAKE_STRING("count", 5u, false), timeCount);
 	defineMethod(timeClass, TAKE_STRING("set", 3u, false), timeSet);
 	defineMethod(timeClass, TAKE_STRING("details", 7u, false), timeDetails);
@@ -2761,9 +2975,9 @@ void initTimeLib(VM* vm) {
 	defineMethod(timeClass, TAKE_STRING("stringify_iso", 13u, false), timeStringifyISO);
 	defineMethod(timeClass, TAKE_STRING("__represent__", 13u, false), time__represent__);
 	
-	defineStaticMethod(timeClass, TAKE_STRING("sleep", 5u, false), timeSleep);
 	defineStaticMethod(timeClass, TAKE_STRING("snap", 4u, false), timeSnap);
 	defineStaticMethod(timeClass, TAKE_STRING("elapsed", 7u, false), timeElapsed);
+	defineStaticMethod(timeClass, TAKE_STRING("current_timezone_bias", 21u, false), timeCurrentTimezoneBias);
 
 	setStatic(timeClass, TAKE_STRING("PREFER_UTC", 10u, false), NUMBER_VAL(0));
 	setStatic(timeClass, TAKE_STRING("PREFER_LOCAL", 12u, false), NUMBER_VAL(1));
@@ -5879,11 +6093,13 @@ static NativePack stringRepeat(VM* vm, int argCount, Value* values) {
 		NATIVE_R_ERR("Expected the first argument to be a number in String.repeat(times)!");
 	}
 
-	long long times = (long long) VALUE_NUMBER(values[1]);
+	double value = VALUE_NUMBER(values[1]);
 
-	if(times < 0) {
+	if(value < 0 || value > MAX_SAFE_INTEGER) {
 		NATIVE_R_ERR("Invalid times value provided in String.repeat(times)!");
 	}
+
+	long long times = (long long) value;
 
 	size_t length = string -> length * times;
 
@@ -5891,6 +6107,45 @@ static NativePack stringRepeat(VM* vm, int argCount, Value* values) {
 
 	for(register long long i = 0; i < times; i++) 
 		memcpy(buffer + i * string -> length, string -> buffer, string -> length * sizeof(char));
+	
+	buffer[length] = 0;
+
+	pack.value = OBJECT_VAL(TAKE_STRING(buffer, length, true));
+
+	return pack;
+}
+
+static NativePack stringRepeatUntil(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	stringInstanceString;
+
+	if(argCount < 2) {
+		pack.value = OBJECT_VAL(TAKE_STRING("", 0u, false));
+
+		return pack;
+	}
+
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected the first argument to be a number in String.repeat_until(length)!");
+	}
+
+	double value = VALUE_NUMBER(values[1]);
+
+	if(value < 0 || value > MAX_SAFE_INTEGER) {
+		NATIVE_R_ERR("Invalid times value provided in String.repeat_until(length)!");
+	}
+
+	long long length = (long long) value;
+
+	char* buffer = ALLOCATE(char, length + 1);
+
+	int times = length / string -> length, i = 0;
+
+	for(; i < times; i++) 
+		memcpy(buffer + i * string -> length, string -> buffer, string -> length * sizeof(char));
+	
+	memcpy(buffer + i * string -> length, string -> buffer, (length - times * string -> length) * sizeof(char));
 	
 	buffer[length] = 0;
 
@@ -6461,6 +6716,7 @@ void initStringLib(VM* vm) {
 	defineMethod(stringClass, TAKE_STRING("pad_left", 8u, false), stringPadLeft);
 	defineMethod(stringClass, TAKE_STRING("pad_right", 9u, false), stringPadRight);
 	defineMethod(stringClass, TAKE_STRING("repeat", 6u, false), stringRepeat);
+	defineMethod(stringClass, TAKE_STRING("repeat_until", 12u, false), stringRepeatUntil);
 	defineMethod(stringClass, TAKE_STRING("contains", 8u, false), stringContains);
 	defineMethod(stringClass, TAKE_STRING("index", 5u, false), stringIndex);
 	defineMethod(stringClass, TAKE_STRING("replace", 7u, false), stringReplace);
@@ -6729,7 +6985,8 @@ static NativePack funcPass(VM* vm, int argCount, Value* values) {
 	for(uint64_t i = 0u; i < args -> count; i++) 
 		stack_push(vm, args -> values[i]);
 	
-	if(callValue(vm, OBJECT_VAL(method -> function), args -> count) && (method -> function -> type == OBJ_NATIVE || run(vm) != INTERPRET_RUNTIME_ERROR)) 
+	if(callValue(vm, OBJECT_VAL(method -> function), args -> count) && 
+	(method -> function -> type == OBJ_NATIVE || run(vm) != INTERPRET_RUNTIME_ERROR)) 
 		pack.value = stack_pop(vm);
 	else pack.hadError = true;
 
@@ -6773,7 +7030,6 @@ void gcLibIgnore() {
 
 	markObject((Obj*) secField);
 	markObject((Obj*) usecField);
-	markObject((Obj*) tzoneField);
 
 	// Number library.
 
