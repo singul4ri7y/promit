@@ -4738,19 +4738,19 @@ InterpretResult run(VM* vm) {
 					if(!isStatic) {
 						WrapperStatus wrapperStatus = wrapperInvoke(vm, value, method, argCount);
 
-						if(wrapperStatus.status == true && wrapperStatus.hadError == false) {
+						if(wrapperStatus.status == true) {
+							if(wrapperStatus.hadError == false) 
 								break;
-						}
-						else if(state == 2u) {
-							RUNTIME_ERROR("Attempt to access method from non-(instance/dictionary/wrapper-class) value!");
-
-							return INTERPRET_RUNTIME_ERROR;
-						} else {
-							RUNTIME_ERROR(data.message, method -> buffer);
-
-							return INTERPRET_RUNTIME_ERROR;
+							else return INTERPRET_RUNTIME_ERROR;
 						}
 					}
+					
+					if(state == 2u) 
+						RUNTIME_ERROR("Attempt to access method from non-(instance/dictionary/wrapper-class) value!");
+					else if(data.message != NULL) 
+						RUNTIME_ERROR(data.message, method -> buffer);
+
+					return INTERPRET_RUNTIME_ERROR;
 				} while(false);
 				
 				frame = vm -> frames + vm -> frameCount - 1u;
@@ -4809,19 +4809,19 @@ InterpretResult run(VM* vm) {
 					if(!isStatic) {
 						WrapperStatus wrapperStatus = wrapperInvoke(vm, value, method, argCount);
 
-						if(wrapperStatus.status == true && wrapperStatus.hadError == false) {
+						if(wrapperStatus.status == true) {
+							if(wrapperStatus.hadError == false) 
 								break;
-						}
-						else if(state == 2u) {
-							RUNTIME_ERROR("Attempt to access method from non-(instance/dictionary/wrapper-class) value!");
-
-							return INTERPRET_RUNTIME_ERROR;
-						} else {
-							RUNTIME_ERROR(data.message, method -> buffer);
-
-							return INTERPRET_RUNTIME_ERROR;
+							else return INTERPRET_RUNTIME_ERROR;
 						}
 					}
+					
+					if(state == 2u) 
+						RUNTIME_ERROR("Attempt to access method from non-(instance/dictionary/wrapper-class) value!");
+					else if(data.message != NULL) 
+						RUNTIME_ERROR(data.message, method -> buffer);
+
+					return INTERPRET_RUNTIME_ERROR;
 				} while(false);
 				
 				frame = vm -> frames + vm -> frameCount - 1u;
@@ -5293,8 +5293,4 @@ int __printf(const char* format, ...) {
 	va_end(v);
 	
 	return wrote;
-}
-
-const char* readFile(const char* name) {
-	
 }

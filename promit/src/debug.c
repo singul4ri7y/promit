@@ -41,7 +41,7 @@ static size_t constantInstruction(const char* opcode, Chunk* chunk, size_t offse
 	printValue(&chunk -> constants.values[constant]);
 	printf("\n");
 
-	return offset + 2u;
+	return offset + 3u;
 }
 
 static size_t globalLongInstruction(const char* opcode, Chunk* chunk, size_t offset) {

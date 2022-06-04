@@ -83,8 +83,6 @@ static ClassCompiler* currentClass = NULL;
 static char* relativePath = NULL;
 static size_t relativePathSize = 0u;
 
-static bool absoluteREPL = false;
-
 typedef enum {
 	PREC_NONE, 
 	PREC_ASSIGNMENT,    // =
@@ -149,6 +147,7 @@ static void pushRequest(uint32_t codePoint) {
 
 // Forward declaration of addLocal.
 
+static void advance();
 static void addLocal(const Token*, bool);
 
 static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
@@ -185,6 +184,11 @@ static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
 		if(type != TYPE_PROGRAM) 
 			compiler -> function -> name = copyString(getVM(), parser.previous.start, parser.previous.length);
 		else compiler -> function -> name = takeString(getVM(), "main", 4, false);
+	}
+	else if(parser.current.type == TOKEN_IDENTIFIER) {
+		advance();
+
+		compiler -> function -> name = copyString(getVM(), parser.previous.start, parser.previous.length);
 	}
 	
 	Local* local = &current -> locals[current -> localCount - 1u];
@@ -1347,14 +1351,12 @@ static void patchRequests() {
 	if(!current -> requests.count) 
 		return;
 
-	while(true) {
-		PointData pointData = current -> requests.data[current -> requests.count - 1u];
+	while(current -> requests.count) {
+		PointData pointData = current -> requests.data[--current -> requests.count];
 
 		if(pointData.depth == current -> loopDepth) 
 			patchRequestJump(pointData.codePoint, pointData.stride);
 		else break;
-		
-		current -> requests.count--;
 	}
 }
 
@@ -1918,7 +1920,7 @@ static void defineVariable(size_t var, bool isConst) {
 	}\
 	semicolon("Expected a ';' after variable declaration!", !inLoop);\
 
-static void takeDeclaration(bool inLoop) {		// In loop specialy for 'for'.
+static void takeDeclaration(bool inLoop) {		// In loop specially for 'for'.
 	VARIABLE(false, inLoop);
 }
 
@@ -2151,8 +2153,6 @@ ObjFunction* compile(VM* vm, const char* source) {
 	
 	globalScanner = &scanner;
 	globalVM      = vm;
-	
-	absoluteREPL = vm -> inREPL;
 
 	Compiler compiler;
 

@@ -1968,9 +1968,6 @@ void initMathLib(VM* vm) {
 	tableInsert(&vm -> globals, name, ((ValueContainer) { OBJECT_VAL(mathClass), true }));
 }
 
-#define timeGet(instance, name, value) tableGet(&instance -> fields, name, &value)
-#define timeSet(instance, name, value) tableInsert(&instance -> fields, name, (ValueContainer) { NUMBER_VAL((value)), false });
-
 static ObjString* secField;
 static ObjString* usecField;
 static ObjString* tzoneField;
@@ -1983,11 +1980,11 @@ static ObjClass* timeClass;
 	ObjInstance* instance = VALUE_INSTANCE(values[0]);\
 	ValueContainer timeContainer;\
 	getField(instance, secField, timeContainer);\
-	double sec = VALUE_NUMBER(timeContainer.value);\
+	time_t sec = (time_t) VALUE_NUMBER(timeContainer.value);\
 	getField(instance, usecField, timeContainer);\
-	double usec = VALUE_NUMBER(timeContainer.value);\
+	int usec = (int) VALUE_NUMBER(timeContainer.value);\
 	getField(instance, tzoneField, timeContainer);\
-	double tzone = VALUE_NUMBER(timeContainer.value);
+	int tzone = (int) VALUE_NUMBER(timeContainer.value);
 
 int gettzoffset(void) {
 	int offset = 0;
@@ -2040,35 +2037,9 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static int timeUnits[] = { 1, 1e3, 1e6, 1, 60, 3600, 86400, 
-	604800, 2629746, 31556926 };
-
-static NativePack timeGetYear(VM* vm, int argCount, Value* values) {
-	initNativePack;
-
-	timeInstanceTime;
-
-	pack.value = NUMBER_VAL(((long long) (sec + tzone) / timeUnits[9]) + 1970);
-
-	return pack;
-}
-
-static NativePack timeGetUTCYear(VM* vm, int argCount, Value* values) {
-	initNativePack;
-
-	timeInstanceTime;
-
-	pack.value = NUMBER_VAL(((long long) sec / timeUnits[9]) + 1970);
-
-	return pack;
-}
-
-static  NativePack timeSleep(VM* vm, int argCount, Value* values) {
-}
-
 // Gets the current CPU time.
 
-static NativePack timeNow(VM* vm, int argCount, Value* values) {
+static NativePack timeSnap(VM* vm, int argCount, Value* values) {
 	NativePack pack;
 	
 	pack.hadError = false;
@@ -2097,86 +2068,22 @@ static NativePack timeElapsed(VM* vm, int argCount, Value* values) {
 static NativePack timeStringifyISO(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
-	return pack;
-}
-
-static NativePack timeSetYear(VM* vm, int argCount, Value* values) {
-	initNativePack;
-
-	if(argCount < 2) {
-		pack.value = NUMBER_VAL(0);
-
-		return pack;
-	}
-
 	timeInstanceTime;
 
-	double year = trunc(VALUE_NUMBER(values[1]));
+	struct tm* _time = gmtime(&sec);
 
-	if(year < -1e5 || year > 1e5) {
-		NATIVE_R_ERR("Invalid year provided in Time.set_year(year)! How far you intend to go?");
-	}
+	char* buffer = ALLOCATE(char, 30u * sizeof(char));
 
-	if(year >= 0 && year < 100) 
-		year += 1900;
+	int wrote = sprintf(buffer, "%d-%.2d-%.2dT%.2d:%.2d:%.2d.%dZ", _time -> tm_year + 1900, _time -> tm_mon + 1, _time -> tm_mday,
+		_time -> tm_hour, _time -> tm_min, _time -> tm_sec, usec);
 	
-	int rest = (long long) sec % timeUnits[9];
-
-	double ysec = (year - 1970) * timeUnits[9];
-
-	pack.value = NUMBER_VAL((ysec - sec) * 1000 + ((long long) usec / 1000));
-
-	setField(instance, secField, NUMBER_VAL(ysec + rest));
+	pack.value = OBJECT_VAL(TAKE_STRING(buffer, wrote, true));
 
 	return pack;
 }
 
-static NativePack timeSetUTCYear(VM* vm, int argCount, Value* values) {
+static  NativePack timeSleep(VM* vm, int argCount, Value* values) {
 	initNativePack;
-
-	if(argCount < 2) {
-		pack.value = NUMBER_VAL(0);
-
-		return pack;
-	}
-
-	timeInstanceTime;
-
-	double year = trunc(VALUE_NUMBER(values[1]));
-
-	if(year < -1e5 || year > 1e5) {
-		NATIVE_R_ERR("Invalid year provided in Time.set_utc_year(year)! How far you intend to go?");
-	}
-
-	if(year >= 0 && year < 100) 
-		year += 1900;
-	
-	int rest = (long long) sec % timeUnits[9];
-
-	double ysec = (year - 1970) * timeUnits[9];
-
-	pack.value = NUMBER_VAL((ysec - sec) * 1000 + ((long long) usec / 1000));
-
-	setField(instance, secField, NUMBER_VAL(ysec + rest));
-
-	return pack;
-}
-
-static NativePack timeGetDate(VM* vm, int argCount, Value* values) {
-	initNativePack;
-
-	timeInstanceTime;
-	
-	int year = ((long long) (sec + tzone) / timeUnits[9]) + 1970;
-
-	int rest = ((year - 1) / 400 - 1970 / 400) +
-		((year - 1) / 100 - 1970 / 100);
-	
-	uint16_t days[] = { 31, 28 + isLeap(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-	
-	for(uint8_t i = 0u; i < 12u && rest > days[i]; i++, rest -= days[i]);
-
-	pack.value = NUMBER_VAL(rest);
 
 	return pack;
 }
@@ -2188,10 +2095,628 @@ static NativePack timeCount(VM* vm, int argCount, Value* values) {
 
 	ObjDictionary* dict = newDictionary(vm);
 
-	tableInsert(&dict -> fields, TAKE_STRING("sec", 3u, false), (ValueContainer) { NUMBER_VAL(sec), true });
-	tableInsert(&dict -> fields, TAKE_STRING("usec", 4u, false), (ValueContainer) { NUMBER_VAL(usec), true });
+	setField(dict, TAKE_STRING("sec", 3u, false), NUMBER_VAL((double) sec));
+	setField(dict, TAKE_STRING("usec", 4u, false), NUMBER_VAL((double) usec));
 
 	pack.value = OBJECT_VAL(dict);
+
+	return pack;
+}
+
+static NativePack timeGetYear(VM* vm, int argCount, Value* values) {
+	initNativePack;
+	
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	pack.value = NUMBER_VAL((double) (_time -> tm_year + 1900));
+
+	return pack;
+}
+
+static NativePack timeGetUTCYear(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	pack.value = NUMBER_VAL((double) (_time -> tm_year + 1900));
+}
+
+static NativePack timeSetYear(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected the first parameter to be a number in Time.set_year(year)!");
+	}
+
+	double year = trunc(VALUE_NUMBER(values[1]));
+
+	if(year < -4000 || year > 4000 || isnan(year)) {
+		NATIVE_R_ERR("Invalid year provided in Time.set_year(year)! How far do you intend to go?");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	_time -> tm_year = (int) (year - 1900);
+
+	time_t result = mktime(_time);
+
+	if(result == -1) 
+		return pack;
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeSetUTCYear(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected the first parameter to be a number in Time.set_utc_year(year)!");
+	}
+
+	double year = trunc(VALUE_NUMBER(values[1]));
+
+	if(year < -4000 || year > 4000 || isnan(year)) {
+		NATIVE_R_ERR("Invalid year provided in Time.set_utc_year(year)! How far do you intend to go?");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	_time -> tm_year = (int) (year - 1900);
+
+	time_t result = mktime(_time);
+
+	if(result == -1) 
+		return pack;
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeDetails(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	ObjDictionary* dict = newDictionary(vm);
+
+	struct tm* _time = NULL;
+
+	short type = -1;
+
+	if(argCount < 2) 
+		type = 0;
+	else if(IS_NUMBER(values[1])) {
+		double value = trunc(VALUE_NUMBER(values[1]));
+
+		if(value < 0 || value > 1) {
+			NATIVE_R_ERR("Invalid preference provided in Time.details(preference)!");
+		}
+
+		type = (short) value;
+	} else {
+		NATIVE_R_ERR("The preference parameter must be a number in Time.details(preference)!");
+	}
+
+	pack.value = OBJECT_VAL(dict);
+
+	if(type == 0) 
+		_time = gmtime(&sec);
+	else if(type == 1) 
+		_time = localtime(&sec);
+	else return pack;
+
+	setField(dict, TAKE_STRING("year", 4u, false), NUMBER_VAL(_time -> tm_year + 1900));
+	setField(dict, TAKE_STRING("month", 5u, false), NUMBER_VAL(_time -> tm_mon));
+	setField(dict, TAKE_STRING("dls", 3u, false), NUMBER_VAL(_time -> tm_isdst));
+	setField(dict, TAKE_STRING("date", 4u, false), NUMBER_VAL(_time -> tm_mday));
+	setField(dict, TAKE_STRING("day", 3u, false), NUMBER_VAL(_time -> tm_wday));
+	setField(dict, TAKE_STRING("hour", 4u, false), NUMBER_VAL(_time -> tm_hour));
+	setField(dict, TAKE_STRING("sec", 3u, false), NUMBER_VAL(_time -> tm_sec));
+	setField(dict, TAKE_STRING("yday", 4u, false), NUMBER_VAL(_time -> tm_yday));
+	setField(dict, TAKE_STRING("min", 3u, false), NUMBER_VAL(_time -> tm_min));
+	setField(dict, TAKE_STRING("msec", 3u, false), NUMBER_VAL((int) usec / 1000));
+	setField(dict, TAKE_STRING("usec", 3u, false), NUMBER_VAL((int) usec % 1000));
+
+	return pack;
+}
+
+static NativePack timeGetDate(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	pack.value = NUMBER_VAL(_time -> tm_mday);
+
+	return pack;
+}
+
+static NativePack timeGetUTCDate(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	pack.value = NUMBER_VAL(_time -> tm_mday);
+
+	return pack;
+}
+
+static NativePack timeStringify(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = NULL;
+
+	short type = -1;
+
+	if(argCount < 2) 
+		type = 0;
+	else if(IS_NUMBER(values[1])) {
+		double value = trunc(VALUE_NUMBER(values[1]));
+
+		if(value < 0 || value > 1) {
+			NATIVE_R_ERR("Invalid preference provided in Time.stringify(preference)!");
+		}
+
+		type = (short) value;
+	} else {
+		NATIVE_R_ERR("The preference parameter must be a number in Time.stringify(preference)!");
+	}
+
+	pack.value = OBJECT_VAL(TAKE_STRING("", 0u, false));
+
+	if(type == 0) 
+		_time = gmtime(&sec);
+	else if(type == 1) 
+		_time = localtime(&sec);
+	else return pack;
+
+	char* buffer = ALLOCATE(char, 45 * sizeof(char));
+
+	strftime(buffer, 45 * sizeof(char), "%a %b %d %H:%M:%S %Y GMT%z (UTC %Z)", _time);
+
+	pack.value = OBJECT_VAL(TAKE_STRING(buffer, strlen(buffer), true));
+
+	return pack;
+}
+
+static NativePack time__represent__(VM* vm, int argCount, Value* values) {
+	Value v[] = { values[0], NUMBER_VAL(1) };
+
+	return timeStringify(vm, 2, (Value*) v);
+}
+
+static NativePack timeSetDate(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected date to be a number in Time.set_date(date)!");
+	}
+
+	double date = trunc(VALUE_NUMBER(values[1]));
+
+	if(date < 1 || date > 31 || isnan(date)) {
+		NATIVE_R_ERR("Invalid date provided in Time.set_date(date)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	_time -> tm_mday = (int) date;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeSetUTCDate(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected date to be a number in Time.set_utc_date(date)!");
+	}
+
+	double date = trunc(VALUE_NUMBER(values[1]));
+
+	if(date < 1 || date > 31 || isnan(date)) {
+		NATIVE_R_ERR("Invalid date provided in Time.set_utc_date(date)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	_time -> tm_mday = (int) date;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeGetMonth(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	pack.value = NUMBER_VAL((double) _time -> tm_mon);
+
+	return pack;
+}
+
+static NativePack timeGetUTCMonth(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	pack.value = NUMBER_VAL((double) _time -> tm_mon);
+
+	return pack;
+}
+
+static NativePack timeSetMonth(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected month index to be a number in Time.set_month(month_index)!");
+	}
+
+	double month = trunc(VALUE_NUMBER(values[1]));
+
+	if(month < 0 || month > 11 || isnan(month)) {
+		NATIVE_R_ERR("Invalid month index provided in Time.set_month(month_index)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	_time -> tm_mon = (int) month;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeSetUTCMonth(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected month index to be a number in Time.set_utc_month(month_index)!");
+	}
+
+	double month = trunc(VALUE_NUMBER(values[1]));
+
+	if(month < 0 || month > 11 || isnan(month)) {
+		NATIVE_R_ERR("Invalid month index provided in Time.set_utc_month(month_index)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	_time -> tm_mon = (int) month;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeGetHour(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	pack.value = NUMBER_VAL((double) _time -> tm_hour);
+
+	return pack;
+}
+
+static NativePack timeGetUTCHour(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	pack.value = NUMBER_VAL((double) _time -> tm_hour);
+
+	return pack;
+}
+
+static NativePack timeSetHour(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected hour to be a number in Time.set_hour(hour)!");
+	}
+
+	double hour = trunc(VALUE_NUMBER(values[1]));
+
+	if(hour < 0 || hour > 23 || isnan(hour)) {
+		NATIVE_R_ERR("Invalid hour provided in Time.set_hour(hour)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	_time -> tm_hour = (int) hour;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeSetUTCHour(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected hour to be a number in Time.set_utc_hour(hour)!");
+	}
+
+	double hour = trunc(VALUE_NUMBER(values[1]));
+
+	if(hour < 0 || hour > 23 || isnan(hour)) {
+		NATIVE_R_ERR("Invalid hour provided in Time.set_utc_hour(hour)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	_time -> tm_hour = (int) hour;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeSet(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = BOOL_VAL(false);
+
+	if(argCount < 2) 
+		return pack;
+
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected the first argument to be a number in Time.set(sec, usec)!");
+	}
+
+	double _sec = trunc(VALUE_NUMBER(values[1])), _usec = NAN;
+
+	if(isinf(_sec) || isnan(_sec)) {
+		NATIVE_R_ERR("Invalid seconds provided in Time.set(sec, usec)!");
+	}
+
+	if(argCount > 2) {
+		if(!IS_NUMBER(values[2])) {
+			NATIVE_R_ERR("Expected the second argument to be a number in Time.set(sec, usec)!");
+		}
+
+		_usec = trunc(VALUE_NUMBER(values[2]));
+	}
+
+	timeInstanceTime;
+
+	if(!isnan(_usec) && !isinf(_usec)) {
+		_sec += (time_t) _usec / 1000000L;
+		_usec = (time_t) _usec % 1000000L;
+
+		if(_usec < 0) {
+			_sec--;
+			_usec += 1e6;
+		}
+	}
+
+	setField(instance, secField, NUMBER_VAL(_sec));
+	setField(instance, usecField, NUMBER_VAL(_usec));
+
+	pack.value = BOOL_VAL(true);
+
+	return pack;
+}
+
+static NativePack timeGetMinute(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	pack.value = NUMBER_VAL((double) _time -> tm_min);
+
+	return pack;
+}
+
+static NativePack timeGetUTCMinute(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	pack.value = NUMBER_VAL((double) _time -> tm_min);
+
+	return pack;
+}
+
+static NativePack timeSetMinute(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected minute value to be a number in Time.set_minute(minute)!");
+	}
+
+	double minute = trunc(VALUE_NUMBER(values[1]));
+
+	if(minute < 0 || minute > 59 || isnan(minute)) {
+		NATIVE_R_ERR("Invalid minute provided in Time.set_minute(minute)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	_time -> tm_min = (int) minute;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeSetUTCMinute(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	pack.value = NUMBER_VAL(0);
+
+	if(argCount < 2) 
+		return pack;
+	
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected minute value to be a number in Time.set_utc_minute(minute)!");
+	}
+
+	double minute = trunc(VALUE_NUMBER(values[1]));
+
+	if(minute < 0 || minute > 59 || isnan(minute)) {
+		NATIVE_R_ERR("Invalid minute provided in Time.set_utc_minute(minute)!");
+	}
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	_time -> tm_min = (int) minute;
+
+	time_t result = mktime(_time);
+
+	pack.value = NUMBER_VAL(result - sec);
+
+	setField(instance, secField, NUMBER_VAL((double) result));
+
+	return pack;
+}
+
+static NativePack timeGetSecond(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	pack.value = NUMBER_VAL((double) _time -> tm_sec);
+
+	return pack;
+}
+
+static NativePack timeGetUTCSecond(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	pack.value = NUMBER_VAL((double) _time -> tm_sec);
 
 	return pack;
 }
@@ -2212,24 +2737,36 @@ void initTimeLib(VM* vm) {
 	defineMethod(timeClass, TAKE_STRING("get_year", 8u, false), timeGetYear);
 	defineMethod(timeClass, TAKE_STRING("get_utc_year", 12u, false), timeGetUTCYear);
 	defineMethod(timeClass, TAKE_STRING("set_year", 8u, false), timeSetYear);
-	defineMethod(timeClass, TAKE_STRING("set_utc_year", 12u, false), timeSetYear);
+	defineMethod(timeClass, TAKE_STRING("set_utc_year", 12u, false), timeSetUTCYear);
 	defineMethod(timeClass, TAKE_STRING("get_date", 8u, false), timeGetDate);
+	defineMethod(timeClass, TAKE_STRING("get_utc_date", 12u, false), timeGetUTCDate);
+	defineMethod(timeClass, TAKE_STRING("set_date", 8u, false), timeSetDate);
+	defineMethod(timeClass, TAKE_STRING("set_utc_date", 12u, false), timeSetUTCDate);
+	defineMethod(timeClass, TAKE_STRING("get_month", 9u, false), timeGetMonth);
+	defineMethod(timeClass, TAKE_STRING("get_utc_month", 13u, false), timeGetUTCMonth);
+	defineMethod(timeClass, TAKE_STRING("set_month", 9u, false), timeSetMonth);
+	defineMethod(timeClass, TAKE_STRING("set_utc_month", 13u, false), timeSetUTCMonth);
+	defineMethod(timeClass, TAKE_STRING("get_hour", 8u, false), timeGetHour);
+	defineMethod(timeClass, TAKE_STRING("get_utc_hour", 12u, false), timeGetUTCHour);
+	defineMethod(timeClass, TAKE_STRING("set_hour", 8u, false), timeSetHour);
+	defineMethod(timeClass, TAKE_STRING("set_utc_hour", 12u, false), timeSetUTCHour);
+	defineMethod(timeClass, TAKE_STRING("get_minute", 10u, false), timeGetMinute);
+	defineMethod(timeClass, TAKE_STRING("get_utc_minute", 14u, false), timeGetUTCMinute);
+	defineMethod(timeClass, TAKE_STRING("get_second", 10u, false), timeGetSecond);
+	defineMethod(timeClass, TAKE_STRING("get_utc_second", 14u, false), timeGetUTCSecond);
 	defineMethod(timeClass, TAKE_STRING("count", 5u, false), timeCount);
+	defineMethod(timeClass, TAKE_STRING("set", 3u, false), timeSet);
+	defineMethod(timeClass, TAKE_STRING("details", 7u, false), timeDetails);
+	defineMethod(timeClass, TAKE_STRING("stringify", 9u, false), timeStringify);
+	defineMethod(timeClass, TAKE_STRING("stringify_iso", 13u, false), timeStringifyISO);
+	defineMethod(timeClass, TAKE_STRING("__represent__", 13u, false), time__represent__);
 	
 	defineStaticMethod(timeClass, TAKE_STRING("sleep", 5u, false), timeSleep);
-	defineStaticMethod(timeClass, TAKE_STRING("now", 3u, false), timeNow);
+	defineStaticMethod(timeClass, TAKE_STRING("snap", 4u, false), timeSnap);
 	defineStaticMethod(timeClass, TAKE_STRING("elapsed", 7u, false), timeElapsed);
-	
-	setStatic(timeClass, TAKE_STRING("NANOSECONDS", 11u, false), NUMBER_VAL(0));
-	setStatic(timeClass, TAKE_STRING("MICROSECONDS", 12u, false), NUMBER_VAL(1));
-	setStatic(timeClass, TAKE_STRING("MILLISECONDS", 12u, false), NUMBER_VAL(2));
-	setStatic(timeClass, TAKE_STRING("SECONDS", 7u, false), NUMBER_VAL(3));
-	setStatic(timeClass, TAKE_STRING("MINUTES", 7u, false), NUMBER_VAL(4));
-	setStatic(timeClass, TAKE_STRING("HOURS", 5u, false), NUMBER_VAL(5));
-	setStatic(timeClass, TAKE_STRING("DAYS", 4u, false), NUMBER_VAL(6));
-	setStatic(timeClass, TAKE_STRING("WEEKS", 5u, false), NUMBER_VAL(7));
-	setStatic(timeClass, TAKE_STRING("MONTHS", 6u, false), NUMBER_VAL(8));
-	setStatic(timeClass, TAKE_STRING("YEARS", 5u, false), NUMBER_VAL(9));
+
+	setStatic(timeClass, TAKE_STRING("PREFER_UTC", 10u, false), NUMBER_VAL(0));
+	setStatic(timeClass, TAKE_STRING("PREFER_LOCAL", 12u, false), NUMBER_VAL(1));
 	
 	tableInsert(&vm -> globals, name, (ValueContainer) { OBJECT_VAL(timeClass), true });
 }
@@ -2693,7 +3230,7 @@ static NativePack numberStringify(VM* vm, int argCount, Value* values) {
 
 	// Special case for base 10.
 
-	if(base == 10 && (number > MAX_SAFE_INTEGER || number < MIN_SAFE_INTEGER)) {
+	if(base == 10 && (number > MAX_SAFE_INTEGER || number < MIN_SAFE_INTEGER) || fabs(number) < 1e-6) {
 		// Then do scientific representation.
 		// Simply call numberScientific.
 
@@ -3033,7 +3570,7 @@ static NativePack listForeach(VM* vm, int argCount, Value* values) {
 		for(short j = 0; j < arity; j++) 
 			stack_push(vm, args[j]);
 
-		if(callValue(vm, callback, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) stack_pop(vm);
+		if(callValue(vm, callback, arity) && (IS_NATIVE(callback) || run(vm) != INTERPRET_RUNTIME_ERROR)) stack_pop(vm);
 		else {
 			pack.hadError = true;
 
@@ -3101,7 +3638,7 @@ static NativePack listReduce(VM* vm, int argCount, Value* values) {
 		for(short j = 0; j < arity; j++) 
 			stack_push(vm, args[j]);
 		
-		if(callValue(vm, reducer, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+		if(callValue(vm, reducer, arity) && (IS_NATIVE(reducer) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			initval = stack_pop(vm);
 		} else {
 			pack.hadError = true;
@@ -3150,7 +3687,7 @@ static NativePack listReduceRight(VM* vm, int argCount, Value* values) {
 		for(short j = 0; j < arity; j++) 
 			stack_push(vm, args[j]);
 		
-		if(callValue(vm, reducer, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+		if(callValue(vm, reducer, arity) && (IS_NATIVE(reducer) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			initval = stack_pop(vm);
 		} else {
 			pack.hadError = true;
@@ -3282,7 +3819,7 @@ static NativePack listMap(VM* vm, int argCount, Value* values) {
 		for(short j = 0; j < arity; j++) 
 			stack_push(vm, args[j]);
 		
-		if(callValue(vm, callback, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+		if(callValue(vm, callback, arity) && (IS_NATIVE(callback) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			result -> values[result -> count++] = stack_pop(vm);
 		} else {
 			pack.hadError = true;
@@ -3675,7 +4212,7 @@ static NativePack listSearch(VM* vm, int argCount, Value* values) {
 			for(short j = 0; j < arity; j++) 
 				stack_push(vm, args[j]);
 			
-			if(callValue(vm, predicate, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+			if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 				Value fnres = stack_pop(vm);
 
 				if(toBoolean(vm, &fnres)) {
@@ -3700,7 +4237,7 @@ static NativePack listSearch(VM* vm, int argCount, Value* values) {
 			for(short j = 0; j < arity; j++) 
 				stack_push(vm, args[j]);
 			
-			if(callValue(vm, predicate, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+			if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 				Value fnres = stack_pop(vm);
 
 				if(toBoolean(vm, &fnres)) {
@@ -3764,7 +4301,7 @@ static NativePack listSearchIndex(VM* vm, int argCount, Value* values) {
 			for(short j = 0; j < arity; j++) 
 				stack_push(vm, args[j]);
 			
-			if(callValue(vm, predicate, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+			if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 				Value fnres = stack_pop(vm);
 
 				if(toBoolean(vm, &fnres)) {
@@ -3789,7 +4326,7 @@ static NativePack listSearchIndex(VM* vm, int argCount, Value* values) {
 			for(short j = 0; j < arity; j++) 
 				stack_push(vm, args[j]);
 			
-			if(callValue(vm, predicate, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+			if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 				Value fnres = stack_pop(vm);
 
 				if(toBoolean(vm, &fnres)) {
@@ -3844,7 +4381,7 @@ static NativePack listFilter(VM* vm, int argCount, Value* values) {
 		for(short j = 0; j < arity; j++) 
 			stack_push(vm, args[j]);
 		
-		if(callValue(vm, predicate, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+		if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			Value fnres = stack_pop(vm);
 
 			if(toBoolean(vm, &fnres)) {
@@ -4004,7 +4541,7 @@ static NativePack listCheck(VM* vm, int argCount, Value* values) {
 		for(short j = 0; j < arity; j++) 
 			stack_push(vm, args[j]);
 
-		if(callValue(vm, predicate, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+		if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			Value fnres = stack_pop(vm);
 
 			bool ret = toBoolean(vm, &fnres);
@@ -4133,7 +4670,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 				return buffer;
 			}
 
-			if(number > MAX_SAFE_INTEGER || number < MIN_SAFE_INTEGER) 
+			if(number > MAX_SAFE_INTEGER || number < MIN_SAFE_INTEGER || (number != 0 && fabs(number) < 1e-6)) 
 				return scientific(number, -1);
 			
 			// This code is from numberStringify(VM*, int, Value*).
@@ -6154,7 +6691,7 @@ static NativePack funcCall(VM* vm, int argCount, Value* values) {
 	for(int i = 3; i < argCount; i++) 
 		stack_push(vm, values[i]);
 	
-	if(callValue(vm, OBJECT_VAL(method -> function), argCount - 3) && run(vm) != INTERPRET_RUNTIME_ERROR) 
+	if(callValue(vm, OBJECT_VAL(method -> function), argCount - 3) && (method -> function -> type == OBJ_NATIVE || run(vm) != INTERPRET_RUNTIME_ERROR)) 
 		pack.value = stack_pop(vm);
 	else pack.hadError = true;
 
@@ -6192,7 +6729,7 @@ static NativePack funcPass(VM* vm, int argCount, Value* values) {
 	for(uint64_t i = 0u; i < args -> count; i++) 
 		stack_push(vm, args -> values[i]);
 	
-	if(callValue(vm, OBJECT_VAL(method -> function), args -> count) && run(vm) != INTERPRET_RUNTIME_ERROR) 
+	if(callValue(vm, OBJECT_VAL(method -> function), args -> count) && (method -> function -> type == OBJ_NATIVE || run(vm) != INTERPRET_RUNTIME_ERROR)) 
 		pack.value = stack_pop(vm);
 	else pack.hadError = true;
 
