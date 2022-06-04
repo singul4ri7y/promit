@@ -3,4 +3,4 @@ Promit is an bytecode interpreted, fast, lightweight and elegant programming lan
 
 Still in development.
 
-Development progress : 98%.
+Development progress : 99%.
