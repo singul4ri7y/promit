@@ -76,9 +76,9 @@ showl 'Summation of those two numbers is : ${a + b}!';
 - Minimalist library.
 ```dart
 take dictionary = {
-	'name'(const) :  'SD Asif Hossein',
-	'age'(const)  :  19,    // Now, yes.
-	'passion'     :  'Programming'
+	'name'(const)     :  'SD Asif Hossein',
+	'age'             :  19,    // Now, yes.
+	'passion'(const)  :  'Programming'
 };
 
 dictionary.keys()    // Returns a list.
