@@ -1,6 +1,9 @@
-# promit
-Promit is an bytecode interpreted, fast, lightweight and elegant programming language with ton's of power!
+# Project Promit
 
-Still in development.
+Promit is bytecode interpreted, lightweight, elegant and fast programming language. Promit has a minimal yet effective and powerful library functions, which helps to tackle down any modern programs.
 
-Development progress : 99%.
+![](logo/logo.jpg)
+
+## Development status
+
+Development ongoing : 99% completed.
