@@ -156,6 +156,7 @@ apt install git build-essential
 Switch to linux 😁. Nah, just kidding.
 
 Install ``MinGW-w64``, ``Cygwin`` or ``TDM GCC`` which has ``make`` baked within it.
+
 Install git from : <a href= "https://git-scm.com/downloads">https://git-scm.com/downloads</a>.
 
 ### The hard stuff :
