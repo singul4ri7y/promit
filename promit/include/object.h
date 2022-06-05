@@ -75,6 +75,7 @@ struct ObjClass {
 	ObjString* name;
 	Table methods;
 	Table statics;
+	struct ObjClass* superClass;
 };
 
 struct ObjInstance {

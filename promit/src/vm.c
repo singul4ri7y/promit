@@ -960,6 +960,21 @@ static WrapperStatus wrapperInvoke(VM* vm, Value value, ObjString* name, uint8_t
 	return wrapperStatus;
 }
 
+static bool invokeFromClass(VM* vm, ObjClass* klass, ObjString* name, uint8_t argCount) {
+	ValueContainer valueContainer;
+
+	if(tableGet(&klass -> methods, name, &valueContainer)) {
+		if(callValue(vm, valueContainer.value, argCount)) 
+			return true;
+		
+		return false;
+	} else {
+		RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+
+		return false;
+	}
+}
+
 #define NUM_ASSURE(val, name) \
 	Value* name = (val);\
 	switch(name -> type) {\
@@ -1897,14 +1912,15 @@ InterpretResult run(VM* vm) {
 			}
 
 			case OP_INSTOF: {
-				Value klass    = POP(),
-				      instance = POP();
-
-				if(!IS_CLASS(klass)) {
+				if(!IS_CLASS(*peek(vm, 0))) {
 					RUNTIME_ERROR("Expected the Right Hand Side of 'instof' to be a class!");
 
 					return INTERPRET_RUNTIME_ERROR;
 				}
+
+				ObjClass* klass = VALUE_CLASS(POP());
+
+				Value instance  = POP();
 
 				// Wrapper class.
 
@@ -1933,8 +1949,15 @@ InterpretResult run(VM* vm) {
 
 					instance = OBJECT_VAL(&dummy);
 				}
+
+				ObjClass* check = VALUE_INSTANCE(instance) -> klass;
+
+				bool result = false;
+
+				while(check != NULL && !(result = check == klass)) 
+					check = check -> superClass;
 				
-				PUSH(BOOL_VAL(VALUE_INSTANCE(instance) -> klass == VALUE_CLASS(klass)));
+				PUSH(BOOL_VAL(result));
 
 				break;
 			}
@@ -3462,6 +3485,124 @@ InterpretResult run(VM* vm) {
 				break;
 			}
 
+			case OP_INHERIT: {
+				if(!IS_CLASS(*peek(vm, 1))) {
+					RUNTIME_ERROR("Expected the superclass to be a class!");
+
+					return INTERPRET_RUNTIME_ERROR;
+				}
+
+				ObjClass* superclass = VALUE_CLASS(*peek(vm, 1));
+				ObjClass* subclass   = VALUE_CLASS(*peek(vm, 0));
+
+				subclass -> superClass = superclass;
+
+				tableInsertAll(&superclass -> methods, &subclass -> methods);
+
+				POP();    // Subclass.
+
+				break;
+			}
+
+			case OP_SUPER : {
+				ObjString* name  = VALUE_STRING(readConstant(frame, frame_function, false));
+				ObjClass* sclass = VALUE_CLASS(POP());
+
+				if(!bindMethod(vm, sclass, name, 0)) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				break;
+			}
+
+			case OP_DNM_SUPER : {
+				ObjClass* sclass = VALUE_CLASS(POP());
+				
+				Value string = POP();
+
+				char* result = toString(vm, (Value* const) &string);
+				size_t size  = strlen(result);
+
+				vm -> bytesAllocated += (size + 1u) * sizeof(char);
+
+				ObjString* name = TAKE_STRING(result, size, true);
+
+				if(!bindMethod(vm, sclass, name, 0)) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				break;
+			}
+
+			case OP_SUPER_LONG: {
+				ObjString* name  = VALUE_STRING(readConstant(frame, frame_function, true));
+				ObjClass* sclass = VALUE_CLASS(POP());
+
+				if(!bindMethod(vm, sclass, name, 0)) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				break;
+			}
+
+			case OP_SUPER_INVOKE: {
+				ObjClass* sclass = VALUE_CLASS(POP());
+
+				ObjString* method = VALUE_STRING(readConstant(frame, frame_function, false));
+
+				uint8_t argCount = READ_BYTE();
+
+				if(!invokeFromClass(vm, sclass, method, argCount)) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				frame = vm -> frames + vm -> frameCount - 1u;
+
+				frame_function = getFunction(frame -> function);
+				frame_closure  = getClosure(frame -> function);
+
+				break;
+			}
+
+			case OP_SUPER_INVOKE_LONG: {
+				ObjClass* sclass = VALUE_CLASS(POP());
+
+				ObjString* method = VALUE_STRING(readConstant(frame, frame_function, true));
+
+				uint8_t argCount = READ_BYTE();
+
+				if(!invokeFromClass(vm, sclass, method, argCount)) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				frame = vm -> frames + vm -> frameCount - 1u;
+
+				frame_function = getFunction(frame -> function);
+				frame_closure  = getClosure(frame -> function);
+
+				break;
+			}
+
+			case OP_DNM_SUPER_INVOKE: {
+				ObjClass* sclass = VALUE_CLASS(POP());
+				
+				Value string = POP();
+
+				char* result = toString(vm, (Value* const) &string);
+				size_t size  = strlen(result);
+
+				vm -> bytesAllocated += (size + 1u) * sizeof(char);
+
+				ObjString* method = TAKE_STRING(result, size, true);
+
+				uint8_t argCount = READ_BYTE();
+
+				if(!invokeFromClass(vm, sclass, method, argCount)) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				frame = vm -> frames + vm -> frameCount - 1u;
+
+				frame_function = getFunction(frame -> function);
+				frame_closure  = getClosure(frame -> function);
+
+				break;
+			}
+
 			case OP_GET_PROPERTY: {
 				Value value = *peek(vm, 0);
 
@@ -4732,8 +4873,14 @@ InterpretResult run(VM* vm) {
 
 					InvokeData data = invoke(vm, method, argCount, state, isStatic);
 					
-					if(data.status == true) 
+					if(data.status == true) {
+						frame = vm -> frames + vm -> frameCount - 1u;
+						
+						frame_function = getFunction(frame -> function);
+						frame_closure  = getClosure(frame -> function);
+
 						break;
+					}
 					
 					if(!isStatic) {
 						WrapperStatus wrapperStatus = wrapperInvoke(vm, value, method, argCount);
@@ -4752,11 +4899,6 @@ InterpretResult run(VM* vm) {
 
 					return INTERPRET_RUNTIME_ERROR;
 				} while(false);
-				
-				frame = vm -> frames + vm -> frameCount - 1u;
-				
-				frame_function = getFunction(frame -> function);
-				frame_closure  = getClosure(frame -> function);
 				
 				break;
 			}
@@ -4803,8 +4945,14 @@ InterpretResult run(VM* vm) {
 
 					InvokeData data = invoke(vm, method, argCount, state, isStatic);
 					
-					if(data.status == true) 
+					if(data.status == true) {
+						frame = vm -> frames + vm -> frameCount - 1u;
+						
+						frame_function = getFunction(frame -> function);
+						frame_closure  = getClosure(frame -> function);
+
 						break;
+					}
 					
 					if(!isStatic) {
 						WrapperStatus wrapperStatus = wrapperInvoke(vm, value, method, argCount);
@@ -4823,11 +4971,6 @@ InterpretResult run(VM* vm) {
 
 					return INTERPRET_RUNTIME_ERROR;
 				} while(false);
-				
-				frame = vm -> frames + vm -> frameCount - 1u;
-				
-				frame_function = getFunction(frame -> function);
-				frame_closure  = getClosure(frame -> function);
 				
 				break;
 			}
@@ -4959,6 +5102,11 @@ InterpretResult run(VM* vm) {
 				else if(state == 1u) {
 					RUNTIME_ERROR("Undefined dictionary property '%s'!", name -> buffer);
 		
+					return INTERPRET_RUNTIME_ERROR;
+				}
+				else if(klass != NULL) {
+					RUNTIME_ERROR("Undefined wrapper property '%s'!", name -> buffer);
+					
 					return INTERPRET_RUNTIME_ERROR;
 				} else {
 					RUNTIME_ERROR("Attempt to access a method from non-(instance/dictionary/wrapper-class) value!");

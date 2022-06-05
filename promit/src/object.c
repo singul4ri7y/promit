@@ -428,7 +428,8 @@ ObjUpvalue* newUpvalue(VM* vm, Value* location, bool isConst) {
 ObjClass* newClass(VM* vm, ObjString* name) {
 	ObjClass* klass = ALLOCATE_OBJECT(vm, ObjClass, OBJ_CLASS);
 
-	klass -> name = name;
+	klass -> name       = name;
+	klass -> superClass = NULL;
 	
 	initTable(&klass -> methods);
 	initTable(&klass -> statics);

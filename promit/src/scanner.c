@@ -243,6 +243,7 @@ static TokenType identifierType(Scanner* scanner) {
 		case 'i': if(scanner -> current - scanner -> start > 1) {
 			switch(scanner -> start[1]) {
 				case 'f': return checkKeyword(scanner, 2, "", 0, TOKEN_IF);
+				case 's': return checkKeyword(scanner, 2, "", 0, TOKEN_IS);
 				case 'n': return checkKeyword(scanner, 2, "stof", 4, TOKEN_INSTOF);
 			}
 		}
@@ -296,6 +297,7 @@ static bool usableIdentifier(TokenType type) {
 		   type == TOKEN_TYPEOF ||
 		   type == TOKEN_THIS ||
 		   type == TOKEN_SUPER ||
+		   type == TOKEN_INSTOF ||
 		   type == TOKEN_IDENTIFIER;
 }
 

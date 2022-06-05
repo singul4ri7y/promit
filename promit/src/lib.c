@@ -2292,8 +2292,15 @@ static NativePack timeStringify(VM* vm, int argCount, Value* values) {
 	else return pack;
 
 	char* buffer = ALLOCATE(char, 45 * sizeof(char));
+	
+	char* months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+	char* days  [] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+	
+	int tzone = gettzoffset();
 
-	strftime(buffer, 45 * sizeof(char), "%a %b %d %H:%M:%S %Y GMT%z (UTC %Z)", _time);
+	sprintf(buffer, "%s %s %.2d %.2d:%.2d:%.2d %.4d GMT%c%0.4d (UTC %c%.2d)", days[_time -> tm_wday], months[_time -> tm_mon], _time -> tm_mday,
+	        _time -> tm_hour, _time -> tm_min, _time -> tm_sec, _time -> tm_year + 1900, tzone < 0 ? '-' : '+', abs(tzone / 36),
+		    tzone < 0 ? '-' : '+', abs(tzone / 3600));
 
 	pack.value = OBJECT_VAL(TAKE_STRING(buffer, strlen(buffer), true));
 
@@ -5675,6 +5682,12 @@ static NativePack stringLowercase(VM* vm, int argCount, Value* values) {
 
 static NativePack _stringStringify(VM* vm, int argCount, Value* values) {
 	initNativePack;
+
+	if(argCount < 2) {
+		pack.value = OBJECT_VAL(TAKE_STRING("", 0u, false));
+
+		return pack;
+	}
 	
 	char* buffer = toString(vm, (Value* const) (values + 1u));
 

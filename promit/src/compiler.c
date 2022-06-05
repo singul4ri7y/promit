@@ -72,6 +72,7 @@ typedef struct Compiler {
 
 typedef struct ClassCompiler {
 	struct ClassCompiler* enclosing;
+	bool hasSuperClass;
 	bool inStatic;
 } ClassCompiler;
 
@@ -260,6 +261,15 @@ static bool match(TokenType type) {
 	return true;
 }
 
+static Token syntheticToken(const char* text) {
+	Token token;
+
+	token.start  = text;
+	token.length = (int) strlen(text);
+	
+	return token;
+}
+
 static void consume(TokenType tokenType, const char* message) {
 	if(parser.current.type == tokenType) {
 		advance();
@@ -309,13 +319,13 @@ static void emitConstant(Value value) {
 	writeConstant(currentChunk(), value, parser.previous.line);
 }
 
-static void number(bool callAssign) {
+static void number(bool canAssign) {
 	double value = strtod(parser.previous.start, NULL);
 
 	emitConstant(NUMBER_VAL(value));
 }
 
-static void string(bool callAssign) {
+static void string(bool canAssign) {
 	emitConstant(OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
 }
 
@@ -333,24 +343,24 @@ static void constFnExpr(bool);
 static void globalInterpolation(bool);
 static void ternary();
 
-static void parseInfix(bool callAssign, Precedence precedence) {
+static void parseInfix(bool canAssign, Precedence precedence) {
 	while(precedence <= getRule(parser.current.type) -> precedence) {
 		advance();
 
 		ParseFn infixFn = getRule(parser.previous.type) -> infix;
 
-		infixFn(callAssign);
+		infixFn(canAssign);
 	}
 	
-	if(callAssign && match(TOKEN_EQUAL)) 
+	if(canAssign && match(TOKEN_EQUAL)) 
 		error("Invalid left-hand assignment target!");
 	
-	if(callAssign && match(TOKEN_QUESTION)) 
+	if(canAssign && match(TOKEN_QUESTION)) 
 		ternary();
 	
-	if(callAssign && match(TOKEN_INCREMENT)) 
+	if(canAssign && match(TOKEN_INCREMENT)) 
 		error("Invalid use of post increment operator! Target should be a valid identifier!");
-	else if(callAssign && match(TOKEN_DECREMENT)) 
+	else if(canAssign && match(TOKEN_DECREMENT)) 
 		error("Invalid use of post decrement operator! Target should be a valid identifier!");
 }
 
@@ -364,11 +374,11 @@ static void parsePrecedence(Precedence precedence) {
 		return;
 	}
 
-	bool callAssign = precedence <= PREC_ASSIGNMENT;
+	bool canAssign = precedence <= PREC_ASSIGNMENT;
 
-	prefixFn(callAssign);
+	prefixFn(canAssign);
 
-	parseInfix(callAssign, precedence);
+	parseInfix(canAssign, precedence);
 }
 
 static void expression() {
@@ -383,7 +393,7 @@ static void semicolon(const char* message, bool multiple) {
 	}
 }
 
-static void literal(bool callAssign) {
+static void literal(bool canAssign) {
 	switch(parser.previous.type) {
 		case TOKEN_FALSE:    emitByte(OP_FALSE); break;
 		case TOKEN_TRUE:     emitByte(OP_TRUE); break;
@@ -394,7 +404,7 @@ static void literal(bool callAssign) {
 	}
 }
 
-static void unary(bool callAssign) {
+static void unary(bool canAssign) {
 	TokenType operatorType = parser.previous.type;
 
 	parsePrecedence(PREC_UNARY);
@@ -407,7 +417,7 @@ static void unary(bool callAssign) {
 	}
 }
 
-static void grouping(bool callAssign) {
+static void grouping(bool canAssign) {
 	expression();
 
 	consume(TOKEN_RIGHT_PAREN, "Expeced a ')' after end of expression!");
@@ -490,7 +500,7 @@ static void declareVariable(bool isConst) {
 
 		if(identifiersEqual(token, &local -> name)) {
 			if(current -> scopeDepth == local -> depth) {
-				char* buffer = malloc(50u + token -> length);
+				char* buffer = malloc((50u + token -> length) * sizeof(char));
 
 				sprintf(buffer, "Redefinition of local variable '%.*s' in same scope!", token -> length, token -> start);
 
@@ -619,6 +629,10 @@ static int resolveUpvalue(Compiler* compiler, Token* name) {
 	return -1;
 }
 
+static size_t identifierConstant(Token* token) {
+	return writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), token -> start, token -> length)));
+}
+
 #define SET_N_GET_OPT(code, arg) \
 	if(arg <= 20) \
 		emitByte(code + 2 + arg);\
@@ -626,7 +640,7 @@ static int resolveUpvalue(Compiler* compiler, Token* name) {
 		SET_N_GET(code, arg)\
 	}
 
-static void namedVariable(Token* name, bool callAssign, bool globalOnly) {
+static void namedVariable(Token* name, bool canAssign, bool globalOnly) {
 	Chunk* chunk = currentChunk();
 
 	checkConstantPoolOverflow("Constant pool overflow while getting/setting variable!");
@@ -639,11 +653,11 @@ static void namedVariable(Token* name, bool callAssign, bool globalOnly) {
 		if(!globalOnly && (arg = resolveUpvalue(current, name)) != -1) state = 2u;
 		else {
 			state = 1u;
-			arg = writeValueArray(&chunk -> constants, OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
+			arg = (int) identifierConstant(name);
 		}
 	}
 	
-	if(callAssign && match(TOKEN_EQUAL)) {
+	if(canAssign && match(TOKEN_EQUAL)) {
 		if(state == 0u) {
 			// Check if the local is constant. If it is, throw a compiler time error.
 			
@@ -693,7 +707,7 @@ static void namedVariable(Token* name, bool callAssign, bool globalOnly) {
 		
 		TokenType type = parser.previous.type;
 		
-		if(callAssign && match(TOKEN_EQUAL)) {
+		if(canAssign && match(TOKEN_EQUAL)) {
 			if(state == 0u) {
 				// First get the value.
 				
@@ -755,41 +769,41 @@ static void namedVariable(Token* name, bool callAssign, bool globalOnly) {
 	}
 }
 
-static void variable(bool callAssign, bool globalOnly) {
-	namedVariable(&parser.previous, callAssign, globalOnly);
+static void variable(bool canAssign, bool globalOnly) {
+	namedVariable(&parser.previous, canAssign, globalOnly);
 }
 
-static void defaultVariable(bool callAssign) {
-	variable(callAssign, false);
+static void defaultVariable(bool canAssign) {
+	variable(canAssign, false);
 }
 
-static void globalVariable(bool callAssign) {
+static void globalVariable(bool canAssign) {
 	consume(TOKEN_IDENTIFIER, "Expected a global variable name!");
 	
-	variable(callAssign, true);
+	variable(canAssign, true);
 }
 
-static void singleInterpolation(bool callAssign) {
-	variable(callAssign, false);
+static void singleInterpolation(bool canAssign) {
+	variable(canAssign, false);
 
 	emitByte(OP_ADD);
 }
 
-static void globalInterpolation(bool callAssign) {
-	variable(callAssign, true);
+static void globalInterpolation(bool canAssign) {
+	variable(canAssign, true);
 	
 	emitByte(OP_ADD);
 }
 
-static void stringContinue(bool callAssign) {
-	string(callAssign);
+static void stringContinue(bool canAssign) {
+	string(canAssign);
 
 	if(parser.stringDepth > 0) 
 		parser.stringDepth--;
 	else emitByte(OP_ADD);
 }
 
-static void interpolation(bool callAssign) {
+static void interpolation(bool canAssign) {
 	parser.stringDepth++;
 	
 	expression();
@@ -802,11 +816,8 @@ static void interpolation(bool callAssign) {
 	emitByte(OP_ADD);
 }
 
-static size_t identifierConstant(Token* token) {
-	return writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), token -> start, token -> length)));
-}
 
-static void inc(bool callAssign) {
+static void inc(bool canAssign) {
 	Chunk* chunk = currentChunk();
 
 	checkConstantPoolOverflow("Constant pool overflow while setting variable!");
@@ -903,7 +914,7 @@ static void inc(bool callAssign) {
 	}
 }
 
-static void _typeof(bool callAssign) {
+static void _typeof(bool canAssign) {
 	parsePrecedence(PREC_COMPARISON);
 	
 	emitByte(OP_TYPEOF);
@@ -937,14 +948,14 @@ static void call(bool canAssign) {
 
 static void square(bool);
 
-static void dot(bool callAssign) {
+static void dot(bool canAssign) {
 	consume(TOKEN_IDENTIFIER, "Expected a property name after '.'!");
 
 	size_t field = writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
 
 	OpCode code;
 
-	if(callAssign && match(TOKEN_EQUAL)) {
+	if(canAssign && match(TOKEN_EQUAL)) {
 		expression();
 
 		SET_N_GET(OP_SET_PROPERTY, field);
@@ -960,7 +971,7 @@ static void dot(bool callAssign) {
 		
 		TokenType type = parser.previous.type;
 		
-		if(callAssign && match(TOKEN_EQUAL)) {
+		if(canAssign && match(TOKEN_EQUAL)) {
 			SET_N_GET(OP_GET_PROPERTY_INST, field);
 			
 			expression();
@@ -999,12 +1010,12 @@ static void dot(bool callAssign) {
 	}
 }
 
-static void square(bool callAssign) {
+static void square(bool canAssign) {
 	expression();    // It's dynamic data.
 	
 	consume(TOKEN_RIGHT_SQUARE, "Expected a ']' after expression!");
 	
-	if(callAssign && match(TOKEN_EQUAL)) {
+	if(canAssign && match(TOKEN_EQUAL)) {
 		expression();
 
 		emitBytes(OP_DNM_SET_PROPERTY, false);
@@ -1018,7 +1029,7 @@ static void square(bool callAssign) {
 		
 		TokenType type = parser.previous.type;
 		
-		if(callAssign && match(TOKEN_EQUAL)) {
+		if(canAssign && match(TOKEN_EQUAL)) {
 			emitByte(OP_DNM_GET_PROPERTY_INST);
 			
 			expression();
@@ -1054,7 +1065,7 @@ static void square(bool callAssign) {
 	} else emitByte(OP_DNM_GET_PROPERTY);
 }
 
-static void _this(bool callAssign) {
+static void _this(bool canAssign) {
 	if(currentClass == NULL) {
 		error("Cannot use 'this' outside of a class!");
 		
@@ -1067,7 +1078,7 @@ static void _this(bool callAssign) {
 	variable(false, false);
 }
 
-static void dictionary(bool callAssign) {
+static void dictionary(bool canAssign) {
 	emitByte(OP_DICTIONARY);
 	
 	size_t key;
@@ -1101,14 +1112,14 @@ static void dictionary(bool callAssign) {
 	consume(TOKEN_RIGHT_BRACE, "Expected a '}' at the end of dictionary!");
 }
 
-static void _static(bool callAssign) {
+static void _static(bool canAssign) {
 	consume(TOKEN_IDENTIFIER, "Expected a property name after '::'!");
 
 	size_t field = writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
 
 	OpCode code;
 
-	if(callAssign && match(TOKEN_EQUAL)) {
+	if(canAssign && match(TOKEN_EQUAL)) {
 		expression();
 
 		SET_N_GET(OP_SET_STATIC_PROPERTY, field);
@@ -1124,7 +1135,7 @@ static void _static(bool callAssign) {
 		
 		TokenType type = parser.previous.type;
 		
-		if(callAssign && match(TOKEN_EQUAL)) {
+		if(canAssign && match(TOKEN_EQUAL)) {
 			SET_N_GET(OP_GET_STATIC_PROPERTY_INST, field);
 			
 			expression();
@@ -1163,7 +1174,7 @@ static void _static(bool callAssign) {
 	}
 }
 
-static void list(bool callAssign) {
+static void list(bool canAssign) {
 	emitByte(OP_LIST);
 	
 	do {
@@ -1178,7 +1189,7 @@ static void list(bool callAssign) {
 	consume(TOKEN_RIGHT_SQUARE, "Expected a ']' at the end of list!");
 }
 
-static void recieve(bool callAssign) {
+static void recieve(bool canAssign) {
 	uint8_t type = 0u;
 
 	if(match(TOKEN_LEFT_PAREN)) {
@@ -1196,6 +1207,60 @@ static void recieve(bool callAssign) {
 	}
 
 	emitBytes(OP_RECIEVE, type);
+}
+
+static void _super(bool canAssign) {
+	if(currentClass == NULL) {
+		error("Cannot use 'super' outside of class!");
+		return;
+	}
+	else if(currentClass -> hasSuperClass == false) {
+		error("Cannot use 'super' in a class with no superclass!");
+		return;
+	}
+	else if(currentClass -> inStatic == true) {
+		error("Cannot use 'super' in a static method!");
+		return;
+	}
+
+	Token tthis = syntheticToken("this"),
+	     ssuper = syntheticToken("super");
+
+	namedVariable(&tthis, false, false);
+
+	bool isDynamic = false;
+
+	if(match(TOKEN_DOT)) {
+		consume(TOKEN_IDENTIFIER, "Expected a superclass method name!");
+	}
+	else if(match(TOKEN_LEFT_SQUARE)) {
+		expression();
+		consume(TOKEN_RIGHT_SQUARE, "Expected a ']' after dynamic 'super' method name!");
+
+		isDynamic = true;
+	} else {
+		error("Expected getting a method from 'super'!");
+		return;
+	}
+
+	int ticket = !isDynamic ? identifierConstant(&parser.previous) : -1;
+
+	if(match(TOKEN_LEFT_PAREN)) {
+		uint8_t argCount = argumentList();
+
+		namedVariable(&ssuper, false, false);
+
+		if(isDynamic) emitBytes(OP_DNM_SUPER_INVOKE, argCount);
+		else {
+			SET_N_GET(OP_SUPER_INVOKE, ticket);
+			emitByte(argCount);
+		}
+	} else {
+		namedVariable(&ssuper, false, false);
+
+		if(isDynamic) emitByte(OP_DNM_SUPER);
+		else { SET_N_GET(OP_SUPER, ticket); }
+	}
 }
 
 // Parse rules.
@@ -1228,8 +1293,8 @@ ParseRule parseRules[] = {
 	[TOKEN_AND]                      = { NULL, and, NULL, PREC_AND },
 	[TOKEN_RIGHT_SHIFT]              = { NULL, binary, NULL, PREC_TERM },
 	[TOKEN_LEFT_SHIFT]               = { NULL, binary, NULL, PREC_TERM },
-	[TOKEN_INCREMENT]               = { inc, NULL, NULL, PREC_NONE},
-	[TOKEN_DECREMENT]               = { inc, NULL, NULL, PREC_NONE },
+	[TOKEN_INCREMENT]                = { inc, NULL, NULL, PREC_NONE},
+	[TOKEN_DECREMENT]                = { inc, NULL, NULL, PREC_NONE },
 	
 	[TOKEN_LEFT_SQUARE]              = { list, square, NULL, PREC_CALL },
 	[TOKEN_RIGHT_SQUARE]             = { NULL, NULL, NULL, PREC_NONE },
@@ -1268,7 +1333,7 @@ ParseRule parseRules[] = {
 	[TOKEN_RECIEVE]                  = { recieve, NULL, NULL, PREC_NONE },
 	[TOKEN_FOR]                      = { NULL, NULL, NULL, PREC_NONE },
 	[TOKEN_WHILE]                    = { NULL, NULL, NULL, PREC_NONE },
-	[TOKEN_SUPER]                    = { NULL, NULL, NULL, PREC_NONE },
+	[TOKEN_SUPER]                    = { _super, NULL, NULL, PREC_NONE },
 	[TOKEN_TAKE]                     = { NULL, NULL, NULL, PREC_NONE },
 	[TOKEN_RETURN]                   = { NULL, NULL, NULL, PREC_NONE },
 	[TOKEN_SHOWL]                    = { NULL, NULL, NULL, PREC_NONE },
@@ -1280,7 +1345,7 @@ static ParseRule* getRule(const TokenType tokenType) {
 	return &parseRules[tokenType];
 }
 
-static void binary(bool callAssign) {
+static void binary(bool canAssign) {
 	TokenType operatorType = parser.previous.type;
 	
 	ParseRule* rule = getRule(operatorType);
@@ -1921,7 +1986,7 @@ static void takeDeclaration(bool inLoop) {		// In loop specially for 'for'.
 	VARIABLE(false, inLoop);
 }
 
-static void and(bool callAssign) {
+static void and(bool canAssign) {
 	uint32_t endJump = emitJump(OP_JUMP_OPR);
 	
 	emitByte(OP_SILENT_POP);
@@ -1931,7 +1996,7 @@ static void and(bool callAssign) {
 	patchJump(endJump);
 }
 
-static void or(bool callAssign) {
+static void or(bool canAssign) {
 	uint32_t elseJump = emitJump(OP_JUMP_OPR);
 	uint32_t endJump  = emitJump(OP_JUMP);
 
@@ -2014,7 +2079,7 @@ static void functionDeclaration(bool isConst) {
 	defineVariable(global, isConst);\
 }
 
-static void fnExpr(bool callAssign) {
+static void fnExpr(bool canAssign) {
 	function(TYPE_FUNCTION, true);
 }
 
@@ -2069,7 +2134,7 @@ static void method(bool isConst, bool isStatic) {
 static void classDeclaration(bool inLoop, bool isConst) {
 	consume(TOKEN_IDENTIFIER, "Expected a class name!");
 	
-	Token* className = &parser.previous;
+	Token className = parser.previous;
 
 	size_t constant = writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
 
@@ -2081,11 +2146,42 @@ static void classDeclaration(bool inLoop, bool isConst) {
 	
 	ClassCompiler classCompiler;
 	
-	classCompiler.enclosing = currentClass;
+	classCompiler.hasSuperClass = false;
+	classCompiler.enclosing     = currentClass;
 	
 	currentClass = &classCompiler;
+
+	if(match(TOKEN_IS)) {
+		consume(TOKEN_IDENTIFIER, "Expected a superclass name!");
+
+		if(identifiersEqual(&className, &parser.previous)) {
+			error("Cannot inherit own class!");
+		}
+		else if((parser.previous.length == 4u && !memcmp(parser.previous.start, "List", parser.previous.length)) ||
+		        (parser.previous.length == 6u && !memcmp(parser.previous.start, "String", parser.previous.length)) ||
+		        (parser.previous.length == 10u && !memcmp(parser.previous.start, "Dictionary", parser.previous.length)) ||
+		        (parser.previous.length == 8u && !memcmp(parser.previous.start, "Function", parser.previous.length)) ||
+		        (parser.previous.length == 6u && !memcmp(parser.previous.start, "Number", parser.previous.length)) ||
+		        (parser.previous.length == 8u && !memcmp(parser.previous.start, "ByteList", parser.previous.length)) ||
+		        (parser.previous.length == 7u && !memcmp(parser.previous.start, "Boolean", parser.previous.length))) {
+			error("Inheriting wrapper classes are forbidden!");
+		}
+
+		variable(false, false);
+
+		beginScope();
+
+		Token super = syntheticToken("super");
+		addLocal(&super, true);
+		defineVariable(0, true);
+
+		namedVariable(&className, false, false);
+		emitByte(OP_INHERIT);
+
+		classCompiler.hasSuperClass = true;
+	}
 	
-	namedVariable(className, false, false);
+	namedVariable(&className, false, false);
 
 	consume(TOKEN_LEFT_BRACE, "Expected a nice '{' at the beginning of class body!");
 	
@@ -2105,6 +2201,9 @@ static void classDeclaration(bool inLoop, bool isConst) {
 	consume(TOKEN_RIGHT_BRACE, "Expected a nice '}' at the end of class body!");
 	
 	emitByte(check(TOKEN_EOF) && !inLoop ? OP_POP : OP_SILENT_POP);
+
+	if(classCompiler.hasSuperClass == true) 
+		endScope();
 	
 	currentClass = currentClass -> enclosing;
 }
