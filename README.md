@@ -108,7 +108,7 @@ take result = call();    // result is actually the returned closure.
 
 showl typeof result;    // Expected 'closure'.
 
-result();
+showl result();         // Expected "Now it's inner!";
 ```
  - Has ```continue ``` in switch.
 ```dart
