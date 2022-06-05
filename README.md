@@ -81,9 +81,11 @@ take dictionary = {
 	'passion'     :  'Programming'
 };
 
+showl 'key-value pair is : ';
+
 dictionary.keys()    // Returns a list.
 	.foreach( fn(key) {
-		showl "key-value pair is $key : ${dictionary[key]}"
+		showl "$key : ${dictionary[key]}"
 } );
 ```
 - Has functions and closures (Yeah, I know you've already guessed).
