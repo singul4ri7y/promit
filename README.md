@@ -51,7 +51,7 @@ class Soup is Breakfast {
 	have() {
 		showl "Isn't having soup for breakfast too odd!";
 		
-		this.have();
+		super.have();
 	}
 };
 
