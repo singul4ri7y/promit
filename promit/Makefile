@@ -101,7 +101,7 @@ $(OBJ_DIR)%.c.obj : $(SRC_DIR)%.c
 
 project_promit : 
 	@echo -e "$(PURPLE_BOLD)<=======================================| Project Promit |=======================================>$(RESET)\n"
-	@echo -e "$(CYAN)Building Project Promit 'promit' on $(shell date) with configuration $(CONFIG).$(RESET)\n"
+	@echo -e "$(CYAN)Building Project Promit on $(shell date) with configuration $(CONFIG).$(RESET)\n"
 	@mkdir -p $(OBJ_DIR) $(OUTPUT_DIR) $(DEPENDENCY_DIR)
 
 clean : 
