@@ -159,7 +159,7 @@ Install ``MinGW-w64``, ``Cygwin`` or ``TDM GCC`` which has ``make`` baked within
 
 Install git from : <a href= "https://git-scm.com/downloads">https://git-scm.com/downloads</a>.
 
-### The hard stuff :
+### The easy stuff :
 Go to any folder, clone the repo and hit ``make``.
 ```
 git clone https://github.com/singul4ri7y/promit
