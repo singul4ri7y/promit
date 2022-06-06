@@ -6,7 +6,7 @@
  * 
  * Part of Promit Test Suit, location /test/Algorithms/ConstructBST.promit
  * 
- * Created by SD Asif Hossein on 27 April, 2022 (Wednesday) at 8:00 PM.
+ * Created by SD Asif Hossein on 27 April, 2022 (Wednesday) at 8:00 PM (UTC +06).
  */
 
 /** The Node class for node information */
@@ -190,6 +190,8 @@ class BST {
 					root.right = node;
 			}
 		}
+
+		// Singleton
 
 		return BST(root, length);
 	}

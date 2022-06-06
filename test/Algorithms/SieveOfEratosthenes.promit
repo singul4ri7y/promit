@@ -1,0 +1,52 @@
+/**
+ *
+ * Simple promit implementation of Sieve of Eratosthenes.
+ *
+ * Part of Promit Test Suit, location /test/Algorithms/SieveOfEratosthenes.promit
+ * 
+ * Created by SD Asif Hossein on 6 June, 2022 (Monday) at 12:50 PM (UTC +06).
+ */
+
+show 'Enter the range of number : ';
+
+// Recieving a number of the command line.
+
+take range = recieve(num);
+
+showl 'Identifing all the prime numbers within the range...';
+
+// List (Special Wrapper Class for list types) creates a list instance
+// and fill(elem) fills the whole list with the provided element.
+
+take prime_data = List(range).fill(true);
+
+// The sieve magic.
+// Start from the number 2, mark all it's multiples and move on to
+// the next element. The marking starts from current numbers squared
+// index.
+
+for(take i = 2; i - 1 < range; i++) {
+	if(prime_data[i - 1] != false) {
+		for(take j = i * i; j - 1 < range; j += i) 
+			prime_data[j - 1] = false;
+	}
+}
+
+showl 'Identified all the prime numbers between the provided range.';
+showl 'Printing all the prime numbers...';
+
+// To keep track of the number of prime numbers ;).
+
+take count = 0;
+
+// Now print all the prime numbers, which are finally marked 
+
+prime_data.foreach(fn e(elem, i) {
+	if(elem) {
+		showl i + 1;
+
+		count++;
+	}
+});
+
+showl '\n$count prime numbers printed!';
