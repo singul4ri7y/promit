@@ -65,6 +65,6 @@ bool valuesEqual(const Value, const Value);
 bool toBoolean(VM*, Value*);
 
 int __printf(const char*, ...);
-const char* readFile(const char*);
+double toNumber(Value* value);
 
 #endif

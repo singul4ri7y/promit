@@ -172,7 +172,7 @@ int gettimeofday(struct timeval* tp, struct timeval* tzp) {
     return 0;
 }
 
-#elif defined(__linux__)
+#elif defined(__unix__)
 
 void getch() {
 	struct termios old, current;

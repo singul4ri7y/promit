@@ -121,18 +121,17 @@ static NativePack fileWrite(VM* vm, int argCount, Value* values) {
 
 		return pack;
 	}
-	
-	if(IS_STRING(values[1])) {
-		ObjString* string = VALUE_STRING(values[1]);
-		
-		wrote = (double) fprintf(file -> file, string -> buffer);
-	}
-	else if(IS_BYTELIST(values[1])) {
+
+	if(IS_BYTELIST(values[1])) {
 		ObjByteList* byteList = VALUE_BYTELIST(values[1]);
 		
 		wrote = (double) fwrite(byteList -> bytes, 1u, byteList -> size, file -> file);
 	} else {
-		NATIVE_R_ERR("Expected a string or bytelist as the first argument!");
+		char* result = toString(vm, (Value* const) values + 1u);
+
+		wrote = (double) fprintf(file -> file, result);
+
+		free(result);
 	}
 	
 	pack.value = NUMBER_VAL(wrote);
@@ -147,10 +146,6 @@ static NativePack fileWriteLine(VM* vm, int argCount, Value* values) {
 		NATIVE_R_ERR("Too few parameters to call function File.write_line(line)");
 	}
 	
-	if(!IS_STRING(values[1])) {
-		NATIVE_R_ERR("Expected a string at first argument!");
-	}
-	
 	fileInstanceFile;
 
 	// Prevent segmentation fault.
@@ -161,9 +156,11 @@ static NativePack fileWriteLine(VM* vm, int argCount, Value* values) {
 		return pack;
 	}
 	
-	ObjString* string = VALUE_STRING(values[1]);
+	char* result = toString(vm, (Value* const) values + 1u);
 	
-	double wrote = fprintf(file -> file, "%s\n", string -> buffer);
+	double wrote = fprintf(file -> file, "%s\n", result);
+
+	free(result);
 	
 	pack.value = NUMBER_VAL(wrote);
 	
@@ -258,9 +255,19 @@ static NativePack fileReadLine(VM* vm, int argCount, Value* values) {
 	
 	if(status != EOF) {
 		if(ignoreNewline && status) {
+			// LF
+			
 			line[status - 1u] = 0;
 			
 			status--;
+
+			// CRLF
+
+			if(status && line[status - 1u] == '\r') {
+				line[status - 1u] = 0;
+
+				status--;
+			}
 		}
 		
 		ObjString* string = TAKE_STRING(line, status, true);
@@ -1972,7 +1979,7 @@ static ObjString* secField;
 static ObjString* usecField;
 static ObjString* tzoneField;
 
-static ObjClass* timeClass;
+extern ObjClass* timeClass;
 
 #define timeInstanceTime if(!IS_INSTANCE(values[0]) || VALUE_INSTANCE(values[0]) -> klass != timeClass) {\
 		NATIVE_R_ERR("Provided reciever/instance (this) must be of file instance!");\
@@ -3008,14 +3015,14 @@ extern ObjClass* vmNumberClass;
 		number = VALUE_NUMBER(numberContainer.value);\
 	}
 
-static double toNumber(Value* value) {
+double toNumber(Value* value) {
 	switch(value -> type) {
 		case VAL_NUMBER:  return value -> as.number;
 		case VAL_BOOLEAN: return (double) value -> as.boolean;
 		case VAL_NULL:    return 0;
 		case VAL_OBJECT: {
 			switch(OBJ_TYPE(*value)) {
-				case OBJ_STRING: return pstrtod(VALUE_STRING(*value) -> buffer);
+				case OBJ_STRING: return pstrtod(VALUE_CSTRING(*value));
 			}
 
 			return NAN;

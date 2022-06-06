@@ -11,4 +11,8 @@
 // #define DEBUG_PRINT_CODE
 // #define DEBUG_TRACE_EXECUTION
 
+#ifdef __MACH__
+    #error "MacOS or it's derivatives are not yet supported."
+#endif  // __MACH__
+
 #endif

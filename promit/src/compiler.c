@@ -659,7 +659,7 @@ static void namedVariable(Token* name, bool canAssign, bool globalOnly) {
 	
 	if(canAssign && match(TOKEN_EQUAL)) {
 		if(state == 0u) {
-			// Check if the local is constant. If it is, throw a compiler time error.
+			// Check if the local is constant. If it is, throw a compile time error.
 			
 			if(current -> locals[arg].isConst) {
 				error("Attempt to assign a value to a constant local!");
@@ -681,7 +681,7 @@ static void namedVariable(Token* name, bool canAssign, bool globalOnly) {
 			SET_N_GET(OP_SET_GLOBAL, arg);
 		}
 	}
-	else if(match(TOKEN_INCREMENT)) {
+	else if(canAssign && match(TOKEN_INCREMENT)) {
 		if(state == 0u) {
 			if(current -> locals[arg].isConst) 
 				error("Attempt to increment a constant local variable!");
@@ -692,7 +692,7 @@ static void namedVariable(Token* name, bool canAssign, bool globalOnly) {
 			INC_DC(OP_POST_INCREMENT, 4, arg);
 		} else { INC_DC(OP_POST_INCREMENT, 0, arg); }    // Immutability/constant will be checked at runtime.
 	}
-	else if(match(TOKEN_DECREMENT)) {
+	else if(canAssign && match(TOKEN_DECREMENT)) {
 		if(state == 0u) {    // Local
 			if(current -> locals[arg].isConst) 
 				error("Attempt to decrement a constant local variable!");
@@ -829,7 +829,11 @@ static void inc(bool canAssign) {
 	if(match(TOKEN_COLON)) 
 		globalOnly = true;
 	
-	consume(TOKEN_IDENTIFIER, "Expected a vairable after pre increment/decrement operator!");
+	if(!match(TOKEN_IDENTIFIER) && !match(TOKEN_THIS)) {
+		error("Expected a vairable after pre increment/decrement operator!");
+
+		return;
+	}
 	
 	bool property = false;
 	bool exp = false;
@@ -963,7 +967,8 @@ static void dot(bool canAssign) {
 	}
 	else if(match(TOKEN_INCREMENT)) {
 		INC_DC(OP_POST_INCREMENT, 6, field);
-	} else if(match(TOKEN_DECREMENT)) {
+	}
+	else if(match(TOKEN_DECREMENT)) {
 		INC_DC(OP_POST_DECREMENT, 6, field);
 	}
 	else if(checkBinaryToken()) {

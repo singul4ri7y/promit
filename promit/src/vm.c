@@ -34,6 +34,10 @@ ObjClass* vmStringClass;
 ObjClass* vmDictionaryClass;
 ObjClass* vmFunctionClass;
 
+// Non-wrapper classes.
+
+ObjString* timeClass;
+
 // Field locations from lib.c
 
 extern ObjString* listField;
@@ -973,6 +977,56 @@ static bool invokeFromClass(VM* vm, ObjClass* klass, ObjString* name, uint8_t ar
 
 		return false;
 	}
+}
+
+static double incdc(Value* value, bool dec, bool pre) {
+	double number = 0;
+
+	switch(value -> type) {
+		case VAL_NUMBER: {
+			value -> as.number += dec ? -1 : 1;
+			
+			number = pre ? value -> as.number : value -> as.number + (dec ? 1 : -1);
+
+			break;
+		}
+
+		case VAL_BOOLEAN: {
+			value -> as.number = !!value -> as.boolean + (dec ? -1 : 1);
+			
+			number = pre ? value -> as.number : value -> as.number + (dec ? 1 : -1);
+
+			break;
+		}
+
+		case VAL_NULL: {
+			value -> as.number = dec ? -1 : 1;
+			
+			number = pre ? value -> as.number : value -> as.number + (dec ? 1 : -1);
+
+			break;
+		}
+
+		case VAL_OBJECT: {
+			switch(OBJ_TYPE(*value)) {
+				case OBJ_STRING: {
+					value -> as.number = pstrtod(VALUE_CSTRING(*value));
+
+					value -> as.number += dec ? -1 : 1;
+
+					number = pre ? value -> as.number : value -> as.number + (dec ? 1 : -1);
+
+					break;
+				}
+
+				default: number = NAN;
+			}
+		}
+	}
+
+	value -> type = VAL_NUMBER;
+
+	return number;
 }
 
 #define NUM_ASSURE(val, name) \
@@ -2162,11 +2216,7 @@ InterpretResult run(VM* vm) {
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
-						PUSH(entry -> valueContainer.value);
-						
-						value -> as.number++;
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, false)));
 					} else {
 						RUNTIME_ERROR("Undefined variable '%s'!", name -> buffer);
 
@@ -2177,38 +2227,62 @@ InterpretResult run(VM* vm) {
 					
 					uint32_t slot = readBytes(frame, param == 2 ? false : true);
 				
-					NUM_ASSURE(&vm -> stack[frame -> slots + slot], value);
-					
-					PUSH(vm -> stack[frame -> slots + slot]);
-					
-					value -> as.number++;
+					PUSH(NUMBER_VAL(incdc(vm -> stack + frame -> slots + slot, false, false)));
 				}
 				else if(param > 3 && param <= 5) {
+					// Upvalue.
+
 					uint8_t slot = readBytes(frame, param == 4 ? false : true);
+
+					ObjUpvalue* upvalue = frame_closure -> upvalues[slot];
 				
-					if(getClosure(frame -> function) -> upvalues[slot] -> isConst) {
+					if(upvalue -> isConst) {
 						RUNTIME_ERROR("Attempt to increment a constant upvalue!");
 						
 						return INTERPRET_RUNTIME_ERROR;
 					}
 					
-					NUM_ASSURE(getClosure(frame -> function) -> upvalues[slot] -> location, value);
-					
-					PUSH(*getClosure(frame -> function) -> upvalues[slot] -> location);
-					
-					value -> as.number++;
-					
-					break;
+					PUSH(NUMBER_VAL(incdc(upvalue -> location, false, false)));
 				}
 				else if(param > 5 && param <= 7) {
+					ObjString* name = VALUE_STRING(readConstant(frame, frame_function, param == 6u ? false : true));
+
 					Value value = *peek(vm, 0);
 				
 					Table* fields;
 					
 					bool isDictionary = false;
+
+					ValueContainer valueContainer;
 					
 					if(IS_INSTANCE(value)) {
-						fields = &VALUE_INSTANCE(value) -> fields;
+						ObjInstance* instance = VALUE_INSTANCE(value);
+
+						if(instance -> klass == vmDictionaryClass) {
+							tableGet(&instance -> fields, dictionaryField, &valueContainer);
+
+							fields = &VALUE_DICTIONARY(valueContainer.value) -> fields;
+
+							Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
+
+							if(entry != NULL && entry -> key != NULL) {
+								if(entry -> valueContainer.isConst) {
+									RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
+
+									return INTERPRET_RUNTIME_ERROR;
+								}
+
+								POP();   // Instance.
+
+								PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, false)));
+
+								break;
+							} else {
+								RUNTIME_ERROR("Attmept to increment an undefined property '%s'!", name -> buffer);
+							}
+						}
+
+						fields = &instance -> fields;
 						
 						isDictionary = false;
 					}
@@ -2217,29 +2291,23 @@ InterpretResult run(VM* vm) {
 						
 						isDictionary = true;
 					} else {
-						RUNTIME_ERROR("Attempt to increment a property of a non-instance/non-dictionary value!");
+						RUNTIME_ERROR("Attempt to increment a property of a non-(instance/dictionary) value!");
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
-
-					ObjString* name = VALUE_STRING(readConstant(frame, frame_function, param == 6u ? false : true));
 
 					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to increment a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();    // Instance.
 						
-						PUSH(entry -> valueContainer.value);
-						
-						value -> as.number++;
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, false)));
 					}
 					else if(!isDictionary) {
 						ObjInstance* instance = VALUE_INSTANCE(value);
@@ -2250,9 +2318,13 @@ InterpretResult run(VM* vm) {
 							RUNTIME_ERROR("Attempt to increment a static property through instance! Don't do that!");
 							
 							return INTERPRET_RUNTIME_ERROR;
+						} else {
+							RUNTIME_ERROR("Attempt to increment an undefined property '%s'!", name -> buffer);
+
+							return INTERPRET_RUNTIME_ERROR;
 						}
 					} else {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to increment an undefined property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -2262,25 +2334,31 @@ InterpretResult run(VM* vm) {
 				
 					Value string = *peek(vm, 0);
 					
-					if(IS_LIST(value) || IS_BYTELIST(value)) {
-						int index;
-						
-						if(IS_NUMBER(string)) 
-							index = (size_t) VALUE_NUMBER(string);
-						else if(IS_STRING(string)) 
-							index = (size_t) pstrtod(VALUE_CSTRING(string));
-						else if(IS_NULL(string)) 
-							index = 0;
-						else if(IS_BOOL(string)) 
-							index = VALUE_BOOL(string) ? 1u : 0u;
-						else {
+					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
+					IS_BYTELIST(value)) {
+						double idxval = toNumber(&string);
+
+						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
+
+						int index = (int) idxval;
 						
-						if(IS_LIST(value)) {
-							ObjList* list = VALUE_LIST(value);
+						if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass)) {
+							ObjList* list = NULL;
+
+							if(IS_LIST(value)) list = VALUE_LIST(value);
+							else {
+								ObjInstance* instance = VALUE_INSTANCE(value);
+
+								ValueContainer valueContainer;
+
+								tableGet(&instance -> fields, listField, &valueContainer);
+
+								list = VALUE_LIST(valueContainer.value);
+							}
 							
 							if(index < 0) 
 								index += list -> count;
@@ -2291,14 +2369,10 @@ InterpretResult run(VM* vm) {
 								return INTERPRET_RUNTIME_ERROR;
 							}
 							
-							POP();
-							POP();
+							POP();    // Property
+							POP();    // String.
 							
-							NUM_ASSURE(&list -> values[index], value);
-							
-							PUSH(list -> values[index]);
-							
-							value -> as.number++;
+							PUSH(NUMBER_VAL(incdc(list -> values + index, false, false)));
 							
 							break;
 						}
@@ -2329,9 +2403,44 @@ InterpretResult run(VM* vm) {
 					Table* fields;
 					
 					bool isDictionary = false;
+
+					char* result = toString(vm, (Value* const) &string);
+					size_t size  = strlen(result);
+
+					vm -> bytesAllocated += size + 1u;
+
+					ObjString* name = TAKE_STRING(result, size, true);
+
+					ValueContainer valueContainer;
 					
 					if(IS_INSTANCE(value)) {
-						fields = &VALUE_INSTANCE(value) -> fields;
+						ObjInstance* instance = VALUE_INSTANCE(value);
+
+						if(instance -> klass == vmDictionaryClass) {
+							tableGet(&instance -> fields, dictionaryField, &valueContainer);
+
+							fields = &VALUE_DICTIONARY(valueContainer.value) -> fields;
+
+							Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
+
+							if(entry != NULL && entry -> key != NULL) {
+								if(entry -> valueContainer.isConst) {
+									RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
+
+									return INTERPRET_RUNTIME_ERROR;
+								}
+
+								POP();   // Instance.
+
+								PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, false)));
+
+								break;
+							} else {
+								RUNTIME_ERROR("Attmept to increment an undefined property '%s'!", name -> buffer);
+							}
+						}
+
+						fields = &instance -> fields;
 						
 						isDictionary = false;
 					}
@@ -2340,74 +2449,42 @@ InterpretResult run(VM* vm) {
 						
 						isDictionary = true;
 					} else {
-						RUNTIME_ERROR("Attempt to increment a property of a non-instance/non-dictionary value!");
+						RUNTIME_ERROR("Attempt to increment a property of a non-(instance/dictionary) value!");
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
 
-					ObjString* name = VALUE_STRING(string);
-					
-					if(IS_NUMBER(string)) {
-						char* buffer = toString(vm, &string);
-
-						size_t length = strlen(buffer);
-
-						vm -> bytesAllocated += (length + 1u) * sizeof(char);
-						
-						name = TAKE_STRING(buffer, length, true);
-					}
-					else if(IS_BOOL(string)) {
-						bool bl = VALUE_BOOL(string);
-						
-						name = TAKE_STRING(bl ? "true" : "false", bl ? 4u : 5u, false);
-					}
-					else if(IS_NULL(string)) 
-						name = TAKE_STRING("null", 4u, false);
-					else if(!IS_STRING(string)) {
-						RUNTIME_ERROR("Expected a string as property key!");
-						
-						return INTERPRET_RUNTIME_ERROR;
-					}
-					
-					ObjString* interned = tableFindString(&vm -> strings, name -> buffer, name -> length, name -> hash);
-					
-					if(interned == NULL) {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
-
-						return INTERPRET_RUNTIME_ERROR;
-					}
-
-					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, interned) : NULL;
+					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to increment a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();
 						POP();    // Instance.
 						
-						PUSH(entry -> valueContainer.value);
-						
-						value -> as.number++;
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, false)));
 					}
 					else if(!isDictionary) {
 						ObjInstance* instance = VALUE_INSTANCE(value);
 					
-						entry = instance -> klass -> statics.count ? findEntry(instance -> klass -> statics.entries, instance -> klass -> statics.capacity, interned) : NULL;
+						entry = instance -> klass -> statics.count ? findEntry(instance -> klass -> statics.entries, instance -> klass -> statics.capacity, name) : NULL;
 						
 						if(entry != NULL && entry -> key != NULL) {
 							RUNTIME_ERROR("Attempt to increment a static property through instance! Don't do that!");
 							
 							return INTERPRET_RUNTIME_ERROR;
+						} else {
+							RUNTIME_ERROR("Attempt to increment an undefined property '%s'!", name -> buffer);
+
+							return INTERPRET_RUNTIME_ERROR;
 						}
 					}
 					else {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to increment an undefined property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -2428,20 +2505,16 @@ InterpretResult run(VM* vm) {
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to increment a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to increment a constant static property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();    // Instance.
 						
-						PUSH(entry -> valueContainer.value);
-						
-						value -> as.number++;
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, false)));
 					} else {
-						RUNTIME_ERROR("Undefined static property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to increment an undefined static property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -2465,54 +2538,73 @@ InterpretResult run(VM* vm) {
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
-						PUSH(entry -> valueContainer.value);
-						
-						value -> as.number--;
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, false)));
 					} else {
 						RUNTIME_ERROR("Undefined variable '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
-				}
-				else if(param > 1 && param <= 3) {
+				} else if(param > 1 && param <= 3) {
 					// Local.
 					
 					uint32_t slot = readBytes(frame, param == 2 ? false : true);
 				
-					NUM_ASSURE(&vm -> stack[frame -> slots + slot], value);
-					
-					PUSH(vm -> stack[frame -> slots + slot]);
-					
-					value -> as.number--;
+					PUSH(NUMBER_VAL(incdc(vm -> stack + frame -> slots + slot, true, false)));
 				}
 				else if(param > 3 && param <= 5) {
+					// Upvalue.
+
 					uint8_t slot = readBytes(frame, param == 4 ? false : true);
+
+					ObjUpvalue* upvalue = frame_closure -> upvalues[slot];
 				
-					if(getClosure(frame -> function) -> upvalues[slot] -> isConst) {
+					if(upvalue -> isConst) {
 						RUNTIME_ERROR("Attempt to decrement a constant upvalue!");
 						
 						return INTERPRET_RUNTIME_ERROR;
 					}
 					
-					NUM_ASSURE(getClosure(frame -> function) -> upvalues[slot] -> location, value);
-					
-					PUSH(*getClosure(frame -> function) -> upvalues[slot] -> location);
-					
-					value -> as.number--;
-					
-					break;
+					PUSH(NUMBER_VAL(incdc(upvalue -> location, true, false)));
 				}
 				else if(param > 5 && param <= 7) {
+					ObjString* name = VALUE_STRING(readConstant(frame, frame_function, param == 6u ? false : true));
+
 					Value value = *peek(vm, 0);
 				
 					Table* fields;
 					
 					bool isDictionary = false;
+
+					ValueContainer valueContainer;
 					
 					if(IS_INSTANCE(value)) {
-						fields = &VALUE_INSTANCE(value) -> fields;
+						ObjInstance* instance = VALUE_INSTANCE(value);
+
+						if(instance -> klass == vmDictionaryClass) {
+							tableGet(&instance -> fields, dictionaryField, &valueContainer);
+
+							fields = &VALUE_DICTIONARY(valueContainer.value) -> fields;
+
+							Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
+
+							if(entry != NULL && entry -> key != NULL) {
+								if(entry -> valueContainer.isConst) {
+									RUNTIME_ERROR("Attempt to decrement a constant property '%s'!", name -> buffer);
+
+									return INTERPRET_RUNTIME_ERROR;
+								}
+
+								POP();   // Instance.
+
+								PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, false)));
+
+								break;
+							} else {
+								RUNTIME_ERROR("Attmept to decrement an undefined property '%s'!", name -> buffer);
+							}
+						}
+
+						fields = &instance -> fields;
 						
 						isDictionary = false;
 					}
@@ -2521,29 +2613,23 @@ InterpretResult run(VM* vm) {
 						
 						isDictionary = true;
 					} else {
-						RUNTIME_ERROR("Attempt to decrement a property of a non-instance/non-dictionary value!");
+						RUNTIME_ERROR("Attempt to decrement a property of a non-(instance/dictionary) value!");
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
-
-					ObjString* name = VALUE_STRING(readConstant(frame, frame_function, param == 6u ? false : true));
 
 					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to decrement a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to decrement a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();    // Instance.
 						
-						PUSH(entry -> valueContainer.value);
-						
-						value -> as.number--;
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, false)));
 					}
 					else if(!isDictionary) {
 						ObjInstance* instance = VALUE_INSTANCE(value);
@@ -2554,9 +2640,13 @@ InterpretResult run(VM* vm) {
 							RUNTIME_ERROR("Attempt to decrement a static property through instance! Don't do that!");
 							
 							return INTERPRET_RUNTIME_ERROR;
+						} else {
+							RUNTIME_ERROR("Attempt to decrement an undefined property '%s'!", name -> buffer);
+
+							return INTERPRET_RUNTIME_ERROR;
 						}
 					} else {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to decrement an undefined property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -2566,25 +2656,31 @@ InterpretResult run(VM* vm) {
 				
 					Value string = *peek(vm, 0);
 					
-					if(IS_LIST(value) || IS_BYTELIST(value)) {
-						int index;
-						
-						if(IS_NUMBER(string)) 
-							index = (size_t) VALUE_NUMBER(string);
-						else if(IS_STRING(string)) 
-							index = (size_t) pstrtod(VALUE_CSTRING(string));
-						else if(IS_NULL(string)) 
-							index = 0;
-						else if(IS_BOOL(string)) 
-							index = VALUE_BOOL(string) ? 1u : 0u;
-						else {
+					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
+					IS_BYTELIST(value)) {
+						double idxval = toNumber(&string);
+
+						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
+
+						int index = (int) idxval;
 						
-						if(IS_LIST(value)) {
-							ObjList* list = VALUE_LIST(value);
+						if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass)) {
+							ObjList* list = NULL;
+
+							if(IS_LIST(value)) list = VALUE_LIST(value);
+							else {
+								ObjInstance* instance = VALUE_INSTANCE(value);
+
+								ValueContainer valueContainer;
+
+								tableGet(&instance -> fields, listField, &valueContainer);
+
+								list = VALUE_LIST(valueContainer.value);
+							}
 							
 							if(index < 0) 
 								index += list -> count;
@@ -2595,14 +2691,10 @@ InterpretResult run(VM* vm) {
 								return INTERPRET_RUNTIME_ERROR;
 							}
 							
-							POP();
-							POP();
+							POP();    // Property
+							POP();    // String.
 							
-							NUM_ASSURE(&list -> values[index], value);
-							
-							PUSH(list -> values[index]);
-							
-							value -> as.number--;
+							PUSH(NUMBER_VAL(incdc(list -> values + index, true, false)));
 							
 							break;
 						}
@@ -2623,7 +2715,7 @@ InterpretResult run(VM* vm) {
 							
 							PUSH(NUMBER_VAL((double) byteList -> bytes[index]));
 							
-							if((int) (byteList -> bytes[index]) - 1 >= 0) 
+							if(byteList -> bytes[index] - 1u >= 0) 
 								byteList -> bytes[index]--;
 							
 							break;
@@ -2633,9 +2725,44 @@ InterpretResult run(VM* vm) {
 					Table* fields;
 					
 					bool isDictionary = false;
+
+					char* result = toString(vm, (Value* const) &string);
+					size_t size  = strlen(result);
+
+					vm -> bytesAllocated += size + 1u;
+
+					ObjString* name = TAKE_STRING(result, size, true);
+
+					ValueContainer valueContainer;
 					
 					if(IS_INSTANCE(value)) {
-						fields = &VALUE_INSTANCE(value) -> fields;
+						ObjInstance* instance = VALUE_INSTANCE(value);
+
+						if(instance -> klass == vmDictionaryClass) {
+							tableGet(&instance -> fields, dictionaryField, &valueContainer);
+
+							fields = &VALUE_DICTIONARY(valueContainer.value) -> fields;
+
+							Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
+
+							if(entry != NULL && entry -> key != NULL) {
+								if(entry -> valueContainer.isConst) {
+									RUNTIME_ERROR("Attempt to decrement a constant property '%s'!", name -> buffer);
+
+									return INTERPRET_RUNTIME_ERROR;
+								}
+
+								POP();   // Instance.
+
+								PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, false)));
+
+								break;
+							} else {
+								RUNTIME_ERROR("Attmept to decrement an undefined property '%s'!", name -> buffer);
+							}
+						}
+
+						fields = &instance -> fields;
 						
 						isDictionary = false;
 					}
@@ -2644,74 +2771,42 @@ InterpretResult run(VM* vm) {
 						
 						isDictionary = true;
 					} else {
-						RUNTIME_ERROR("Attempt to decrement a property of a non-instance/non-dictionary value!");
+						RUNTIME_ERROR("Attempt to decrement a property of a non-(instance/dictionary) value!");
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
 
-					ObjString* name = VALUE_STRING(string);
-					
-					if(IS_NUMBER(string)) {
-						char* buffer = toString(vm, &string);
-
-						size_t length = strlen(buffer);
-
-						vm -> bytesAllocated += (length + 1u) * sizeof(char);
-						
-						name = TAKE_STRING(buffer, length, true);
-					}
-					else if(IS_BOOL(string)) {
-						bool bl = VALUE_BOOL(string);
-						
-						name = TAKE_STRING(bl ? "true" : "false", bl ? 4u : 5u, false);
-					}
-					else if(IS_NULL(string)) 
-						name = TAKE_STRING("null", 4u, false);
-					else if(!IS_STRING(string)) {
-						RUNTIME_ERROR("Expected a string as property key!");
-						
-						return INTERPRET_RUNTIME_ERROR;
-					}
-					
-					ObjString* interned = tableFindString(&vm -> strings, name -> buffer, name -> length, name -> hash);
-					
-					if(interned == NULL) {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
-
-						return INTERPRET_RUNTIME_ERROR;
-					}
-
-					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, interned) : NULL;
+					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to decrement a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to decrement a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();
 						POP();    // Instance.
 						
-						PUSH(entry -> valueContainer.value);
-						
-						value -> as.number--;
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, false)));
 					}
 					else if(!isDictionary) {
 						ObjInstance* instance = VALUE_INSTANCE(value);
 					
-						entry = instance -> klass -> statics.count ? findEntry(instance -> klass -> statics.entries, instance -> klass -> statics.capacity, interned) : NULL;
+						entry = instance -> klass -> statics.count ? findEntry(instance -> klass -> statics.entries, instance -> klass -> statics.capacity, name) : NULL;
 						
 						if(entry != NULL && entry -> key != NULL) {
 							RUNTIME_ERROR("Attempt to decrement a static property through instance! Don't do that!");
 							
 							return INTERPRET_RUNTIME_ERROR;
+						} else {
+							RUNTIME_ERROR("Attempt to decrement an undefined property '%s'!", name -> buffer);
+
+							return INTERPRET_RUNTIME_ERROR;
 						}
 					}
 					else {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to decrement an undefined property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -2732,20 +2827,16 @@ InterpretResult run(VM* vm) {
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to decrement a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to decrement a constant static property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();    // Instance.
 						
-						PUSH(entry -> valueContainer.value);
-						
-						value -> as.number--;
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, false)));
 					} else {
-						RUNTIME_ERROR("Undefined static property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to decrement an undefined static property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -2769,52 +2860,73 @@ InterpretResult run(VM* vm) {
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
-						value -> as.number++;
-						
-						PUSH(entry -> valueContainer.value);
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, true)));
 					} else {
 						RUNTIME_ERROR("Undefined variable '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
-				}
-				else if(param > 1 && param <= 3) {
+				} else if(param > 1 && param <= 3) {
 					// Local.
 					
 					uint32_t slot = readBytes(frame, param == 2 ? false : true);
 				
-					NUM_ASSURE(&vm -> stack[frame -> slots + slot], value);
-					
-					value -> as.number++;
-					
-					PUSH(vm -> stack[frame -> slots + slot]);
+					PUSH(NUMBER_VAL(incdc(vm -> stack + frame -> slots + slot, false, true)));
 				}
 				else if(param > 3 && param <= 5) {
+					// Upvalue.
+
 					uint8_t slot = readBytes(frame, param == 4 ? false : true);
+
+					ObjUpvalue* upvalue = frame_closure -> upvalues[slot];
 				
-					if(getClosure(frame -> function) -> upvalues[slot] -> isConst) {
+					if(upvalue -> isConst) {
 						RUNTIME_ERROR("Attempt to increment a constant upvalue!");
 						
 						return INTERPRET_RUNTIME_ERROR;
 					}
 					
-					NUM_ASSURE(getClosure(frame -> function) -> upvalues[slot] -> location, value);
-					
-					value -> as.number++;
-					
-					PUSH(*getClosure(frame -> function) -> upvalues[slot] -> location);
+					PUSH(NUMBER_VAL(incdc(upvalue -> location, false, true)));
 				}
 				else if(param > 5 && param <= 7) {
+					ObjString* name = VALUE_STRING(readConstant(frame, frame_function, param == 6u ? false : true));
+
 					Value value = *peek(vm, 0);
 				
 					Table* fields;
 					
 					bool isDictionary = false;
+
+					ValueContainer valueContainer;
 					
 					if(IS_INSTANCE(value)) {
-						fields = &VALUE_INSTANCE(value) -> fields;
+						ObjInstance* instance = VALUE_INSTANCE(value);
+
+						if(instance -> klass == vmDictionaryClass) {
+							tableGet(&instance -> fields, dictionaryField, &valueContainer);
+
+							fields = &VALUE_DICTIONARY(valueContainer.value) -> fields;
+
+							Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
+
+							if(entry != NULL && entry -> key != NULL) {
+								if(entry -> valueContainer.isConst) {
+									RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
+
+									return INTERPRET_RUNTIME_ERROR;
+								}
+
+								POP();   // Instance.
+
+								PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, true)));
+
+								break;
+							} else {
+								RUNTIME_ERROR("Attmept to increment an undefined property '%s'!", name -> buffer);
+							}
+						}
+
+						fields = &instance -> fields;
 						
 						isDictionary = false;
 					}
@@ -2823,29 +2935,23 @@ InterpretResult run(VM* vm) {
 						
 						isDictionary = true;
 					} else {
-						RUNTIME_ERROR("Attempt to increment a property of a non-instance/non-dictionary value!");
+						RUNTIME_ERROR("Attempt to increment a property of a non-(instance/dictionary) value!");
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
-
-					ObjString* name = VALUE_STRING(readConstant(frame, frame_function, param == 6u ? false : true));
 
 					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to increment a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();    // Instance.
 						
-						value -> as.number++;
-						
-						PUSH(entry -> valueContainer.value);
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, true)));
 					}
 					else if(!isDictionary) {
 						ObjInstance* instance = VALUE_INSTANCE(value);
@@ -2856,9 +2962,13 @@ InterpretResult run(VM* vm) {
 							RUNTIME_ERROR("Attempt to increment a static property through instance! Don't do that!");
 							
 							return INTERPRET_RUNTIME_ERROR;
+						} else {
+							RUNTIME_ERROR("Attempt to increment an undefined property '%s'!", name -> buffer);
+
+							return INTERPRET_RUNTIME_ERROR;
 						}
 					} else {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to increment an undefined property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -2868,25 +2978,31 @@ InterpretResult run(VM* vm) {
 				
 					Value string = *peek(vm, 0);
 					
-					if(IS_LIST(value) || IS_BYTELIST(value)) {
-						int index;
-						
-						if(IS_NUMBER(string)) 
-							index = (size_t) VALUE_NUMBER(string);
-						else if(IS_STRING(string)) 
-							index = (size_t) pstrtod(VALUE_CSTRING(string));
-						else if(IS_NULL(string)) 
-							index = 0;
-						else if(IS_BOOL(string)) 
-							index = VALUE_BOOL(string) ? 1u : 0u;
-						else {
+					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
+					IS_BYTELIST(value)) {
+						double idxval = toNumber(&string);
+
+						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
+
+						int index = (int) idxval;
 						
-						if(IS_LIST(value)) {
-							ObjList* list = VALUE_LIST(value);
+						if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass)) {
+							ObjList* list = NULL;
+
+							if(IS_LIST(value)) list = VALUE_LIST(value);
+							else {
+								ObjInstance* instance = VALUE_INSTANCE(value);
+
+								ValueContainer valueContainer;
+
+								tableGet(&instance -> fields, listField, &valueContainer);
+
+								list = VALUE_LIST(valueContainer.value);
+							}
 							
 							if(index < 0) 
 								index += list -> count;
@@ -2897,14 +3013,10 @@ InterpretResult run(VM* vm) {
 								return INTERPRET_RUNTIME_ERROR;
 							}
 							
-							POP();
-							POP();
+							POP();    // Property
+							POP();    // String.
 							
-							NUM_ASSURE(&list -> values[index], value);
-							
-							value -> as.number++;
-							
-							PUSH(list -> values[index]);
+							PUSH(NUMBER_VAL(incdc(list -> values + index, false, true)));
 							
 							break;
 						}
@@ -2925,7 +3037,7 @@ InterpretResult run(VM* vm) {
 							
 							if(byteList -> bytes[index] + 1u <= 255) 
 								byteList -> bytes[index]++;
-								
+							
 							PUSH(NUMBER_VAL((double) byteList -> bytes[index]));
 							
 							break;
@@ -2935,9 +3047,44 @@ InterpretResult run(VM* vm) {
 					Table* fields;
 					
 					bool isDictionary = false;
+
+					char* result = toString(vm, (Value* const) &string);
+					size_t size  = strlen(result);
+
+					vm -> bytesAllocated += size + 1u;
+
+					ObjString* name = TAKE_STRING(result, size, true);
+
+					ValueContainer valueContainer;
 					
 					if(IS_INSTANCE(value)) {
-						fields = &VALUE_INSTANCE(value) -> fields;
+						ObjInstance* instance = VALUE_INSTANCE(value);
+
+						if(instance -> klass == vmDictionaryClass) {
+							tableGet(&instance -> fields, dictionaryField, &valueContainer);
+
+							fields = &VALUE_DICTIONARY(valueContainer.value) -> fields;
+
+							Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
+
+							if(entry != NULL && entry -> key != NULL) {
+								if(entry -> valueContainer.isConst) {
+									RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
+
+									return INTERPRET_RUNTIME_ERROR;
+								}
+
+								POP();   // Instance.
+
+								PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, true)));
+
+								break;
+							} else {
+								RUNTIME_ERROR("Attmept to increment an undefined property '%s'!", name -> buffer);
+							}
+						}
+
+						fields = &instance -> fields;
 						
 						isDictionary = false;
 					}
@@ -2946,74 +3093,42 @@ InterpretResult run(VM* vm) {
 						
 						isDictionary = true;
 					} else {
-						RUNTIME_ERROR("Attempt to increment a property of a non-instance/non-dictionary value!");
+						RUNTIME_ERROR("Attempt to increment a property of a non-(instance/dictionary) value!");
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
 
-					ObjString* name = VALUE_STRING(string);
-					
-					if(IS_NUMBER(string)) {
-						char* buffer = toString(vm, &string);
-
-						size_t length = strlen(buffer);
-
-						vm -> bytesAllocated += (length + 1u) * sizeof(char);
-						
-						name = TAKE_STRING(buffer, length, true);
-					}
-					else if(IS_BOOL(string)) {
-						bool bl = VALUE_BOOL(string);
-						
-						name = TAKE_STRING(bl ? "true" : "false", bl ? 4u : 5u, false);
-					}
-					else if(IS_NULL(string)) 
-						name = TAKE_STRING("null", 4u, false);
-					else if(!IS_STRING(string)) {
-						RUNTIME_ERROR("Expected a string as property key!");
-						
-						return INTERPRET_RUNTIME_ERROR;
-					}
-					
-					ObjString* interned = tableFindString(&vm -> strings, name -> buffer, name -> length, name -> hash);
-					
-					if(interned == NULL) {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
-
-						return INTERPRET_RUNTIME_ERROR;
-					}
-
-					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, interned) : NULL;
+					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to increment a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();
 						POP();    // Instance.
 						
-						value -> as.number++;
-						
-						PUSH(entry -> valueContainer.value);
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, true)));
 					}
 					else if(!isDictionary) {
 						ObjInstance* instance = VALUE_INSTANCE(value);
 					
-						entry = instance -> klass -> statics.count ? findEntry(instance -> klass -> statics.entries, instance -> klass -> statics.capacity, interned) : NULL;
+						entry = instance -> klass -> statics.count ? findEntry(instance -> klass -> statics.entries, instance -> klass -> statics.capacity, name) : NULL;
 						
 						if(entry != NULL && entry -> key != NULL) {
 							RUNTIME_ERROR("Attempt to increment a static property through instance! Don't do that!");
 							
 							return INTERPRET_RUNTIME_ERROR;
+						} else {
+							RUNTIME_ERROR("Attempt to increment an undefined property '%s'!", name -> buffer);
+
+							return INTERPRET_RUNTIME_ERROR;
 						}
 					}
 					else {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to increment an undefined property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -3034,20 +3149,16 @@ InterpretResult run(VM* vm) {
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to increment a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to increment a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();    // Instance.
 						
-						value -> as.number++;
-						
-						PUSH(entry -> valueContainer.value);
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, false, true)));
 					} else {
-						RUNTIME_ERROR("Undefined static property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to increment an undefined static property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -3071,54 +3182,73 @@ InterpretResult run(VM* vm) {
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
-						value -> as.number--;
-						
-						PUSH(entry -> valueContainer.value);
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, true)));
 					} else {
 						RUNTIME_ERROR("Undefined variable '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
-				}
-				else if(param > 1 && param <= 3) {
+				} else if(param > 1 && param <= 3) {
 					// Local.
 					
 					uint32_t slot = readBytes(frame, param == 2 ? false : true);
 				
-					NUM_ASSURE(&vm -> stack[frame -> slots + slot], value);
-					
-					value -> as.number--;
-					
-					PUSH(vm -> stack[frame -> slots + slot]);
+					PUSH(NUMBER_VAL(incdc(vm -> stack + frame -> slots + slot, true, true)));
 				}
 				else if(param > 3 && param <= 5) {
+					// Upvalue.
+
 					uint8_t slot = readBytes(frame, param == 4 ? false : true);
+
+					ObjUpvalue* upvalue = frame_closure -> upvalues[slot];
 				
-					if(getClosure(frame -> function) -> upvalues[slot] -> isConst) {
+					if(upvalue -> isConst) {
 						RUNTIME_ERROR("Attempt to decrement a constant upvalue!");
 						
 						return INTERPRET_RUNTIME_ERROR;
 					}
 					
-					NUM_ASSURE(getClosure(frame -> function) -> upvalues[slot] -> location, value);
-					
-					value -> as.number--;
-					
-					PUSH(*getClosure(frame -> function) -> upvalues[slot] -> location);
-					
-					break;
+					PUSH(NUMBER_VAL(incdc(upvalue -> location, true, true)));
 				}
 				else if(param > 5 && param <= 7) {
+					ObjString* name = VALUE_STRING(readConstant(frame, frame_function, param == 6u ? false : true));
+
 					Value value = *peek(vm, 0);
 				
 					Table* fields;
 					
 					bool isDictionary = false;
+
+					ValueContainer valueContainer;
 					
 					if(IS_INSTANCE(value)) {
-						fields = &VALUE_INSTANCE(value) -> fields;
+						ObjInstance* instance = VALUE_INSTANCE(value);
+
+						if(instance -> klass == vmDictionaryClass) {
+							tableGet(&instance -> fields, dictionaryField, &valueContainer);
+
+							fields = &VALUE_DICTIONARY(valueContainer.value) -> fields;
+
+							Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
+
+							if(entry != NULL && entry -> key != NULL) {
+								if(entry -> valueContainer.isConst) {
+									RUNTIME_ERROR("Attempt to decrement a constant property '%s'!", name -> buffer);
+
+									return INTERPRET_RUNTIME_ERROR;
+								}
+
+								POP();   // Instance.
+
+								PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, true)));
+
+								break;
+							} else {
+								RUNTIME_ERROR("Attmept to decrement an undefined property '%s'!", name -> buffer);
+							}
+						}
+
+						fields = &instance -> fields;
 						
 						isDictionary = false;
 					}
@@ -3127,29 +3257,23 @@ InterpretResult run(VM* vm) {
 						
 						isDictionary = true;
 					} else {
-						RUNTIME_ERROR("Attempt to decrement a property of a non-instance/non-dictionary value!");
+						RUNTIME_ERROR("Attempt to decrement a property of a non-(instance/dictionary) value!");
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
-
-					ObjString* name = VALUE_STRING(readConstant(frame, frame_function, param == 6u ? false : true));
 
 					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to decrement a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to decrement a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();    // Instance.
 						
-						value -> as.number--;
-						
-						PUSH(entry -> valueContainer.value);
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, true)));
 					}
 					else if(!isDictionary) {
 						ObjInstance* instance = VALUE_INSTANCE(value);
@@ -3160,9 +3284,13 @@ InterpretResult run(VM* vm) {
 							RUNTIME_ERROR("Attempt to decrement a static property through instance! Don't do that!");
 							
 							return INTERPRET_RUNTIME_ERROR;
+						} else {
+							RUNTIME_ERROR("Attempt to decrement an undefined property '%s'!", name -> buffer);
+
+							return INTERPRET_RUNTIME_ERROR;
 						}
 					} else {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to decrement an undefined property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -3172,25 +3300,31 @@ InterpretResult run(VM* vm) {
 				
 					Value string = *peek(vm, 0);
 					
-					if(IS_LIST(value) || IS_BYTELIST(value)) {
-						int index;
-						
-						if(IS_NUMBER(string)) 
-							index = (size_t) VALUE_NUMBER(string);
-						else if(IS_STRING(string)) 
-							index = (size_t) pstrtod(VALUE_CSTRING(string));
-						else if(IS_NULL(string)) 
-							index = 0;
-						else if(IS_BOOL(string)) 
-							index = VALUE_BOOL(string) ? 1u : 0u;
-						else {
+					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
+					IS_BYTELIST(value)) {
+						double idxval = toNumber(&string);
+
+						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
+
+						int index = (int) idxval;
 						
-						if(IS_LIST(value)) {
-							ObjList* list = VALUE_LIST(value);
+						if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass)) {
+							ObjList* list = NULL;
+
+							if(IS_LIST(value)) list = VALUE_LIST(value);
+							else {
+								ObjInstance* instance = VALUE_INSTANCE(value);
+
+								ValueContainer valueContainer;
+
+								tableGet(&instance -> fields, listField, &valueContainer);
+
+								list = VALUE_LIST(valueContainer.value);
+							}
 							
 							if(index < 0) 
 								index += list -> count;
@@ -3201,14 +3335,10 @@ InterpretResult run(VM* vm) {
 								return INTERPRET_RUNTIME_ERROR;
 							}
 							
-							POP();
-							POP();
+							POP();    // Property
+							POP();    // String.
 							
-							NUM_ASSURE(&list -> values[index], value);
-							
-							value -> as.number--;
-							
-							PUSH(list -> values[index]);
+							PUSH(NUMBER_VAL(incdc(list -> values + index, true, true)));
 							
 							break;
 						}
@@ -3227,9 +3357,9 @@ InterpretResult run(VM* vm) {
 							POP();
 							POP();
 							
-							if((int) (byteList -> bytes[index]) - 1 >= 0) 
+							if(byteList -> bytes[index] - 1u >= 0) 
 								byteList -> bytes[index]--;
-								
+							
 							PUSH(NUMBER_VAL((double) byteList -> bytes[index]));
 							
 							break;
@@ -3239,9 +3369,44 @@ InterpretResult run(VM* vm) {
 					Table* fields;
 					
 					bool isDictionary = false;
+
+					char* result = toString(vm, (Value* const) &string);
+					size_t size  = strlen(result);
+
+					vm -> bytesAllocated += size + 1u;
+
+					ObjString* name = TAKE_STRING(result, size, true);
+
+					ValueContainer valueContainer;
 					
 					if(IS_INSTANCE(value)) {
-						fields = &VALUE_INSTANCE(value) -> fields;
+						ObjInstance* instance = VALUE_INSTANCE(value);
+
+						if(instance -> klass == vmDictionaryClass) {
+							tableGet(&instance -> fields, dictionaryField, &valueContainer);
+
+							fields = &VALUE_DICTIONARY(valueContainer.value) -> fields;
+
+							Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
+
+							if(entry != NULL && entry -> key != NULL) {
+								if(entry -> valueContainer.isConst) {
+									RUNTIME_ERROR("Attempt to decrement a constant property '%s'!", name -> buffer);
+
+									return INTERPRET_RUNTIME_ERROR;
+								}
+
+								POP();   // Instance.
+
+								PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, true)));
+
+								break;
+							} else {
+								RUNTIME_ERROR("Attmept to decrement an undefined property '%s'!", name -> buffer);
+							}
+						}
+
+						fields = &instance -> fields;
 						
 						isDictionary = false;
 					}
@@ -3250,74 +3415,42 @@ InterpretResult run(VM* vm) {
 						
 						isDictionary = true;
 					} else {
-						RUNTIME_ERROR("Attempt to decrement a property of a non-instance/non-dictionary value!");
+						RUNTIME_ERROR("Attempt to decrement a property of a non-(instance/dictionary) value!");
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
 
-					ObjString* name = VALUE_STRING(string);
-					
-					if(IS_NUMBER(string)) {
-						char* buffer = toString(vm, &string);
-
-						size_t length = strlen(buffer);
-
-						vm -> bytesAllocated += (length + 1u) * sizeof(char);
-						
-						name = TAKE_STRING(buffer, length, true);
-					}
-					else if(IS_BOOL(string)) {
-						bool bl = VALUE_BOOL(string);
-						
-						name = TAKE_STRING(bl ? "true" : "false", bl ? 4u : 5u, false);
-					}
-					else if(IS_NULL(string)) 
-						name = TAKE_STRING("null", 4u, false);
-					else if(!IS_STRING(string)) {
-						RUNTIME_ERROR("Expected a string as property key!");
-						
-						return INTERPRET_RUNTIME_ERROR;
-					}
-					
-					ObjString* interned = tableFindString(&vm -> strings, name -> buffer, name -> length, name -> hash);
-					
-					if(interned == NULL) {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
-
-						return INTERPRET_RUNTIME_ERROR;
-					}
-
-					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, interned) : NULL;
+					Entry* entry = fields -> count ? findEntry(fields -> entries, fields -> capacity, name) : NULL;
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to decrement a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to decrement a constant property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
-						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
 						
 						POP();
 						POP();    // Instance.
 						
-						value -> as.number--;
-						
-						PUSH(entry -> valueContainer.value);
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, true)));
 					}
 					else if(!isDictionary) {
 						ObjInstance* instance = VALUE_INSTANCE(value);
 					
-						entry = instance -> klass -> statics.count ? findEntry(instance -> klass -> statics.entries, instance -> klass -> statics.capacity, interned) : NULL;
+						entry = instance -> klass -> statics.count ? findEntry(instance -> klass -> statics.entries, instance -> klass -> statics.capacity, name) : NULL;
 						
 						if(entry != NULL && entry -> key != NULL) {
-							RUNTIME_ERROR("Attempt to increment a static property through instance! Don't do that!");
+							RUNTIME_ERROR("Attempt to decrement a static property through instance! Don't do that!");
 							
+							return INTERPRET_RUNTIME_ERROR;
+						} else {
+							RUNTIME_ERROR("Attempt to decrement an undefined property '%s'!", name -> buffer);
+
 							return INTERPRET_RUNTIME_ERROR;
 						}
 					}
 					else {
-						RUNTIME_ERROR("Undefined property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to decrement an undefined property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -3338,20 +3471,16 @@ InterpretResult run(VM* vm) {
 					
 					if(entry != NULL && entry -> key != NULL) {
 						if(entry -> valueContainer.isConst) {
-							RUNTIME_ERROR("Attempt to decrement a constant property!", name -> buffer);
+							RUNTIME_ERROR("Attempt to decrement a constant static property '%s'!", name -> buffer);
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
 						
-						NUM_ASSURE(&entry -> valueContainer.value, value);
-						
 						POP();    // Instance.
 						
-						value -> as.number--;
-						
-						PUSH(entry -> valueContainer.value);
+						PUSH(NUMBER_VAL(incdc(&entry -> valueContainer.value, true, true)));
 					} else {
-						RUNTIME_ERROR("Undefined static property '%s'!", name -> buffer);
+						RUNTIME_ERROR("Attempt to decrement an undefined static property '%s'!", name -> buffer);
 
 						return INTERPRET_RUNTIME_ERROR;
 					}
@@ -4018,28 +4147,21 @@ InterpretResult run(VM* vm) {
 				do {
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						double idxval;
+						int index;
 						
 						if(IS_NUMBER(string)) 
-							idxval = VALUE_NUMBER(string);
+							index = (int) VALUE_NUMBER(string);
 						else if(IS_STRING(string)) 
-							idxval = pstrtod(VALUE_CSTRING(string));
+							index = (int) pstrtod(VALUE_CSTRING(string));
 						else if(IS_NULL(string)) 
-							idxval = 0;
+							index = 0;
 						else if(IS_BOOL(string)) 
-							idxval = VALUE_BOOL(string) ? 1u : 0u;
+							index = (int) VALUE_BOOL(string) ? 1u : 0u;
 						else {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
-
-						int index;
-
-						if(isnan(idxval)) 
-							break;
-						
-						index = (int) idxval;
 						
 						if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass)) {
 							ObjList* list = NULL;
@@ -4314,8 +4436,8 @@ InterpretResult run(VM* vm) {
 
 				bool isConst = READ_BYTE();
 				
-				if(IS_LIST(value) || (IS_INSTANCE(value) &&
-				!strcmp(VALUE_INSTANCE(value) -> klass -> name -> buffer, "List")) || IS_BYTELIST(value) || IS_STRING(value)) {
+				if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
+				IS_BYTELIST(value)) {
 					int index;
 					
 					if(IS_NUMBER(string)) 
@@ -4325,7 +4447,7 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(string)) 
 						index = 0;
 					else if(IS_BOOL(string)) 
-						index = VALUE_BOOL(string) ? 1u : 0u;
+						index = (int) VALUE_BOOL(string) ? 1u : 0u;
 					else {
 						RUNTIME_ERROR("Index is not convertable to number!");
 						
@@ -4333,7 +4455,7 @@ InterpretResult run(VM* vm) {
 					}
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) &&
-					!strcmp(VALUE_INSTANCE(value) -> klass -> name -> buffer, "List"))) {
+					VALUE_INSTANCE(value) -> klass == vmListClass)) {
 						ObjList* list = NULL;
 
 						if(IS_LIST(value)) list = VALUE_LIST(value);

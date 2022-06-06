@@ -44,7 +44,7 @@ extern double pstrtod(const char*);
 
 extern int gettimeofday(struct timeval* tp, struct timeval* tzp);
 
-#elif defined(__linux__)
+#elif defined(__unix__)
 
 #include <termios.h>
 #include <unistd.h>
