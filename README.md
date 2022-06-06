@@ -33,9 +33,9 @@ const class Promit {
 
 take promit = Promit();
 
-cities.foreach( fn(city) {
+cities.foreach(fn(city) {
 	promit.visit(city);
-} );
+});
 
 showl "The variable 'promit' is ${typeof promit} and ${promit instof Promit}.";
 ```
