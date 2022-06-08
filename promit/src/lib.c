@@ -5459,6 +5459,67 @@ static NativePack listMake(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
+static NativePack listRange(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	ObjList* result = newList(vm);
+
+	pack.value = OBJECT_VAL(result);
+
+	if(argCount < 2) 
+		return pack;
+
+	if(!IS_NUMBER(values[1])) {
+		NATIVE_R_ERR("Expected stop value to be a integer value in List::range(stop, start, step)!");
+	}
+
+	double value = trunc(VALUE_NUMBER(values[1]));
+
+	if(value < MIN_SAFE_INTEGER || value > MAX_SAFE_INTEGER || isnan(value)) {
+		NATIVE_R_ERR("Invalid stop value provided in List::range(stop, start, step)!");
+	}
+
+	int stop = (int) value;
+
+	int start = 0, step = 1;
+
+	if(argCount > 2) {
+		if(!IS_NUMBER(values[2])) {
+			NATIVE_R_ERR("Expected start value to be a integer value in List::range(stop, start, step)!");
+		}
+
+		value = trunc(VALUE_NUMBER(values[2]));
+
+		if(value < MIN_SAFE_INTEGER || value > MAX_SAFE_INTEGER || isnan(value)) {
+			NATIVE_R_ERR("Invalid start value provided in List::range(stop, start, step)!");
+		}
+
+		start = (int) value;
+	}
+
+	if(argCount > 3) {
+		if(!IS_NUMBER(values[3])) {
+			NATIVE_R_ERR("Expected step value to be a integer value in List::range(stop, start, step)!");
+		}
+
+		value = trunc(VALUE_NUMBER(values[3]));
+
+		if(value < 0 || value > MAX_SAFE_INTEGER || isnan(value)) {
+			NATIVE_R_ERR("Invalid step value provided in List::range(stop, start, step)!");
+		}
+
+		step = (int) value;
+	}
+
+	result -> capacity = (stop - start) / step;
+	result -> values   = GROW_ARRAY(Value, result -> values, 0u, result -> capacity);
+
+	for(; start < stop; start += step) 
+		result -> values[result -> count++] = NUMBER_VAL(start);
+
+	return pack;
+}
+
 void initListLib(VM* vm) {
 	listField = TAKE_STRING("_p_list__", 9u, false);
 
@@ -5500,6 +5561,7 @@ void initListLib(VM* vm) {
 	defineMethod(listClass, TAKE_STRING("__represent__", 13u, false), list__represent__);
 
 	defineStaticMethod(listClass, TAKE_STRING("make", 4u, false), listMake);
+	defineStaticMethod(listClass, TAKE_STRING("range", 5u, false), listRange);
 
 	// For List.index(value, occurance) and List.search(predicate, occurance)
 

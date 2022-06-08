@@ -6,7 +6,7 @@
 void repl(VM* vm) {
 	char line[2048];
 
-	puts("Welcome to Promit v1.0.1 (alpha)\nType '.help' for more information.\n");
+	puts("Welcome to Promit v0.5.0 (beta)\nType '.help' for more information.\n");
 
 	while(true) {
 		printf("[promit] => ");
@@ -21,8 +21,8 @@ void repl(VM* vm) {
 			puts("\nPromit: Try to input statements/expressions in a single line. For multiline input, type '.editor' to go editor mode.\nType '.why' to know about the project.\n");
 		}
 		else if(!strcmp(line, ".why\n")) {
-			puts("\nThe Project Promit is developed by SD Asif Hossein, in order to keep his promise once he made to his friend 'Meraj Hossain Promit'.\n"
-				 "It's a fun project, not for professional use.\n");
+			puts("\nAsif: The Project Promit is developed by SD Asif Hossein, in order to keep his promise once he made to his friend 'Meraj Hossain Promit'.\n"
+				 "If you like it, be sure to use it ;).\n");
 		}
 		else if(!strcmp(line, ".editor\n")) {
 			bool editorMode = true;
