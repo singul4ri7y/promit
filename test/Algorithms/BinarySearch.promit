@@ -1,0 +1,66 @@
+/**
+ *
+ * Binary Search algorithm to search a number in self (user) constructed list.
+ * 
+ * Part of Promit Test Suit, location /test/Algorithms/BinarySearch.promit
+ * 
+ * Created by SD Asif Hossein in 9th June, 2022 at 1:47 PM (UTC +06).
+ */
+
+// Get the start number, range and step to approach the range
+// to construct the list.
+
+show 'Enter where to start : ';
+
+take start = recieve(num);
+
+show 'Enter the range : ';
+
+take range = recieve(num);
+
+show 'Enter the number of step : ';
+
+// Use List::range(stop, start, step) to construct the list. Much like
+// Python's range() function.
+
+take step = recieve(num),
+  numbers = List::range(range, start, step);
+
+// Get the target number.
+
+show 'Enter the target number : ';
+
+take target = recieve(num);
+
+// Binary Search.
+
+take left = 0, right = len(numbers) - 1, mid = Math::floor((left + right) / 2),
+    count = 0;
+
+while(left != right) {
+	take number = numbers[mid];
+
+	if(number == target) 
+		break;
+	
+	// Shrink according to the numbers position relative to the target
+	// number.
+
+	if(number > target) 
+		right = mid - 1;
+	else left = mid + 1;
+
+	mid = Math::floor((left + right) / 2);
+
+	count++;
+}
+
+// If the number is found, print it.
+
+if(left != right) 
+	showl 'The target number $target is found on index $mid!';
+else showl 'The number not found!';
+
+// Print how many iteration occured.
+
+showl 'Took $count steps!';
