@@ -1,0 +1,38 @@
+/**
+ * Optimized fibonacci number finder which finds out n'th fibonacci number
+ * function with dynamic programming (tabulation) approach.
+ *
+ * Part of promit test suit, location /test/Algorithms/Fibonacci.promit
+ *
+ * Created by SD Asif Hossein in 13th June 2022 at 03:00 PM (UTC +06).
+ */
+
+// The fibonacci function, which takes in 'n' as the n'th fibonacci,
+// and 'data' as tabulation table to find existing calculated fibonaccis.
+
+fn fib(n, data) {
+	if(n < len(data)) 
+		return data[n];
+	
+	return (data[n] = fib(n - 1, data) + fib(n - 2, data));
+}
+
+// To find the position string like st, nd, rd etc.
+
+fn position(n) {
+	switch(n % 10) {
+		case 1: return 'st';
+		case 2: return 'nd';
+		case 3: return 'rd';
+	}
+
+	return 'th';
+}
+
+// Take input about which number of fibonacci user wish to identify.
+
+show 'Enter the number of fibonacci : ';
+
+take n = recieve(num);
+
+showl "The $n'${position(n)} fibonacci number is : ${ fib(n, [ 0, 1, 1 ]) }";
