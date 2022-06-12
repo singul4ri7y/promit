@@ -1298,7 +1298,7 @@ ParseRule parseRules[] = {
 	[TOKEN_AND]                      = { NULL, and, NULL, PREC_AND },
 	[TOKEN_RIGHT_SHIFT]              = { NULL, binary, NULL, PREC_TERM },
 	[TOKEN_LEFT_SHIFT]               = { NULL, binary, NULL, PREC_TERM },
-	[TOKEN_INCREMENT]                = { inc, NULL, NULL, PREC_NONE},
+	[TOKEN_INCREMENT]                = { inc, NULL, NULL, PREC_NONE },
 	[TOKEN_DECREMENT]                = { inc, NULL, NULL, PREC_NONE },
 	
 	[TOKEN_LEFT_SQUARE]              = { list, square, NULL, PREC_CALL },
@@ -2166,7 +2166,9 @@ static void classDeclaration(bool inLoop, bool isConst) {
 		        (parser.previous.length == 6u && !memcmp(parser.previous.start, "String", parser.previous.length)) ||
 		        (parser.previous.length == 10u && !memcmp(parser.previous.start, "Dictionary", parser.previous.length)) ||
 		        (parser.previous.length == 8u && !memcmp(parser.previous.start, "Function", parser.previous.length)) ||
-		        (parser.previous.length == 6u && !memcmp(parser.previous.start, "Number", parser.previous.length))) {
+		        (parser.previous.length == 6u && !memcmp(parser.previous.start, "Number", parser.previous.length)) ||
+		        (parser.previous.length == 8u && !memcmp(parser.previous.start, "ByteList", parser.previous.length)) ||
+		        (parser.previous.length == 7u && !memcmp(parser.previous.start, "Boolean", parser.previous.length))) {
 			error("Inheriting wrapper classes are forbidden!");
 		}
 

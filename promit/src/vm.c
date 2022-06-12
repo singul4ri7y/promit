@@ -50,7 +50,7 @@ static NativePack len(VM* vm, int argCount, Value* args) {
 	pack.hadError = false;
 	
 	if(argCount < 2) {
-		RUNTIME_ERROR("Expected an argument in function 'len(string | dictionary | list)'!");
+		RUNTIME_ERROR("Expected an argument in function 'len(string | dictionary | list | bytelist | wrapper-instance)'!");
 		
 		pack.hadError = true;
 
@@ -65,6 +65,8 @@ static NativePack len(VM* vm, int argCount, Value* args) {
 		size = VALUE_DICTIONARY(args[1]) -> fields.count;
 	else if(IS_LIST(args[1])) 
 		size = VALUE_LIST(args[1]) -> count;
+	else if(IS_BYTELIST(args[1])) 
+		size = VALUE_BYTELIST(args[2]) -> size;
 	
 	// The wrapper instances.
 	else if(IS_INSTANCE(args[1])) {
@@ -87,12 +89,12 @@ static NativePack len(VM* vm, int argCount, Value* args) {
 
 			size = VALUE_DICTIONARY(container.value) -> fields.count;
 		} else {
-			RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | wrapper-instance)'!");
+			RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | bytelist | wrapper-instance)'!");
 			
 			pack.hadError = true;
 		}
 	} else {
-		RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | wrapper-instance)'!");
+		RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | bytelist | wrapper-instance)'!");
 		
 		pack.hadError = true;
 	}
