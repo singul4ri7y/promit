@@ -2166,7 +2166,7 @@ static void classDeclaration(bool inLoop, bool isConst) {
 		        (parser.previous.length == 6u && !memcmp(parser.previous.start, "String", parser.previous.length)) ||
 		        (parser.previous.length == 10u && !memcmp(parser.previous.start, "Dictionary", parser.previous.length)) ||
 		        (parser.previous.length == 8u && !memcmp(parser.previous.start, "Function", parser.previous.length)) ||
-		        (parser.previous.length == 6u && !memcmp(parser.previous.start, "Number", parser.previous.length)) {
+		        (parser.previous.length == 6u && !memcmp(parser.previous.start, "Number", parser.previous.length))) {
 			error("Inheriting wrapper classes are forbidden!");
 		}
 
