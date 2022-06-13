@@ -1,0 +1,24 @@
+/**
+ * Following program describes how to declare a variable.
+ * 
+ * Part of Promit Test Suit, location /test/Variables/Assignment/AssignVariable.promit
+ *
+ * Written by SD Asif Hossein in 13 June 2022 at 02:41 PM (UTC +06).
+ */
+
+// Use 'take' keyword to declare a variable.
+
+take your_var_name = 'This is a string!';
+
+// Reassign the variable.
+
+your_var_name = 404;    // Which is a number.
+your_var_name = null;   // Nothingness!!
+your_var_name = true;   // Boolean;
+
+showl your_var_name;
+
+// This is called redefinition not reassign.
+// Don't do that.
+
+take your_var_name = 'Something';    // Error : Redefinition of global variable 'your_var_name'!

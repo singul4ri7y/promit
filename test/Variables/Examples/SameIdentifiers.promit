@@ -1,0 +1,48 @@
+/**
+ * This program uses same name 'any_var' to create multiple local and one global variables
+ * and prints them. This shows how promit parses the local variables in scope ascending
+ * (curernt scope, then parent scope and then grand parent scope and so on so forth) which
+ * is descending in depth (first current depth, in our case current depth is 3, then 2 after
+ * that 1, finally depth 0 or global scope) to find local variables. If no local variable is
+ * found, then promit parses the identifier as a global variable and runtime error occurs if
+ * the global variable is not found.
+ * 
+ * Part of Promit Test Suit, location /test/Variables/Example/SameIdentifiers.promit.
+ *
+ * Written by SD Asif Hossein in 13th June 2022 at 02:30 PM (UTC +06).
+ */
+
+take any_var = 'This is a global variable!';
+
+// Creating a scope, depth : 1.
+
+{
+	take any_var = 'This is same identifier local variable, depth : 1';
+	take local1  = 'Local variable 1';
+
+	// Creating another scope, depth : 2.
+
+	{
+		take any_var = 'This is a same identifier local variable, depth : 2';
+		take local2  = 'Local variable 2';
+	
+		// Creating scope, depth : 3.
+
+		{
+			take any_var = 'This is a same identifier local variable, depth : 3';
+			take local3  = 'Local variable 3';
+
+			showl any_var;
+
+			showl 'Local variables local1 : $local1, local2 : $local2 and local3 : $local3!';
+		}
+
+		showl any_var;
+	}
+
+	showl any_var;
+}
+
+// The one and only global scope.
+
+showl any_var;
