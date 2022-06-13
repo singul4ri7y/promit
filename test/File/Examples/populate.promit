@@ -4,7 +4,7 @@
  *
  * Part of Promit Test Suit, location /test/File/Examples/populate.promit
  *
- * Created by SD Asif Hossein on 18 April, 2022 (Monday) at 2:50 PM.
+ * Created by SD Asif Hossein on 18 April, 2022 (Monday) at 2:50 PM (UTC +06).
  **/
  
 show 'Enter the file name to be populated : ';
