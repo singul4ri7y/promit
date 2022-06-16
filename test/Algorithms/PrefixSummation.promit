@@ -26,10 +26,10 @@ class NumMatrix {
 		// Cannot use 'List(row).fill(List(col));'.
 		// Cause fill() uses the same parameter (In this case 'List(col)')
 		// to fill in all the fields. So, if I am to make change to any of
-		// of the row, all the rows will take effect as Objects are pass by
+		// of the row, all the rows will be affected, as Objects are pass by
 		// reference in Promit.
 
-		// To fix the problem creating seperate lists for each of the row.
+		// To fix this problem, creating seperate lists for each of the row.
 
 		this.p_Matrix.foreach(fn _(elem, index, matrix) {
 			matrix[index] = List(col);
@@ -37,15 +37,19 @@ class NumMatrix {
 
 		// Now 2D prefix summation.
 
+		take entry;
+
 		for(take i = 0; i < row; i++) {
 			for(take j = 0; j < col; j++) {
-				this.p_Matrix[i][j] = matrix[i][j];
+				entry = matrix[i][j];
 
-				if(i > 0) this.p_Matrix[i][j] += this.p_Matrix[i - 1][j];
-				if(j > 0) this.p_Matrix[i][j] += this.p_Matrix[i][j - 1];
+				if(i > 0) entry += this.p_Matrix[i - 1][j];
+				if(j > 0) entry += this.p_Matrix[i][j - 1];
 
 				if(i > 0 && j > 0) 
-					this.p_Matrix[i][j] -= this.p_Matrix[i - 1][j - 1];
+					entry -= this.p_Matrix[i - 1][j - 1];
+
+				this.p_Matrix[i][j] = entry;
 			}
 		}
 	}
