@@ -702,12 +702,12 @@ static void namedVariable(Token* name, bool canAssign, bool globalOnly) {
 			INC_DC(OP_POST_DECREMENT, 4, arg);
 		} else { /* Global */ INC_DC(OP_POST_DECREMENT, 0, arg); }    // Immutability/constant will be checked at runtime.
 	}
-	else if(checkBinaryToken()) {
+	else if(canAssign && checkBinaryToken()) {
 		advance();
 		
 		TokenType type = parser.previous.type;
 		
-		if(canAssign && match(TOKEN_EQUAL)) {
+		if(match(TOKEN_EQUAL)) {
 			if(state == 0u) {
 				// First get the value.
 				
@@ -1298,7 +1298,7 @@ ParseRule parseRules[] = {
 	[TOKEN_AND]                      = { NULL, and, NULL, PREC_AND },
 	[TOKEN_RIGHT_SHIFT]              = { NULL, binary, NULL, PREC_TERM },
 	[TOKEN_LEFT_SHIFT]               = { NULL, binary, NULL, PREC_TERM },
-	[TOKEN_INCREMENT]                = { inc, NULL, NULL, PREC_NONE },
+	[TOKEN_INCREMENT]                = { inc, NULL, NULL, PREC_NONE},
 	[TOKEN_DECREMENT]                = { inc, NULL, NULL, PREC_NONE },
 	
 	[TOKEN_LEFT_SQUARE]              = { list, square, NULL, PREC_CALL },
