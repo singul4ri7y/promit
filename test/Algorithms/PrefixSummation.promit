@@ -1,0 +1,96 @@
+/*
+ * This problem is taken from LeetCode, where you find the summation 
+ * of a certain area of a matrix, which uses Prefix Summation (DP) 
+ * technique. Check out the problem at:
+ *     https://leetcode.com/problems/range-sum-query-2d-immutable/
+ * 
+ * Part of Promit Test Suit, location /test/Algorithms/PrefixSummation.promit
+ *
+ * Created by SD Asif Hossein in 16th June, 2022 (Thursday) at 08:01 PM (UTC +06).
+ */
+
+// Class to hold the matrix and calculate the summation. OOP style.
+
+class NumMatrix {
+	const init(matrix) {
+		// Number of matrix rows and columns.
+
+		take row = len(matrix),
+		     col = len(matrix[0]);
+
+		// Create an empty matrix with equal number of rows and 
+		// columns.
+
+		this.p_Matrix = List(row);
+
+		// Cannot use 'List(row).fill(List(col));'.
+		// Cause fill() uses the same parameter (In this case 'List(col)')
+		// to fill in all the fields. So, if I am to make change to any of
+		// of the row, all the rows will take effect as Objects are pass by
+		// reference in Promit.
+
+		// To fix the problem creating seperate lists for each of the row.
+
+		this.p_Matrix.foreach(fn _(elem, index, matrix) {
+			matrix[index] = List(col);
+		});
+
+		// Now 2D prefix summation.
+
+		for(take i = 0; i < row; i++) {
+			for(take j = 0; j < col; j++) {
+				this.p_Matrix[i][j] = matrix[i][j];
+
+				if(i > 0) this.p_Matrix[i][j] += this.p_Matrix[i - 1][j];
+				if(j > 0) this.p_Matrix[i][j] += this.p_Matrix[i][j - 1];
+
+				if(i > 0 && j > 0) 
+					this.p_Matrix[i][j] -= this.p_Matrix[i - 1][j - 1];
+			}
+		}
+	}
+
+	const sum_region(row1, col1, row2, col2) {
+		// Now just do the calculations without recursion.
+
+		take sum = this.p_Matrix[row2][col2];
+
+		if(row1 > 0) sum -= this.p_Matrix[row1 - 1][col2];
+		if(col1 > 0) sum -= this.p_Matrix[row2][col1 - 1];
+
+		if(row1 > 0 && col1 > 0) 
+			sum += this.p_Matrix[row1 - 1][col1 - 1];
+
+		return sum;
+	}
+}
+
+take raw_matrix = [ [3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5] ];
+
+showl 'The matrix we are using : ';
+
+raw_matrix.foreach(fn _(row) {
+	show '   ->  ';
+	row.foreach(fn __(x, i, l) {
+		show x;
+
+		if(i + 1 < len(l)) show ', ';
+	});
+
+	showl;
+});
+
+showl; /** Blank line. */
+
+take num_matrix = NumMatrix(raw_matrix);
+
+// Now, show (off) the summations :).
+
+show 'Summation of the region from [2, 1] to [4, 3] (index) : ';
+showl num_matrix.sum_region(2, 1, 4, 3);
+
+show 'Summation of the region from [1, 1] to [2, 2] (index) : ';
+showl num_matrix.sum_region(1, 1, 2, 2);
+
+show 'Summation of the region from [1, 2] to [2, 4] (index) : ';
+showl num_matrix.sum_region(1, 2, 2, 4);
