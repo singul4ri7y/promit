@@ -1298,7 +1298,7 @@ ParseRule parseRules[] = {
 	[TOKEN_AND]                      = { NULL, and, NULL, PREC_AND },
 	[TOKEN_RIGHT_SHIFT]              = { NULL, binary, NULL, PREC_TERM },
 	[TOKEN_LEFT_SHIFT]               = { NULL, binary, NULL, PREC_TERM },
-	[TOKEN_INCREMENT]                = { inc, NULL, NULL, PREC_NONE},
+	[TOKEN_INCREMENT]                = { inc, NULL, NULL, PREC_NONE },
 	[TOKEN_DECREMENT]                = { inc, NULL, NULL, PREC_NONE },
 	
 	[TOKEN_LEFT_SQUARE]              = { list, square, NULL, PREC_CALL },
