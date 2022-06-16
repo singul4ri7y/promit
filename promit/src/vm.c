@@ -50,7 +50,7 @@ static NativePack len(VM* vm, int argCount, Value* args) {
 	pack.hadError = false;
 	
 	if(argCount < 2) {
-		RUNTIME_ERROR("Expected an argument in function 'len(string | dictionary | list | bytelist | wrapper-instance)'!");
+		RUNTIME_ERROR("Expected an argument in function 'len(string | dictionary | list)'!");
 		
 		pack.hadError = true;
 
@@ -65,8 +65,6 @@ static NativePack len(VM* vm, int argCount, Value* args) {
 		size = VALUE_DICTIONARY(args[1]) -> fields.count;
 	else if(IS_LIST(args[1])) 
 		size = VALUE_LIST(args[1]) -> count;
-	else if(IS_BYTELIST(args[1])) 
-		size = VALUE_BYTELIST(args[2]) -> size;
 	
 	// The wrapper instances.
 	else if(IS_INSTANCE(args[1])) {
@@ -89,12 +87,12 @@ static NativePack len(VM* vm, int argCount, Value* args) {
 
 			size = VALUE_DICTIONARY(container.value) -> fields.count;
 		} else {
-			RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | bytelist | wrapper-instance)'!");
+			RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | wrapper-instance)'!");
 			
 			pack.hadError = true;
 		}
 	} else {
-		RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | bytelist | wrapper-instance)'!");
+		RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | wrapper-instance)'!");
 		
 		pack.hadError = true;
 	}
@@ -1978,35 +1976,32 @@ InterpretResult run(VM* vm) {
 
 				Value instance  = POP();
 
-				// Wrapper class.
+				ObjClass* check = NULL;
 
-				if(!IS_INSTANCE(instance)) {
-					// Dummy instance.
 
-					ObjInstance dummy;
+				if(IS_INSTANCE(instance)) 
+					check = VALUE_INSTANCE(instance) -> klass;
+				else {
+					// Wrapper class.
 
 					switch(instance.type) {
-						case VAL_NUMBER: dummy.klass = vmNumberClass; break;
+						case VAL_NUMBER: check = vmNumberClass; break;
 						case VAL_OBJECT: {
 							switch(OBJ_TYPE(instance)) {
-								case OBJ_LIST: dummy.klass = vmListClass; break;
-								case OBJ_STRING: dummy.klass = vmStringClass; break;
-								case OBJ_DICTIONARY: dummy.klass = vmDictionaryClass; break;
+								case OBJ_LIST: check = vmListClass; break;
+								case OBJ_STRING: check = vmStringClass; break;
+								case OBJ_DICTIONARY: check = vmDictionaryClass; break;
 								case OBJ_FUNCTION:
 								case OBJ_CLOSURE:
 								case OBJ_BOUND_METHOD:
 								case OBJ_NATIVE:
-									dummy.klass = vmFunctionClass;
+									check = vmFunctionClass;
 							}
 
 							break;
 						}
 					}
-
-					instance = OBJECT_VAL(&dummy);
 				}
-
-				ObjClass* check = VALUE_INSTANCE(instance) -> klass;
 
 				bool result = false;
 
