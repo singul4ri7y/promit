@@ -1,0 +1,146 @@
+/**
+ * This is a promit program demonstrating the data structure
+ * 'Segment Tree'.
+ * 
+ * This program creates a full segment tree from a list. This 
+ * segment tree has query time complexity of O(logn) and update
+ * time complexity of O(logn), where query means getting the 
+ * summation of all the list element from provided indicies 
+ * [i ... j] and update means changing any element of the
+ * provided list.
+ *
+ * Part of Promit Test Suit, location /test/Algorithms/SegmentTree.promit
+ *
+ * Created by SD Asif Hossein in 16th June, 2022 at 09:11 PM (UTC +06).
+ */
+
+const class SegmentTree {
+	init(list) {
+		take size = len(list);
+
+		// The provided list stays at the last of the segment
+		// tree anyway.
+		//
+		// If a list [ 1, 2, 3, 4] is provided, the segment tree 
+		// list would be: 
+		//     [ _, _, _, 1, 2, 3, 4], where '_' are the calculated
+		//     segments.
+
+		this.p_Tree   = List(size - 1).append(list);
+
+		// Keeping track of the stride to make changes to the provided
+		// list, which is stored at the very last of the tree.
+
+		this.p_Stride = size - 1;
+
+		SegmentTree::p_BuildTree(this.p_Tree, 1, 0, size - 1, this.p_Stride);
+	}
+
+	// For recursion.
+
+	const static p_BuildTree(tree, node_index, start, end, stride) {
+		// If start index is equal to the end index, that means
+		// we have gotten ourselves a leaf node. As we stored
+		// whole provided list at the end of the tree, we don't
+		// have to calculate or set the value.
+		// But it's here in case of odd number of total leaf nodes.
+
+		if(start == end) return;
+
+		// Get the middle index.
+
+		take mid = Math::trunc((start + end) / 2);
+
+		// If mid is equal to start and mid + 1 is equal to end node, 
+		// then the two child nodes we are going to have is leaf nodes.
+		// As we already have the leaf nodes at the end of the tree list,
+		// what we have to do is simply get the leaf node and calculate
+		// the current node.
+		// Saves 2 recursion complexity per function call.
+
+		if(mid == start && mid + 1 == end) {
+			tree[node_index - 1] = tree[mid + stride] + tree[mid + stride + 1];
+			return;
+		}
+
+		// Calculate the left and right node, then calculate the current node.
+
+		SegmentTree::p_BuildTree(tree, 2 * node_index, start, mid, stride);
+		SegmentTree::p_BuildTree(tree, 2 * node_index + 1, mid + 1, end, stride);
+
+		tree[node_index - 1] = tree[2 * node_index] + tree[2 * node_index - 1];
+	}
+
+	const query(i, j) {
+		return SegmentTree::p_Query(this.p_Tree, 1, 0, this.p_Stride, i, j);
+	}
+
+	// For recursion.
+
+	const static p_Query(tree, node_index, start, end, i, j) {
+		// No overlapping.
+		//
+		// [i ... j]
+		//           [start ... end]
+		// or
+		//                 [i ... j]
+		// [start ... end]
+
+		if(end < i || start > j) 
+			return 0;
+	
+		// Full overlapping.
+		// 
+		//   [start ... end]
+		// [i      ...      j]
+
+		if(start >= i && end <= j) 
+			return tree[node_index - 1];
+
+		// Else partial overlapping.
+		// Search which child segment is part of the summation or
+		// in other word, is a complete segment.
+
+		take mid = Math::trunc((start + end) / 2);
+
+		return SegmentTree::p_Query(tree, 2 * node_index, start, mid, i, j) +
+		       SegmentTree::p_Query(tree, 2 * node_index + 1, mid + 1, end, i, j);
+	}
+
+	const update(i, value) {
+		// Element index in the tree list.
+
+		take index = i + this.p_Stride;
+
+		// The difference between the provided new value
+		// and current value.
+
+		take difference = value - this.p_Tree[index];
+
+		// Set the new value.
+
+		this.p_Tree[index] = value;
+
+		// Now update all the parent nodes value with
+		// with the difference until you reach the root
+		// node.
+
+		do {
+			this.p_Tree[index] += difference;
+		} while(index = Math::trunc((index - 1) / 2));
+	}
+};
+
+take list = [5, 8, 11, 13, 6, 2, 7, 10, 1];
+
+showl 'The list we are using: ${list.join(', ')}';
+
+take seg_tree = SegmentTree(list);
+
+showl 'Showing query of [2, 7] (inclusive) : ${seg_tree.query(2, 7)}';
+
+showl 'Updating index 4 (value : ${list[4]}) with value 18...';
+
+seg_tree.update(4, 18);
+
+showl 'Showing query of [2, 7] (inclusive) after update : ${seg_tree.query(2, 7)}';

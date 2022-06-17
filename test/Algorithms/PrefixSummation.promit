@@ -74,14 +74,7 @@ take raw_matrix = [ [3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0,
 showl 'The matrix we are using : ';
 
 raw_matrix.foreach(fn _(row) {
-	show '   ->  ';
-	row.foreach(fn __(x, i, l) {
-		show x;
-
-		if(i + 1 < len(l)) show ', ';
-	});
-
-	showl;
+	showl '   ->  ${row.join(', ')}';
 });
 
 showl; /** Blank line. */
