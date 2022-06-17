@@ -5,7 +5,7 @@
  * This program creates a full segment tree from a list. This 
  * segment tree has query time complexity of O(logn) and update
  * time complexity of O(logn), where query means getting the 
- * summation of all the list element from provided indicies 
+ * summation of the list elements within the provided indicies 
  * [i ... j] and update means changing any element of the
  * provided list.
  *
