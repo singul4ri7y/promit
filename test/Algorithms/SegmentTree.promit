@@ -52,7 +52,7 @@ const class SegmentTree {
 		take mid = Math::trunc((start + end) / 2);
 
 		// If mid is equal to start and mid + 1 is equal to end node, 
-		// then the two child nodes we are going to have is leaf nodes.
+		// then the two child nodes we are going to have are leaf nodes.
 		// As we already have the leaf nodes at the end of the tree list,
 		// what we have to do is simply get the leaf node and calculate
 		// the current node.
@@ -123,7 +123,7 @@ const class SegmentTree {
 
 		// Now update all the parent nodes value with
 		// with the difference until you reach the root
-		// node.
+		// node (inclusive).
 
 		do {
 			this.p_Tree[index] += difference;
