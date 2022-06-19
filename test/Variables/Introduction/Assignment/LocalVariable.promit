@@ -1,0 +1,23 @@
+/**
+ * Following program demostrates what is local variable and 
+ * how to declare one.
+ *
+ * Part of Promit Test suit, location /test/Variable/Introduction/Assignment/LocalVariable.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 01:29 PM (UTC +06).
+ */
+
+// Every variable inside any scope is a local variable.
+
+{
+	take local = 'This is a local variable!';
+
+	showl local;
+}
+
+// The following will trigger an error.
+// Cause, as 'local' was a local variable,
+// when it got out of scope, the variable
+// got somewhat cleaned. So, no 'local'.
+
+showl local;    // Error : Undefined variable 'local'!

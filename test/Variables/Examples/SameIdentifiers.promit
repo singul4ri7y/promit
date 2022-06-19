@@ -9,7 +9,7 @@
  * 
  * Part of Promit Test Suit, location /test/Variables/Example/SameIdentifiers.promit.
  *
- * Written by SD Asif Hossein in 13th June, 2022 (Monday) at 02:30 PM (UTC +06).
+ * Written by SD Asif Hossein in 13th June 2022 at 02:30 PM (UTC +06).
  */
 
 take any_var = 'This is a global variable!';

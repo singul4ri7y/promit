@@ -1,0 +1,28 @@
+/**
+ * The following program will describe how global identifier
+ * feature works.
+ *
+ * Part of Promit Test Suit, location /test/Variables/Introduction/GlobalIdentifier.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 01:49 PM (UTC +06).
+ */
+
+// Global identifier is a feature used to draw out a global
+// variable, even if a local variable with the same 
+// identifier/name exitst.
+
+take your_name = 'Your name (global)!';
+
+// Scope.
+
+{
+	take your_name = 'Your name (local)!';
+
+	// This will show local 'your_name'.
+	
+	showl your_name;
+
+	// But this will show global 'your_name'.
+
+	showl :your_name;
+}

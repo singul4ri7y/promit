@@ -1,0 +1,21 @@
+/**
+ * This program demonstrates how to declare a global variable.
+ * 
+ * Any variable in global scope is a global variable.
+ * 
+ * Part of Promit Test Suit, location /test/Variable/Introduction/Assignment/GlobalVariable.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 01:21 PM (UTC +06).
+ */
+
+// This is a global variable.
+// Because it's in global scope and is accessible
+// in any scope.
+
+take global = 'This is a global variable!';
+
+{    // Creating a scope.
+	
+	// Show the variable.
+	showl global;
+}

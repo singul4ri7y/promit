@@ -1,0 +1,45 @@
+/**
+ * Following program will demostrate what is upvalue and how
+ * it works.
+ * 
+ * Part of Promit Test Suit, location /test/Variables/Introduction/Upvalues.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 01:42 PM (UTC +06).
+ */
+
+// Well, in short upvalues are captured local variables used
+// by local functions.
+
+// For example...
+
+fn callme() {
+	// This is a random local variable.
+
+	take name = 'SD Asif Hossein';
+
+	// Returning any random function.
+
+	return fn x() {
+		// Now, we are printing the 'name' variable, which
+		// is defined in parent scope.
+
+		// But, as the function will be returned, 'callme'
+		// would have already been called. So, theres no way
+		// we can access 'name' variable, as due to be a local
+		// variable it will be destoryed/cleaned.
+
+		// In this scenerio, this function 'x' will capture the
+		// variable 'name' as an upvalue so that we can access
+		// the variable in absense of the actual vairable.
+
+		showl name;
+	};
+}
+
+take func = callme();
+
+// 'callme' is now called. So, the 'name' variable is gone now.
+// But func function has captured the 'name' variable as an upvalue.
+// 'func' or 'x' is now will be called closure.
+
+func();
