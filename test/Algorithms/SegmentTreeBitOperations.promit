@@ -1,0 +1,130 @@
+/**
+ * This is a Promit demostration of the data structure called 'Segment Tree'.
+ * The following program solves a  Codeforces problem linked below:
+ *     https://codeforces.com/contest/339/problem/D
+ * 
+ * Try reading the statements first.
+ *
+ * Note: This problem does not exactly solves the problem, but approach is 
+ *       similar.
+ * 
+ * Part of Promit Test Suit, location /test/Algorithms/SegmentTreeBitOperations.promit
+ *
+ * Created by SD Asif Hossein in 19th June, 2022 (Sunday) at 10:27 PM (UTC +06).
+ */
+
+const class SegmentTree {
+	init(list) {
+		// Counting the number of levels.
+
+		take size = len(list),
+		    level = 1 + Math::ceil(Math::log2(size));
+
+		// As mentioned in the statement, the number of list elements
+		// is always going to be a 2's power (2 ^ x = n). If the provided
+		// list size is of 2's power, the whole list resides at the end
+		// of the constructed tree. So, appending the list at the end of
+		// the tree.
+		// 
+		// If a list is say, [1, 2, 5, 7], the segment tree would be,
+		//     [_, _, _, 1, 2, 5, 7], where '_' are the calculated
+		//     segments.
+
+		this.p_Tree   = List(size - 1).append(list);
+
+		// Keeping track of the stride to make changes to the list,
+		// stored at the very last of the list.
+
+		this.p_Stride = size - 1;
+
+		// Build the list.
+
+		SegmentTree::p_BuildTree(this.p_Tree, 1, 0, size - 1, level, this.p_Stride);
+	}
+
+	const static p_BuildTree(tree, node_index, start, end, level, stride) {
+		// The mid point.
+
+		take mid = Math::trunc((start + end) / 2);
+	
+		// If mid is equal to start and mid + 1 is equal to end, then 
+		// the child nodes we are gonna have are the leaf nodes. As, we
+		// already calculated the leaf nodes by appending the whole list
+		// to the end of the tree, we do not have to recalculate it.
+		// It's just as simple as getting the leaf nodes and calculating
+		// it.
+		// Saves 2 recursion complexity per function call.
+
+		if(mid == start && mid + 1 == end) 
+			// If level is odd, do bitwise OR operation.
+			// Else bitwise XOR operation.
+
+			return (tree[node_index - 1] = (level & 1) ? 
+			        tree[start + stride] ^ tree[end + stride] : 
+			        tree[start + stride] | tree[end + stride]);
+
+		// Calculate left and right nodes (segments).
+
+		take left = SegmentTree::p_BuildTree(tree, 2 * node_index, start, mid, level + 1, stride),
+		    right = SegmentTree::p_BuildTree(tree, 2 * node_index + 1, mid + 1, end, level + 1, stride);
+
+		return (tree[node_index - 1] = (level & 1) ? left ^ right : left | right);
+	}
+
+	const query() {
+		// The very root of the node holds the answer.
+
+		return this.p_Tree[0];
+	}
+
+	const update(i, value) {
+		// Use 1 based indexing for easier calculations.
+
+		take index = i + this.p_Stride + 1;
+
+		// Set the value in the tree.
+
+		this.p_Tree[index - 1] = value;
+
+		// 'state' variable to do OR or XOR.
+		// If state is true, do OR. Else do XOR.
+
+		take state = true;
+
+		do {
+			// Get the parent nodes index.
+
+			index = Math::trunc((index - ((index & 1) ? 1 : 0)) / 2);
+
+			// Now recalculate the parent node with the new child value.
+
+			this.p_Tree[index - 1] = state ?
+			this.p_Tree[2 * index] | this.p_Tree[2 * index - 1] :
+			this.p_Tree[2 * index] ^ this.p_Tree[2 * index - 1];
+
+			// Change the state.
+
+			state = !state;
+		} while(index > 1);
+	}
+};
+
+take list = [9, 6, 3, 5, 7, 19, 33, 21, 17, 13, 11, 16, 31, 49, 44, 32];
+
+take seg_tree = SegmentTree(list);
+
+showl 'The list we are using : ${list.join(', ')}';
+
+showl 'Initial query : ${seg_tree.query()}';
+
+show 'Query after updating index 7 with 37 : ';
+
+seg_tree.update(7, 37);
+
+showl seg_tree.query();
+
+show 'Query after updating index 15 with 27 : ';
+
+seg_tree.update(15, 27);
+
+showl seg_tree.query();
