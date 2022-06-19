@@ -3942,12 +3942,21 @@ static NativePack listAppend(VM* vm, int argCount, Value* values) {
 
 	memcpy(result -> values, list -> values, list -> count * sizeof(Value));
 
+	ValueContainer listContainer;
+
 	for(register int i = 1; i < argCount; i++) {
-		if(!IS_LIST(values[i])) {
+		if(!IS_LIST(values[i]) && (!IS_INSTANCE(values[i]) || VALUE_INSTANCE(values[i]) -> klass != vmListClass)) {
 			NATIVE_R_ERR("Provided argument no %d is not a list in List.append(lists...)!", i);
 		}
 
-		ObjList* tli = VALUE_LIST(values[i]);
+		ObjList* tli = NULL;
+
+		if(IS_LIST(values[i])) tli = VALUE_LIST(values[i]);
+		else {
+			getField(VALUE_INSTANCE(values[i]), listField, listContainer);
+
+			tli = VALUE_LIST(listContainer.value);
+		}
 
 		if(result -> count + tli -> count >= result -> capacity) {
 			size_t oldCapacity = result -> capacity;
@@ -5672,7 +5681,7 @@ static NativePack stringAppend(VM* vm, int argCount, Value* values) {
 	for(int i = 1; i < argCount; i++) {
 		Value value = values[i];
 
-		if(!IS_STRING(value)) {
+		if(!IS_STRING(value) && (!IS_INSTANCE(value) || VALUE_INSTANCE(value) -> klass != vmStringClass)) {
 			NATIVE_R_ERR("Provided argument no %d is not a list in String.append(strings...)!", i);
 		}
 
@@ -5685,8 +5694,17 @@ static NativePack stringAppend(VM* vm, int argCount, Value* values) {
 
 	index += string -> length;
 
+	ValueContainer stringContainer;
+
 	for(int i = 1; i < argCount; i++) {
-		ObjString* value = VALUE_STRING(values[i]);
+		ObjString* value = NULL;
+
+		if(IS_STRING(values[i])) value = VALUE_STRING(values[i]);
+		else {
+			getField(VALUE_INSTANCE(values[i]), stringField, stringContainer);
+
+			value = VALUE_STRING(stringContainer.value);
+		}
 
 		memcpy(buffer + index, value -> buffer, value -> length * sizeof(char));
 
