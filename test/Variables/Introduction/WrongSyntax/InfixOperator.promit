@@ -1,0 +1,17 @@
+/**
+ * Demostration of infix operator ('+' in this case) syntax
+ * error while reassigning a variable.
+ * 
+ * Part of Promit Test Suit, location /test/Variables/WrontSyntax/InfixOperator.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 04:27 PM (UTC +06).
+ */
+
+// You will understand, as this won't make any sense.
+
+take a = '10';
+take b = '20';
+
+showl a + b;    // Output : 1020
+
+a + b = "30";    // Error : [Error][Compilation][Line 17] at '=': Invalid left-hand assignment target!

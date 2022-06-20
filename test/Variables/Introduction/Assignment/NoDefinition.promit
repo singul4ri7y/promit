@@ -1,0 +1,14 @@
+/**
+ * Declaration without definition demonstration.
+ *
+ * Part of Promit Test Suit, location /test/Variables/Introduction/Assignment/NoDefinition.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 04:17 PM (UTC +06).
+ */
+
+// If you define no value while declaring a variable,
+// the variable will automatically hold 'null' as a value.
+
+take no_definition;
+
+showl no_definition;    // Output : null

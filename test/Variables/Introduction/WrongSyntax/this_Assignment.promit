@@ -1,0 +1,17 @@
+/**
+ * Demostration of very silly mistake "Assignment to 'this' in a method".
+ *
+ * Part of Promit Test Suit, location /test/Variables/WrongSyntax/this_Assignment.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 04:35 PM (UTC +06).
+ */
+
+// Assignment to 'this' is a method/bound-method is forbidden.
+
+const class Foo {
+	bar() {
+		this = 'Shut upp...!??';    // Error : [Error][Compilation][Line 13] at '=': Invalid left-hand assignment target!
+	}
+};
+
+Foo().bar();

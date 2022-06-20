@@ -1,0 +1,14 @@
+/**
+ * Demonstration of grouping while reassigning.
+ * 
+ * Part of Promit Test Suit, location /test/Variables/WrongSyntax/Grouping.promit
+ * 
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 04:22 PM (UTC +06).
+ */
+
+// Left hand assignment target always should be a valid identifier.
+// Grouping is not allowed, or at least not yet.
+
+take a;
+
+(a) = 100;    // Error : [Error][Compilation][Line 14] at '=': Invalid left-hand assignment target!

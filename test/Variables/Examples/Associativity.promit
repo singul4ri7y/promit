@@ -1,0 +1,17 @@
+/**
+ * Associativity in Promit Example.
+ * 
+ * Part of Promit Test Suit, location /test/Variables/Example/Associativity.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 04:13 PM (UTC +06).
+ */
+
+take a = 'This is a!';
+take b = 'This is b!';
+take c = 'This is c!';
+
+a = b = c;
+
+showl a;    // Output : This is c!
+showl b;    // Output : This is c!
+showl c;    // Output : This is c!

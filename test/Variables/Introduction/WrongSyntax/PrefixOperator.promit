@@ -1,0 +1,17 @@
+/**
+ * Example of a prefix operator assignment error.
+ *
+ * Part of Promit Test Suit, location /test/Variables/WrongSyntax/PrefixOperaotr.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) at 04:39 PM (UTC +06).
+ */
+
+
+// It's wrong syntax, as you can tell as it doesn't make any
+// sense.
+
+take a = null;
+
+// '!' is a prefix operator, aka unary operator.
+
+!a = List(10);    // Error : [Error][Compilation][Line 17] at '=': Invalid left-hand assignment target!
