@@ -25,6 +25,8 @@ show 'Enter the number of step : ';
 
 take step = recieve(num),
   numbers = List::range(range, start, step);
+ 
+showl 'Created list is : ${numbers.join(', ')}';
 
 // Get the target number.
 
@@ -57,7 +59,7 @@ while(left != right) {
 
 // If the number is found, print it.
 
-if(left != right) 
+if(left != right || right == mid) 
 	showl 'The target number $target is found on index $mid!';
 else showl 'The number not found!';
 
