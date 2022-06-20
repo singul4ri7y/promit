@@ -1029,32 +1029,6 @@ static double incdc(Value* value, bool dec, bool pre) {
 	return number;
 }
 
-#define NUM_ASSURE(val, name) \
-	Value* name = (val);\
-	switch(name -> type) {\
-		case VAL_NUMBER: /* Do nothin' */ break;\
-		case VAL_BOOLEAN: \
-			name -> as.number = (double) name -> as.boolean;\
-			break;\
-		case VAL_NULL: \
-			name -> as.number = 0;\
-			break;\
-		case VAL_OBJECT: {\
-			if(IS_STRING(*name)) \
-				name -> as.number = pstrtod(VALUE_CSTRING(*name));\
-			else {\
-				RUNTIME_ERROR("Value is not convertable to number!");\
-				return INTERPRET_RUNTIME_ERROR;\
-			}\
-			break;\
-		}\
-		default: {\
-			RUNTIME_ERROR("Value is not convertable to number!");\
-			return INTERPRET_RUNTIME_ERROR;\
-		}\
-	}\
-	name -> type = VAL_NUMBER;
-
 #define BITWISE(value1, value2, op) \
 	NUM_ASSURE(&value1, val1);\
 	NUM_ASSURE(&value2, val2);\
