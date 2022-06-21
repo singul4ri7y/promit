@@ -2199,6 +2199,10 @@ static void classDeclaration(bool inLoop, bool isConst) {
 			isStatic = true;
 		
 		method(isConst, isStatic);
+
+		// Consume all the semicolon(s) if provided.
+
+		while(match(TOKEN_SEMICOLON));
 	}
 	
 	consume(TOKEN_RIGHT_BRACE, "Expected a nice '}' at the end of class body!");
