@@ -1,0 +1,41 @@
+/**
+ * Following program demostrates how to get/set/define properties
+ * to/from instance, dynamically.
+ *
+ * Part of Promit Test Suit, location /test/Properties/Instance/DynamicSetAndGetProperties.promit
+ *
+ * Created by SD Asif Hossein in 21th June, 2022 (Tuesday) at 04:09 PM (UTC +06).
+ */
+
+// Use square braces '[]' to dynamically get/set/define 
+// properties.
+
+// Any random class.
+
+const class RandomClass {};
+
+take prop = 'any_prop';
+
+take random_instance = RandomClass();
+
+// Definition. Cause property 'any_prop' didn't exist earlier.
+
+random_instance[prop] = { value : 'Something...' };
+
+// Dynamic getting.
+
+showl random_instance['any' + '_prop'];    // Output : { value : 'Something...' }
+
+// Set/reassign.
+
+random_instance[prop] = 'A random value!';
+
+showl random_instance[prop];    // Output : A random value!
+
+// Fact : '[]' used in lists is also a dynamic property getter/setter.
+
+showl [ 1, 2, 3 ][1];    // Output : 2
+
+// So with string.
+
+showl 'Little River Boy'[7];    // Output : R

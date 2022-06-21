@@ -1,0 +1,29 @@
+/**
+ * Demonstration of dynamically define/set/get properties in
+ * a dictionary.
+ * 
+ * Part or Promit Test Suit, location /test/Properties/Dictionary/DynamicSetAndGetProperties.promit
+ *
+ * Created by SD Asif Hossein in 21st June, 2022 (Tuesday) at 11:02 PM (UTC +06).
+ */
+
+// Use square braces '[]' to dynamically define/set/get 
+// properties.
+
+// The process is pretty much same as instance.
+
+take dict = {};
+
+// Define a property.
+
+dict['random' + String('_property')] = null;
+
+// Get the property.
+
+showl dict['random_property'];    // Output : null
+
+// Set the property.
+
+dict['random_property'] = 100;
+
+showl dict['random_property'];    // Output : 100

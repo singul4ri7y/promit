@@ -1,0 +1,23 @@
+/**
+ * Demonstration of dynamically define/set/get properties in
+ * a dictionary.
+ * 
+ * Part or Promit Test Suit, location /test/Properties/Dictionary/ConstantProperties.promit
+ *
+ * Created by SD Asif Hossein in 21st June, 2022 (Tuesday) at 11:20 PM (UTC +06).
+ */
+
+// Use '(const)' after property name to make it constant.
+
+take dict = {};
+
+dict.any_prop(const) = ~101;
+
+// Same with dynamic property manipulation.
+
+dict['another_prop'](const) = 512 << 1;
+
+showl dict.any_prop;    // Output : -102
+showl dict.another_prop;    // Output : 1024
+
+dict.any_prop = List(10, 20, 30);    // Error : Attempt to set a defined constant property 'any_prop'!

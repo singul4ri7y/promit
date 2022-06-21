@@ -1,0 +1,30 @@
+/**
+ * Demonstration on how to define/set/get properties in dictionaries.
+ *
+ * Part of Promit Test Suit, location /test/Properties/Dictionary/SetAndGetProperties.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) 11:02 PM (UTC +06).
+ */
+
+// The Dictionary section has comprehensive explaination
+// on how to define properties within the dictionary.
+
+// This demostration will only focus on how to define
+// properties and deal with them outside.
+
+take dict = {};
+
+// This is called property definition, as the property
+// 'prop1' didn't exist in the dictionary earlier.
+
+dict.prop1 = 'This is property 1!';
+
+// Get the property.
+
+showl dict.prop1;    // Output : This is property 1!
+
+// Reassign/set the property.
+
+dict.prop1 = Infinity;
+
+showl dict.prop1;    // Output : Infinity

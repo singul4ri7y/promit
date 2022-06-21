@@ -1,0 +1,30 @@
+/**
+ * Following program demostrates how to get/set/define properties
+ * to/from instance.
+ *
+ * Part of Promit Test Suit, location /test/Properties/Instance/SetAndGetProperties.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) 07:14 PM (UTC +06).
+ */
+
+// Use a dot '.' on instances to get/set/define 
+// properties on instances.
+
+class Foo {};
+
+take instance = Foo();
+
+// Define a field named 'dummy_field'.
+// Define cause the field wasn't predefined.
+
+instance.dummy_field = 'This is a dummy field!';
+
+// Get the field.
+
+showl instance.dummy_field;    // Output : This is a dummy field!
+
+// Set the field.
+
+instance.dummy_field = 'Dummmmy';
+
+showl instance.dummy_field;    // Output : Dummmmy

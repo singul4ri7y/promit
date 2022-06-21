@@ -1,0 +1,32 @@
+/**
+ * Demonstration of the 'del' keyword used to delete
+ * properties.
+ *
+ * Part of Promit Test Suit, location /test/Properties/DeleteProperties.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) 10:55 PM (UTC +06).
+ */
+
+// Use 'del' keyword to delete properties of
+// and instance or dictionary.
+
+// Note : Deletion of static properties using 'del' are described
+//        in /test/Classes/Introduction/Statics/DeleteStaticProperty.promit
+
+class Foo {};
+
+take foo = Foo();
+
+foo.bar(const) = 'baz';
+foo.make_sound = false;
+
+showl foo.bar;    // Output : baz
+showl foo['make_sound'];    // Output : false
+
+del foo.bar;
+
+// Also can delete properties dynamically.
+
+del foo['make_sound'];
+
+showl foo.bar;    // Error : Undefined property 'bar'!

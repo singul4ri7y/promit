@@ -1,0 +1,44 @@
+/**
+ * Demonstration of function 'is_const_prop'.
+ *
+ * Part of Promit Test Suit, location /test/Properties/CheckConstantProperties.promit
+ *
+ * Created by SD Asif Hossein in 20th June, 2022 (Monday) 10:50 PM (UTC +06).
+ */
+
+// Check whether a property (static/non-static) is const
+// or not using the 'is_const_prop' function.
+
+// is_const_prop(dictionary | instance | class, prop_name);
+// Returns : Boolean | NaN
+
+take dict = {
+	request_time   : Time(),
+	in_sync(const) : false
+};
+
+showl is_const_prop(dict, 'request_time');    // Output : false
+showl is_const_prop(dict, 'in_sync');    // Output : true
+
+// If the property doesn't exist, is_const_prop function will
+// return NaN.
+
+showl is_const_prop(dict, 'does_not_exist');    // Output : NaN
+
+// This also applies with instances the same way.
+
+class SomeClass {
+	init(num) {
+		this.num(const) = num;
+	}
+
+	const static print_num(num) {
+		showl num;
+	}
+};
+
+showl is_const_prop(SomeClass(), 'num');    // Output : true
+
+// This also applies with static properties.
+
+showl is_const_prop(SomeClass, 'print_num');    // Output : true
