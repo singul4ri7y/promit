@@ -52,7 +52,7 @@ showl 'Now benchmarking....';
 
 for(take i = 0; i < 100; i++) {
 	if(treez.walk() != 122068) 
-		System.stderr.write_line('Error');
+		System::stderr.write_line('Error');
 }
 
 showl 'Benchamark finished!';
