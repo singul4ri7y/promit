@@ -1,0 +1,16 @@
+/**
+ * Following program describes how to work with
+ * constant variables.
+ *
+ * Part of Promit Test Suit, location /test/Variables/Introduction/Constant.promit
+ *
+ * Created by SD Asif Hossein in 21th June, 2022 (Tuesday) at 04:00 PM (UTC +06).
+ */
+
+// This variable is a constant variable.
+
+const a = 'This is a constant global!';
+
+showl a;    // Output : This is a constant global!
+
+a = 100;    // Error : Attempt to reassign constant global variable 'a'!

@@ -1,0 +1,50 @@
+/**
+ * The following program demonstrates the use of 'typeof'
+ * keyword.
+ *
+ * Part of Promit Test Suit, location /test/Typeof.promit
+ *
+ * Created by SD Asif Hossein in 21th June, 2022 (Tuesday) at 03:57 PM (UTC +06).
+ */
+
+// The 'typeof' keyword returns the type of a variable.
+
+const class A {
+	const hello() {}
+
+	// Singleton.
+
+	const static getA() { return A() }
+};
+
+const fn callme() {
+	take x = 'XValue';
+
+	return fn x() {
+		showl typeof x;
+
+		return true;
+	}
+}
+
+// Now all the types.
+
+showl typeof A;             // Output : class
+showl typeof A();           // Output : instance
+showl typeof callme;        // Output : function
+showl typeof callme();      // Output : closure
+showl typeof callme()();    // Output : string (return) boolean
+showl typeof A().hello;     // Output : method
+showl typeof A::getA;       // Output : function
+
+// 'len' is a native function predefined in Promit.
+
+showl typeof len;           // Output : native
+showl typeof null;          // Output : null
+
+take dictionary = { name : 'SD Asif Hossein', age : 19 };
+
+showl typeof dictionary;    // Output : dictionary
+showl typeof [ 1, 2, 3 ];   // Output : list
+
+showl "That's about it.";
