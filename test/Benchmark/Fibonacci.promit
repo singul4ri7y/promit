@@ -1,0 +1,40 @@
+/**
+ * Unoptimized fibonacci identifier for benchmarking.
+ * 
+ * Part of Promit Test Suit, location /test/Benchmark/Trees.Promit
+ *
+ * Created by SD Asif Hossein in 21th June, 2022 (Tuesday) at 12:02 PM (UTC +06).
+ */
+
+show 'Enter the number of fibonacci : ';
+
+take n = recieve(num);
+
+// Main unoptimized nth fibonacci identifier function.
+// Ideal for benchmarking.
+
+fn fib(n) {
+	if(n < 2) 
+		return n;
+
+	return fib(n - 1) + fib(n - 2);
+}
+
+// Get position string like st, nd etc.
+
+fn position(n) {
+	switch(n) {
+		case 1: return 'st';
+		case 2: return 'nd';
+		case 3: return 'rd';
+	}
+	
+	return 'th';
+}
+
+// Benchmark.
+
+take start_time = Time::snap();
+
+showl "The $n'${position(n)} fibonacci number is : ${fib(n)}!";
+showl 'Time took: ${Time::snap() - start_time} seconds (CPU)!';

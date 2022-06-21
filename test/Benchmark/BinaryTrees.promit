@@ -1,1 +1,87 @@
+/**
+ * This program stresses method calls, memory sustainability
+ * and looping.
+ *
+ * Part of Promit Test Suit, location /test/Benchmark/BinaryTrees.Promit
+ * 
+ * Created by SD Asif Hossein in 21th June, 2022 (Tuesday) at 01:31 PM (UTC +06).
+ */
 
+// This program doesn't make that much sense.
+// But hey, atleast it can benchmark.
+
+const class Tree {
+	init(value, depth) {
+		// Set the value and depth.
+
+		this.depth = depth;
+		this.value = value;
+
+		if(depth > 0) {
+			// Create left and right nodes.
+
+			this.left  = Tree(value - 1, depth - 1);
+			this.right = Tree(2 * value + 1, depth - 1);
+		} else {
+			this.left  = null;
+			this.right = null;
+		}
+	}
+
+	const check() {
+		// If current tree/node is a leaf node, just
+		// return the value.
+
+		if(!this.left) 
+			return this.value;
+		
+		return this.value + this.right.check() - this.left.check();
+	}
+};
+
+take minDepth = 4;
+take maxDepth = 14;
+
+take stretchDepth = maxDepth + 1;
+
+showl 'Min depth : $minDepth, max depth : $maxDepth and stretched depth : $stretchDepth';
+showl 'Starting benchmark...';
+
+take start_time = Time::snap();
+
+showl 'Check 1 : ${Tree(0, stretchDepth).check()}';
+
+// Long lived tree will be benchmarked later.
+
+take long_lived_tree = Tree(0, maxDepth);
+
+// Maximum number of trees/nodes (BT) in max depth.
+
+take trees = 1;
+
+for(take i = 0; i < maxDepth; i++) 
+	trees *= 2;
+
+take check_count = 2;
+
+for(take i = minDepth ; i < maxDepth; i += 2) {
+	take check = 0;
+
+	for(take j = 0; j < trees; j++) 
+		check += Tree(j, i).check() + Tree(-j, i).check();
+	
+	showl 'Number of trees : ${trees * 2}';
+	showl 'Current running depth : $i';
+	showl 'Check ${check_count++} : $check';
+
+	trees /= 4;
+}
+
+// Checking long_lived_tree, which been there for long.
+// The 'long_lived_tree' variable checks the sustainability.
+
+showl 'Long lived tree depth : $maxDepth';
+showl 'Check $check_count : ${long_lived_tree.check()}';
+
+showl 'Benchmarking finished!';
+showl 'Took ${Time::snap() - start_time} seconds (CPU)!';

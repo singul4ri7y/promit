@@ -1,0 +1,59 @@
+/**
+ * A benchmark program with trees and depth recursion.
+ * 
+ * Part of Promit Test Suit, location /test/Benchmark/Trees.Promit
+ *
+ * Created by SD Asif Hossein in 21th June, 2022 (Tuesday) at 12:01 PM (UTC +06).
+ */
+
+// The Tree class.
+
+const class Tree {
+	init(depth) {
+		// Store the current depth.
+
+		this.depth = depth;
+
+		if(depth > 0) {
+			// Creating bunch of trees for benchmark.
+
+			this.a = Tree(depth - 1);
+			this.b = Tree(depth - 1);
+			this.c = Tree(depth - 1);
+			this.d = Tree(depth - 1);
+			this.e = Tree(depth - 1);
+		}
+	}
+
+	// Main benchmark method.
+
+	const walk() {
+		// If current depth is 0, break the recursion.
+
+		if(this.depth == 0) 
+			return 0;
+		
+		return this.depth + 
+		       this.a.walk() +
+		       this.b.walk() +
+			   this.c.walk() +
+			   this.d.walk() +
+			   this.e.walk();
+	}
+};
+
+showl 'Constructing a depth 8 tree...';
+
+take treez = Tree(8);
+
+take start_time = Time::snap();
+
+showl 'Now benchmarking....';
+
+for(take i = 0; i < 100; i++) {
+	if(treez.walk() != 122068) 
+		System.stderr.write_line('Error');
+}
+
+showl 'Benchamark finished!';
+showl 'Took time : ${Time::snap() - start_time} seconds (CPU)!';
