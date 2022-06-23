@@ -1,0 +1,11 @@
+/**
+ * What if you inherit yourself?
+ *
+ * Part of Promit Test Suit, location /test/Inheritance/Introduction/WrongSyntax/InheritSelft.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 01:48 AM (UTC +06).
+ */
+
+// How can you inherit yourself? You are yourself, right?
+
+class Maze is Maze {};    // Error : Cannot inherit own class!

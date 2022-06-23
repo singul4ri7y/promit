@@ -1,0 +1,63 @@
+/**
+ * Demostration of the super keyword.
+ * 
+ * Part of Promit Test Suit, location /test/Inheritance/Introduction/SuperOlySupportsMethods.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 02:07 AM (UTC +06).
+ */
+
+// Base/super class.
+
+const class Base {
+	// Define any random field/property.
+
+	init() {
+		this.base_prop = "'Sup, from Base!";
+	}
+
+	method1() {};
+	method2() {};
+};
+
+// In Promit, while defining a class, you can only
+// define methods in it. You cannot define fields/
+// properties other than methods. Fields/properties
+// are generated from constructor or other methods
+// using 'this' keyword. So, using super, you cannot
+// get/set properties with the 'super' keyword. You
+// have to do that with 'this' keyword.
+
+const class Derived is Base {
+	get_method1() {
+		return super.method1;
+	}
+
+	get_method2() {
+		return super['method2'];
+	}
+
+	print_super_value() {
+		// The right way to get superclass fields.
+
+		showl this.base_prop;
+
+		// The wrong way.
+
+		showl super.base_prop;
+	}
+};
+
+// Intantiation.
+
+take derived = Derived();
+
+// These output are presented in Linux.
+// In your OS method address may be different.
+
+showl derived.get_method1();    // Output : <fn 'method1' at 0x000000009C767340 of instance 'Derived'>
+showl derived.get_method2();    // Output : <fn 'method1' at 0x000000009C767480 of instance 'Derived'>
+
+// This will print and trigger an error.
+
+derived.print_super_value();    // Output : 'Sup, from Base!
+                                // Error  : Undefined property 'base_prop'!

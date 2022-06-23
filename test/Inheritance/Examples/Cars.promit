@@ -1,0 +1,55 @@
+/** 
+ * Real Life OOP situation with Carz.
+ * 
+ * Part of Promit Test Suit, location /test/Inheritance/Examples/Cars.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 02:30 AM (UTC +06).
+ */
+
+// A basic Car class will be used as a superclass.
+
+const class Car {
+	init(name, mileage) {
+		this.name    = name;
+		this.mileage = mileage;
+	}
+
+	const description() {
+		// this.model will be defined by the child classes.
+		
+		showl 'Name : ${this.name}, Model : ${this.model} and Mileage : ${this.mileage}.';
+	}
+};
+
+class BMW is Car {
+	const init(model) {
+		// Call the superclass constructor.
+
+		super.init("BMW", 39.5);
+
+		this.model = model;
+	}
+};
+
+class Audi is Car {
+	const init(model) {
+		// Call the superclass constructor.
+
+		super.init("Audi", 14);
+
+		this.model = model;
+	}
+};
+
+// Instantiate them.
+
+take bmw  = BMW("M3 GTR");
+take audi = Audi("R8");
+
+// Call the description function.
+
+bmw.description();
+audi.description();
+
+showl "'bmw' instof 'Car' : ${bmw instof Car}";
+showl "'audi' instof 'Car' : ${audi instof Car}";

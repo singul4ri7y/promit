@@ -1,0 +1,22 @@
+/**
+ * Demonstration of method inheritance.
+ *
+ * Part of Promit Test Suit, location /test/Inheritance/Introduction/MethodInheritance.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 01:55 AM (UTC +06).
+ */
+
+const class Foo {
+	say_hello() {
+		showl 'Foo said hello!';
+	}
+};
+
+const class Bar is Foo { /** Empty */ };
+
+take bar = Bar();
+
+// Call the say_hello function inherited by Bar
+// class from Foo class.
+
+bar.say_hello();

@@ -1,0 +1,30 @@
+/**
+ * Demonstration of calling superclass constructor without actually
+ * calling it from the derived class.
+ *
+ * Part of Promit Test Suit, location /test/Inheritance/Introduction/Constructor.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 01:35 AM (UTC +06)
+ */
+
+// If a class inherits a superclass and does not have
+// a constructor defined, then while calling that class
+// superclass's constructor will be called.
+
+class Base {
+	init(value) {
+		this.base_prop(const) = value;
+	}
+
+	print_base_prop() {
+		showl this['base_prop'];
+	}
+};
+
+class Derived is Base { /** No constructor */ };
+
+// Here, superclass constructor is calling.
+
+take instance = Derived('Any random property!');
+
+instance.print_base_prop();    // Output : Any random property!

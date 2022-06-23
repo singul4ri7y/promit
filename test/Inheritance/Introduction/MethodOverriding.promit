@@ -1,0 +1,36 @@
+/**
+ * Demostration of method overriding.
+ *
+ * Part of Promit Test Suit, location /test/Inheritance/Introduction/MethodOverriding.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 01:58 AM (UTC +06).
+ */
+
+const class Foo {
+	say_hello() {
+		showl 'Foo said hello!';
+	}
+};
+
+const class Bar is Foo {
+	// Overriding Foo's 'say_hello' method.
+
+	say_hello() {
+		// Use 'super' keyword to access the superclass methods.
+		// Methods only, classes do not have regular fields unless
+		// it's been instantiated, which clearly, superclass is not.
+
+		super.say_hello();
+
+		showl 'So do Bar!';
+	}
+};
+
+// Instantiate the child class.
+
+take bar = Bar();
+
+// Call the overriden function.
+
+bar.say_hello();    // Output : Foo said hello!
+                    //          So do Bar!

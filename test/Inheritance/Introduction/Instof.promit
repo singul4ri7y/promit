@@ -1,0 +1,27 @@
+/**
+ * Demonstration of the keyword 'instof'.
+ *
+ * Part of Promit Test Suit, location /test/Inheritance/Introduction/Instof.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 02:23 AM (UTC +06).
+ */
+
+// Use 'instof' keyword to check whether an instance
+// is an instance of provided class.
+
+// Any class.
+
+class A {};
+
+// Any derived class.
+
+class B is A {};
+
+// Random nobody. Sorry, class.
+
+class C {};
+
+showl B() instof C;    // Output : false
+showl B() instof B;    // Output : true
+showl B() instof A;    // Output : true  (SuperClass)
+

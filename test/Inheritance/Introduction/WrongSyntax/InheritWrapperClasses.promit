@@ -1,0 +1,11 @@
+/**
+ * Demonstration of inheriting wrapper classes.
+ *
+ * Part of Promit Test Suit, location /test/Inheritance/Introduction/WrongSyntax/InheritWrapperClass.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 01:48 AM (UTC +06).
+ */
+
+// Inheriting wrapper classes are forbidden.
+
+class LinkedList is List {};    // Error : Inheriting wrapper classes are forbidden!

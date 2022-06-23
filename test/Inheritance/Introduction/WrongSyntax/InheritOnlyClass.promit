@@ -1,0 +1,13 @@
+/**
+ * Demonstration of inheriting other value types.
+ *
+ * Part of Promit Test Suit, location /test/Inheritance/Introduction/WrongSyntax/InheritOnlyClass.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 01:53 AM (UTC +06).
+ */
+
+// As you have already guessed you can only inherit 'classes'.
+
+const fn NotClass() {}
+
+class BlindInheritanceLover is NotClass {};    // Error : Expected the superclass to be a class!

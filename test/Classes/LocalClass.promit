@@ -1,0 +1,22 @@
+/**
+ * Demonstrates how local classes works. Seriously, it's interesting.
+ *
+ * Part of Promit Test Suit, location /test/Classes/LocalClass.promit
+ * 
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 01:29 AM (UTC +06).
+ */
+
+// I love 'const' :).
+
+const fn localize() {
+	const class Return {
+		feelings() { return 'Feels great to be a local!' }
+	};
+
+	return Return;
+}
+
+// Now call the function, get the class and call
+// method feelings.
+
+showl localize()().feelings();    // Output : Feels great to be a local!
