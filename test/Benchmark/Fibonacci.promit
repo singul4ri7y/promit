@@ -23,7 +23,7 @@ fn fib(n) {
 // Get position string like st, nd etc.
 
 fn position(n) {
-	switch(n) {
+	switch(n % 10) {
 		case 1: return 'st';
 		case 2: return 'nd';
 		case 3: return 'rd';
