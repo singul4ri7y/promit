@@ -1,0 +1,17 @@
+/**
+ * This program demostrates how to delete a static property.
+ * 
+ * Part of Promit Test Suit, location /test/Classes/Introduction/Statics/DeleteStaticProperties.Promit
+ *
+ * Created by SD Asif Hossein in 21th June, 2022 (Tuesday) at 07:02 PM (UTC +06).
+ */
+
+// Use the del keyword to delete a static property.
+
+const class Car {
+	const static model = 'BMW M3 GTR';
+};
+
+del Car::model;
+
+showl Car::model;    // Error : Undefined static property 'model'!
