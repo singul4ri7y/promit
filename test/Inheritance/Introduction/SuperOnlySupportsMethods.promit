@@ -51,7 +51,7 @@ const class Derived is Base {
 
 take derived = Derived();
 
-// These output are presented in Linux.
+// These outputs are presented in Linux.
 // In your OS method address may be different.
 
 showl derived.get_method1();    // Output : <fn 'method1' at 0x000000009C767340 of instance 'Derived'>
