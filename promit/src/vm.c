@@ -1030,8 +1030,14 @@ static double incdc(Value* value, bool dec, bool pre) {
 }
 
 #define BITWISE(value1, value2, op) \
-	double a = toNumber(&value1);\
-	double b = toNumber(&value2);\
+	NumberData data = toNumber(vm, &value1);\
+	if(data.hadError == true) \
+		return INTERPRET_RUNTIME_ERROR;\
+	double a = data.number;\
+	data = toNumber(vm, &value2);\
+	if(data.hadError == true) \
+		return INTERPRET_RUNTIME_ERROR;\
+	double b = data.number;\
 	a = (isinf(a) || isnan(a)) ? 0 : a;\
 	b = (isinf(b) || isnan(b)) ? 0 : b;\
 	if(a > LLONG_MAX || b > LLONG_MAX || a < LLONG_MIN || b < LLONG_MIN) {\
@@ -2307,7 +2313,12 @@ InterpretResult run(VM* vm) {
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						double idxval = toNumber(&string);
+						NumberData data = toNumber(vm, &string);
+						
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+						
+						double idxval = data.number;
 
 						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");
@@ -2629,7 +2640,12 @@ InterpretResult run(VM* vm) {
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						double idxval = toNumber(&string);
+						NumberData data = toNumber(vm, &string);
+						
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+							
+						double idxval = data.number;
 
 						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");
@@ -2951,7 +2967,12 @@ InterpretResult run(VM* vm) {
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						double idxval = toNumber(&string);
+						NumberData data = toNumber(vm, &string);
+						
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+							
+						double idxval = data.number;
 
 						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");
@@ -3273,7 +3294,12 @@ InterpretResult run(VM* vm) {
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						double idxval = toNumber(&string);
+						NumberData data = toNumber(vm, &string);
+						
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+							
+						double idxval = data.number;
 
 						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");

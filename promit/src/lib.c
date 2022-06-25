@@ -3015,19 +3015,114 @@ extern ObjClass* vmNumberClass;
 		number = VALUE_NUMBER(numberContainer.value);\
 	}
 
-double toNumber(Value* value) {
+NumberData toNumber(VM* vm, Value* value) {
+	NumberData data;
+	
+	data.hadError = false;
+	data.number   = NAN;
+	
 	switch(value -> type) {
-		case VAL_NUMBER:  return value -> as.number;
-		case VAL_BOOLEAN: return (double) value -> as.boolean;
-		case VAL_NULL:    return 0;
+		case VAL_NUMBER:  data.number = value -> as.number; break;
+		case VAL_BOOLEAN: data.number = value -> as.boolean; break;
+		case VAL_NULL:    data.number = 0; break;
+		
 		case VAL_OBJECT: {
 			switch(OBJ_TYPE(*value)) {
-				case OBJ_STRING: return pstrtod(VALUE_CSTRING(*value));
-			}
+				case OBJ_INSTANCE: {
+					ObjInstance* instance = VALUE_INSTANCE(*value);
 
-			return NAN;
+					ValueContainer represent;
+
+					ObjString* name = takeString(vm, "__represent__", 13u, false);
+
+					bool found = false;
+
+					if((found = tableGet(&instance -> fields, name, &represent)));
+					else if((found = tableGet(&instance -> klass -> methods, name, &represent)));
+
+					if(found) {
+						Value callable = represent.value;
+
+						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
+							stack_push(vm, callable);
+
+							if(callValue(vm, callable, 0u)) {
+								vm -> stack[vm -> stackTop - 1u] = *value;
+
+								if(run(vm) != INTERPRET_RUNTIME_ERROR) {
+									data.number = VALUE_NUMBER(stack_pop(vm));
+									
+									return data;
+								}
+							}
+
+							data.hadError = true;
+							
+							return data;
+						}
+						else if(IS_NATIVE(callable)) {
+							NativeFn native = VALUE_NATIVE(callable) -> function;
+
+							NativePack pack = native(vm, 1, (Value*) value);
+
+							if(!pack.hadError) 
+								data.number = VALUE_NUMBER(pack.value);
+							
+							data.hadError = pack.hadError;
+							
+							return data;
+						}
+					}
+					
+					break;
+				}
+				
+				case OBJ_DICTIONARY: {
+					Table* fields = &VALUE_DICTIONARY(*value) -> fields;
+
+					ObjString* represent = TAKE_STRING("__represent__", 13u, false);
+
+					ValueContainer valueContainer;
+					
+					if(tableGet(fields, represent, &valueContainer)) {
+						Value callable = valueContainer.value;
+
+						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
+							stack_push(vm, callable);
+
+							if(callValue(vm, callable, 0u) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+								data.number = VALUE_NUMBER(stack_pop(vm));
+
+								return data;
+							}
+							
+							data.hadError = true;
+							
+							return data;
+						}
+						else if(IS_NATIVE(callable)) {
+							NativeFn native = VALUE_NATIVE(callable) -> function;
+
+							NativePack pack = native(vm, 1, (Value*) value);
+
+							if(!pack.hadError) 
+								data.number = VALUE_NUMBER(pack.value);
+							
+							data.hadError = pack.hadError;
+							
+							return data;
+						}
+					}
+					
+					break;
+				}
+				
+				case OBJ_STRING: data.number = pstrtod(VALUE_CSTRING(*value)); break;
+			}
 		}
 	}
+	
+	return data;
 }
 
 static NativePack numberNumberify(VM* vm, int argCount, Value* values) {
@@ -3036,8 +3131,16 @@ static NativePack numberNumberify(VM* vm, int argCount, Value* values) {
 	if(argCount < 2) {
 		NATIVE_R_ERR("Too few arguments to call Number::numberify(value)!");
 	}
+	
+	NumberData data = toNumber(vm, values + 1);
+	
+	if(data.hadError) {
+		pack.hadError = true;
+		
+		return pack;
+	}
 
-	pack.value = NUMBER_VAL(toNumber(values + 1));
+	pack.value = NUMBER_VAL(data.number);
 
 	return pack;
 }
@@ -3047,8 +3150,17 @@ static NativePack numberInit(VM* vm, int argCount, Value* values) {
 
 	double number = 0;
 
-	if(argCount > 1) 
-		number = toNumber(values + 1);
+	if(argCount > 1) {
+		NumberData data = toNumber(vm, values + 1);
+		
+		if(data.hadError) {
+			pack.hadError = true;
+			
+			return pack;
+		}
+		
+		number = data.number;
+	}
 	
 	ObjInstance* instance = VALUE_INSTANCE(values[0]);
 
