@@ -1509,15 +1509,24 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(a));
 					else if(IS_OBJECT(value2)) {
-						char* str1 = toString(vm, &value1);
-						char* str2 = toString(vm, &value2);
+						NumberData data = toNumber(vm, &value2);
+						
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+						
+						if(!isnan(data.number)) {
+							PUSH(NUMBER_VAL(a + data.number));
+						} else {
+							char* str1 = toString(vm, &value1);
+							char* str2 = toString(vm, &value2);
 
-						char* result = CONCATENATE(str1, str2);
+							char* result = CONCATENATE(str1, str2);
 
-						PUSH(OBJECT_VAL(TAKE_STRING(result, strlen(result), true)));
+							PUSH(OBJECT_VAL(TAKE_STRING(result, strlen(result), true)));
 
-						free(str1);
-						free(str2);
+							free(str1);
+							free(str2);
+						}
 					}
 				}
 				else if(IS_BOOL(value1)) {
@@ -1535,7 +1544,16 @@ InterpretResult run(VM* vm) {
 					}
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL((double) a));
-					else if(IS_OBJECT(value2)) { NRM_ADD(a ? "true" : "false"); }
+					else if(IS_OBJECT(value2)) {
+						NumberData data = toNumber(vm, &value2);
+						
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+						
+						if(!isnan(data.number)) {
+							PUSH(NUMBER_VAL(a + data.number));
+						} else { NRM_ADD(a ? "true" : "false"); }
+					}
 				}
 				else if(IS_NULL(value1)) {
 					if(IS_NUMBER(value2)) PUSH(value2);
@@ -1547,18 +1565,43 @@ InterpretResult run(VM* vm) {
 					}
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(0));
-					else if(IS_OBJECT(value2)) { NRM_ADD("null"); }
+					else if(IS_OBJECT(value2)) {
+						NumberData data = toNumber(vm, &value2);
+						
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+						
+						if(!isnan(data.number)) {
+							PUSH(NUMBER_VAL(data.number));
+						} else { NRM_ADD("null"); }
+					}
 				}
 				else if(IS_OBJECT(value1)) {
-					char* result1 = toString(vm, &value1);
-					char* result2 = toString(vm, &value2);
-
-					char* string = CONCATENATE(result1, result2);
+					NumberData data = toNumber(vm, &value1);
+						
+					if(data.hadError) 
+						return INTERPRET_RUNTIME_ERROR;
 					
-					PUSH(OBJECT_VAL(TAKE_STRING(string, strlen(string), true)));
+					if(!isnan(data.number)) {
+						double a = data.number;
+						
+						data = toNumber(vm, &value2);
+						
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+						
+						PUSH(NUMBER_VAL(a + data.number));
+					} else {
+						char* result1 = toString(vm, &value1);
+						char* result2 = toString(vm, &value2);
 
-					free(result1);
-					free(result2);
+						char* string = CONCATENATE(result1, result2);
+						
+						PUSH(OBJECT_VAL(TAKE_STRING(string, strlen(string), true)));
+
+						free(result1);
+						free(result2);
+					}
 				}
 
 				break;
