@@ -39,6 +39,17 @@ void printValueRaw(const Value* value) {
 			__printf("null");
 			break;
 		case VAL_NUMBER: {
+			double number = VALUE_NUMBER(*value);
+			
+			// -0 is the only exception here.
+			// '-' will be omitted for '0' in
+			// toSring(VM*, Value* const) function.
+			
+			if(number == -0) {
+				__printf("-0");
+				break;
+			}
+			
 			char* buffer = toString(currentVM, (Value* const) value);
 
 			__printf(buffer);
