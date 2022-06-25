@@ -1,0 +1,33 @@
+/**
+ * Demostration of Number wrapper class constructor.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Constructor.promit
+ *
+ * Created by SD Asif Hossein in 25th June, 2022 (Saturday) at 04:40 PM (UTC +06).
+ */
+
+// Learn more about __represent__ in Instance section.
+
+const class Anything {
+	__represent__() {
+		return 501;
+	}
+};
+
+const dict   = { __represent__: fn() { return 100 } };
+const string = '50';
+const num    = 49;
+
+// They all will be converted to number.
+
+showl Number(Anything()) + Number(dict) + Number(string) + Number(num);    // Output : 700
+
+// Note : If any instance representation
+// (with the __represent__() method) cannot
+// represented with number, constructor
+// will convert it to NaN.
+
+// 'System' is a class.
+// Learn more about 'System' class in System section.
+
+showl Number(System());    // Output : NaN
