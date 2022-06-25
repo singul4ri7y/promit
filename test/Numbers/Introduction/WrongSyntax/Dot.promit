@@ -1,0 +1,17 @@
+/**
+ * Demostration of wrong way to declare a number type value.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrongSyntax/Dot.promit
+ *
+ * Created by SD Asif Hossein in 25th June, 2022 (Saturday) at 04:17 PM (UTC +06).
+ */
+
+// If you have trailing dot at the end of the number but no numeric
+// characters, then the dot will be omitted.
+
+showl 23423.;    // Output : 23423
+
+// But leding dot without any numeric characters before it will trigger an
+// compilation error.
+
+showl .23423;    // Error : '.': Expected an expression!

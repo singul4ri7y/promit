@@ -1,0 +1,22 @@
+/**
+ * Demostration of number types in promit.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/NumberTypes.promit
+ *
+ * Created by SD Asif Hossein in 25th June, 2022 (Saturday) at 03:48 PM (UTC +06).
+ */
+
+// Promit supports number types starting from integer -9007199254740992 to 9007199254740991, 
+// double value like 1e-203, 4.2889e23 etc. and NaN, Infinity.
+
+take inf  = Infinity;
+take nan  = inf / inf;
+take int  = 3200;
+take dbl  = 23425.2342e300;
+take zro  = -0;    // ;)
+
+showl inf;    // Output : Infinity
+showl nan;    // Output : NaN
+showl int;    // Output : 3200
+showl dbl;    // Output : 2.34252342E+304
+showl zro;    // Output : -0
