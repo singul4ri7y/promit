@@ -48,6 +48,11 @@ typedef enum {
 	INTERPRET_RUNTIME_ERROR
 } InterpretResult;
 
+typedef struct NumberData {
+	bool hadError;
+	double number;
+} NumberData;
+
 bool callValue(VM*, Value, uint8_t);
 
 void initVM(VM*); 
@@ -65,6 +70,6 @@ bool valuesEqual(const Value, const Value);
 bool toBoolean(VM*, Value*);
 
 int __printf(const char*, ...);
-double toNumber(Value* value);
+NumberData toNumber(VM*, Value* value);
 
 #endif
