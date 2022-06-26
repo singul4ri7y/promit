@@ -1,0 +1,13 @@
+/**
+ * Demonstration of static wrapper class method 'Number::is_nan'.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Statics/Methods/IsNan.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 02:50 PM (UTC +06).
+ */
+
+// 'Number::is_nan(value)' checks whether the provided value is
+// NaN (Not a Number) or not.
+
+showl Number::is_nan(Infinity - Infinity);    // Output : true
+showl Number::is_nan(Number::EPSILON);        // Output : false

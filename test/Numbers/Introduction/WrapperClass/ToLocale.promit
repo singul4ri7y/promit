@@ -1,0 +1,14 @@
+/**
+ * Demostration of wrapper function 'Number.to_locale()'.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/ToLocale.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 02:58 PM (UTC +06).
+ */
+
+// Number.to_locale() method converts a number to US locale
+// string.
+
+take number = 3451475708;
+
+showl number.to_locale();    // Output : 3,451,475,708

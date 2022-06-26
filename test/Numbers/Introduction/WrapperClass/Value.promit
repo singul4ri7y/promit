@@ -1,0 +1,42 @@
+/**
+ * Demostration of wrapper class method 'Number.value' and relation
+ * between regular number and Number() wrapper class.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Value.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 02:34 PM (UTC +06).
+ */
+
+// If you are confused about wrapper classes, go to 'WrapperClasses' section
+// under '/test' folder.
+
+// The wrapper method 'Number.value()' returns the absolute number
+// value of Number() instance. See below example to clear
+// your confusions.
+
+// Same numbers.
+
+take num1 = Number(101325);
+take num2 = 101325;
+
+// They represent the same number, but they are 2 different types.
+
+showl 'Type of num1 is : ${typeof num1}';    // Output : instance
+showl 'Type of num2 is : ${typeof num2}';    // Output : number
+
+// But below is an exception as Number is a wrapper class
+// for all number types.
+
+showl num1 == num2;    // Output : true
+
+// Now 'Number.value()' wrapper method gets the actual number
+// value from the wrapper class instance.
+
+showl typeof num1.value() == typeof num2;    // Output : true
+
+// But using .value() in regular number types are
+// the same thing as using the number;
+
+// Same shit!
+
+showl ((100).value() == 100);    // Output : true

@@ -6,7 +6,7 @@
  * Created by SD Asif Hossein in 25th June, 2022 (Saturday) at 04:40 PM (UTC +06).
  */
 
-// Learn more about __represent__ in Instance section.
+// Learn more about __represent__ in Representation section.
 
 const class Anything {
 	__represent__() {

@@ -1,0 +1,21 @@
+/**
+ * Demostration of wrapper class method 'Number.stringify'.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Stringify.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 02:15 PM (UTC +06).
+ */
+
+// The wrapper class method 'Number.stringify(base)' converts a number
+// to string of the provided base.
+
+take number = 123245523;
+
+showl 'The binary representation of number $number is : ${number.stringify(2)}';
+showl 'The hex representation of number $number is : ${number.stringify(16)}';
+showl 'The 36 base representation of number $number is : ${number.stringify(36)}';
+showl 'Normal decimal representation of number $number is : ${number.stringify(10)}';
+
+# Note : Using base less than 2 or greater than 36 will trigger an error.
+
+// showl number.stringify(40);  ->  Error : Expected the base range [2, 36], 40 found in Number.stringify(base)!

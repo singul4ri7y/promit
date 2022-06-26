@@ -1,0 +1,9 @@
+/**
+ * Demonstration of 'Number' wrapper class's static fields.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Statics/Fields.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 04:00 PM (UTC +06).
+ */
+
+// Number::MAX_VALUE denotes the maximum value promit 

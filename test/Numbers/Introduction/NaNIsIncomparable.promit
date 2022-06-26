@@ -8,9 +8,9 @@
 
 // The value NaN is incomparable.
 // Keep that in mind that, while using 'NaN'
-// everything you do, if it's comparison the result
+// everything you do, if it's comparison, the result
 // will be false and if it's operation/calculation
-// the result will be always NaN.
+// the result will always be NaN.
 
 showl 'NaN < 0 : ${NaN < 0}';    // Output : NaN < 0 : false
 showl 'NaN > 0 : ${NaN > 0}';    // Output : NaN > 0 : false

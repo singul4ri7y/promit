@@ -1,0 +1,14 @@
+/**
+ * Demostration of wrapper class method 'Number.to_locale_bd'.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/ToLocaleBD.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 02:00 PM (UTC +06).
+ */
+
+// Number.to_locale_bd() wrapper method converts a number to 
+// Bangladeshi locale string.
+
+take number = 1245332496776;
+
+showl number.to_locale_bd();    // Output : 12,35,33,24,96,776

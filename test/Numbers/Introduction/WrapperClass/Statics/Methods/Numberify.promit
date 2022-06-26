@@ -1,0 +1,17 @@
+/**
+ * Demonstration of 'Number::numberify' static wrapper class
+ * method.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Statics/Methods/Numberify.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 03:15 PM (UTC +06).
+ */
+
+// 'Number::numberify(value)' converts any type of value to number.
+
+# Note : If the value cannot be represented as a number, then the
+#        method will return NaN.
+
+showl Number::numberify('102303');    // Output : 102303
+showl Number::numberify(List(10));    // Output : NaN
+showl Number::numberify(false);       // Output : 0

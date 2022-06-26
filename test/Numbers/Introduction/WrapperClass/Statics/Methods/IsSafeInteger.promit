@@ -1,0 +1,18 @@
+/**
+ * Explaination of safe integer and use of 'Number::is_safe_integer'
+ * method.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Static/Method/IsSafeInteger.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 03:04 PM (UTC +06).
+ */
+
+// 'Number::is_safe_integer(number) will return true if and only if
+// Number::MIN_SAFE_INTEGER <= number <= Number::MAX_SAFE_INTEGER
+// is true, where Number::MIN_SAFE_INTEGER is minimum value which
+// can be represented as integer without loosing any bit of precision
+// in promit and Number::MAX_SAFE_INTEGER is the maximum value for 
+// the same reason.
+
+showl Number::is_safe_integer(1E100);         // Output : false
+showl Number::is_safe_integer(2342553888);    // Output : true

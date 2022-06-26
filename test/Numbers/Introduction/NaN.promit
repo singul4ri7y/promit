@@ -1,0 +1,17 @@
+/**
+ * What the heck is NaN?
+ *
+ * Part of Promit Test Suit, location /test/Numbers/NaN.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 02:55 PM (UTC +06).
+ */
+
+// NaN means Not a Number.
+// Anything in Promit system which cannot be represented
+// as a number, is NaN.
+
+// For example,
+
+showl Infinity - Infinity;               // Output : NaN
+showl Number::numberify(System());       // Output : NaN
+showl Number::numberify([ 1, 2, 3 ]);    // Output : NaN

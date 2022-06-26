@@ -1,0 +1,17 @@
+/**
+ * Demostration of wrapper class method 'Number.scientific'.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Scientific.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 02:07 PM (UTC +06).
+ */
+
+// The wrapper class method 'Number.scientific(frac_precision)' converts a number
+// to scientific string notaion, using provided 'frac_precision'.
+
+take number = 1.2234E-103;
+
+showl number;                   // Output : 1.2234E-103
+showl number.scientific();      // Output : 1.2234E-103
+showl number.scientific(10);    // Output : 1.2234000000E-103
+showl ((-0).scientific());      // Output : -0E+0
