@@ -1,0 +1,31 @@
+/**
+ * Demonstration of standard output manipulation using
+ * the System class and File.
+ *
+ * Learn more about files in the File section.
+ *
+ * Part of Promit Test Suit, location /test/System/Stdout.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 06:15 PM (UTC +06).
+ */
+
+// System::stdout is a 'File' instance.
+
+showl 'System::stdout is : ${System::stdout}';
+
+// showl 'Hello stdout!' is equivalent to,
+
+System::stdout.write_line('Hello stdout!');
+
+// As the stdout file is closed, system cannot
+// print anything into stdout.
+
+System::stdout.close();
+
+showl 'This will not print...';
+
+System::stdout.write_line('Nor will this...');
+
+System::stdout.reopen();
+
+showl 'Now this will print!';

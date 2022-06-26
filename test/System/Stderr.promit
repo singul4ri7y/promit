@@ -1,0 +1,20 @@
+/**
+ * Demonstration of standard error manipulation
+ * using System and File.
+ *
+ * Learn more about file in the File section.
+ *
+ * Part of Promit Test Suit, location /test/System/Stderr.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 06:34 PM (UTC +06).
+ */
+
+// Use System::stderr to write to standard error.
+
+showl 'System::stderr is : ${System::stderr}';
+
+# Using 'show/showl' will write contents to stdout.
+# In order to write to stderr, you have to use
+# System::stderr. There's no alternative way.
+
+System::stderr.write_line('Error! Error! Mayday!!!');

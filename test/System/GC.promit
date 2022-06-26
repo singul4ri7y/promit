@@ -1,0 +1,23 @@
+/**
+ * Demonstration of the use of Garbage Collector function
+ * for manual garbage collection.
+ *
+ * Part of Promit Test Suit, location /test/System/GC.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 05:35 PM (UTC +06).
+ */
+
+// In simple terms, Garbage Collection serves as an automated memory manager
+// which is responsible for release of allocated memories of values (In 
+// Promit's case Objects like strings, dictionaries, instances, classes etc.) 
+// which is not and will not be used in the future (garbage).
+
+// Generally a certain function is responsible for this garbage collection.
+// Promit interpreter calls this function automatically in need, but it also
+// can be called manually.
+
+# Use System::gc() to call the garbage collector function.
+
+showl 'Garbage collector now will be called...';
+
+System::gc();

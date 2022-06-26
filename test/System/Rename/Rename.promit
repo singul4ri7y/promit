@@ -1,0 +1,24 @@
+/**
+ * Demonstration of how you can rename a file using Promit.
+ *
+ * Part of Promit Test Suit, location /test/System/Rename/Rename.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 05:46 PM (UTC +06).
+ */
+
+// Use System::rename(oldname, newname) to rename a file.
+// Returns true if file renaming is successful, otherwise
+// false.
+
+showl "Use 'rename_me' as filename for example...";
+show 'Input a file to be renamed : ';
+
+take filename = recieve(string);    // Equilavent to just 'recieve;'
+
+show 'Input a new filename : ';
+
+// Now renaming the file.
+
+if(System::rename(filename, recieve)) 
+	showl 'File renaming successful!';
+else System::stderr.write_line('File renaming failed!');

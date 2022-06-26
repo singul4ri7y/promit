@@ -1,0 +1,17 @@
+/**
+ * Demonstration of 'System::remove' function.
+ *
+ * Part of Promit Test Suit, location /test/System/Remove/Remove.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 06:00 PM (UTC +06).
+ */
+
+// Use 'System::remove(filename)' to remove/delete a file.
+// Returns true if deletion is successful, otherwise false.
+
+showl "Try removing the 'delete_me' for example...";
+show 'Enter the filename to be removed : ';
+
+if(System::remove(recieve)) 
+	showl 'File removed!';
+else System::stderr.write_line('Failed to remove file!');

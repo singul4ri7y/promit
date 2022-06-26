@@ -1,0 +1,47 @@
+/**
+ * Demonstration of standard input manipulation
+ * using System and File class.
+ *
+ * Learn more about files in the File section.
+ *
+ * Part of Promit Test Suit, location /test/System/Stdin.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 06:27 PM (UTC +06).
+ */
+
+// System::stdin is a 'File' instance.
+
+showl 'System::stdin is ${System::stdin}';
+show 'Try to to input your name : ';
+
+// take name = recieve(string); or 
+// take name = recieve; is equivalent to,
+
+take name = System::stdin.read_line(true);    // Pass true to ingnore the newline character.
+
+showl 'Your name is $name!';
+
+// As stdin is closed, system cannot read from
+// stdin.
+
+System::stdin.close();
+
+// This will not work, stdin is closed now.
+
+name = recieve(string);
+
+// Nor will this...
+
+name = System::stdin.read_line(true);
+
+System::stdin.reopen();
+
+// Now recieving string/number/boolean will work.
+
+show 'Try to input your age : ';
+
+// Reusing the 'name' variable for age... ha ha..
+
+name = recieve(num);
+
+showl 'Your age is $name!';

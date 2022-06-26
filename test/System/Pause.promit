@@ -1,0 +1,11 @@
+/**
+ * Demonstration of 'System::pause' function.
+ *
+ * Part of Promit Test Suit, location /test/System/Pause.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 05:44 PM (UTC +06).
+ */
+
+// Use 'System::pause()' to pause the system until any keypress.
+
+System::pause('Press any key to continue...');

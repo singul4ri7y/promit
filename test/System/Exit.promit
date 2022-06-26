@@ -1,0 +1,19 @@
+/**
+ * Demonstratio of 'System::exit' to exit a program.
+ *
+ * Part of Promit Test Suit, location /test/System/Exit.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 05:30 PM (UTC +06).
+ */
+
+// Use 'System::exit(code)' to exit the program, providing
+// an exit code.
+
+# Note : Exit success code and failure code are baked
+#        within System class as a static.
+
+showl 'The program will now exit...';
+
+System::exit(System::EXIT_SUCCESS);
+
+# Note : Use System::EXIT_FAILURE if program fails.

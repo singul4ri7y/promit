@@ -1,0 +1,16 @@
+/**
+ * Demonstration of elegant way of printing errors.
+ *
+ * Part of Promit Test Suit, location /test/System/PrintError.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 06:40 PM (UTC +06).
+ */
+
+showl 'Creating an error by opening a dummy file...';
+
+take file = File('no_file_no_fun', File::MODE_READ);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'no_file_no_fun'...");
+	System::exit(System::EXIT_FAILURE);
+}
