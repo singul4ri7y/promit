@@ -969,11 +969,11 @@ static NativePack systemRename(VM* vm, int argCount, Value* values) {
 	initNativePack;
 	
 	if(argCount < 3) {
-		NATIVE_R_ERR("Too few arguments to call System::rename()!");
+		NATIVE_R_ERR("Too few arguments to call System::rename(oldname, newname)!");
 	}
 	
 	if(!IS_STRING(values[1]) || !IS_STRING(values[2])) {
-		NATIVE_R_ERR("Expected the arguments to be string in System::rename()!");
+		NATIVE_R_ERR("Expected the arguments to be string in System::rename(oldname, newname)!");
 	}
 	
 	int result = rename(VALUE_CSTRING(values[1]), VALUE_CSTRING(values[2]));
