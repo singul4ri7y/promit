@@ -1,0 +1,83 @@
+/**
+ * Demonstration of instance representation with '__represent__' method.
+ *
+ * Part of Promit Test Suit, location /test/Representation/InstanceRepresentation.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 08:34 PM (UTC +06).
+ */
+
+// In Promit representation means representing an object
+// differently than it's usual representation, providing
+// a lot more relevent data. Instance and dictionary are
+// the objects which can be represented differently.
+
+// Take this example.
+
+const class RandomClass {
+	init() { this.random_prop = 'Random Value!' }
+};
+
+take random_instance = RandomClass();
+
+// Now printing it.
+
+showl random_instance;    // Output : <instance of 'RandomClass'>
+
+// Which is not helpful in many cases. But if we had something like,
+
+# Note : Use '__represent__' method to represent an instance, where
+#        it's return value is going to be the representation.
+
+const class AnotherRandomClass {
+	init() { this.another_random_value = 'Another Random Value!' }
+	__represent__() {
+		return "An instance of 'Another Random Class' with '${this.another_random_value}' as value";
+	}
+};
+
+const another_random_instance = AnotherRandomClass();
+
+// Now if I try to print it,
+
+showl another_random_instance;    // Output : An instance of 'Another Random Class' with 'Another Random Value' as value
+
+showl 'Which is informatic and helpful!';
+
+// Like this, representation can be of various types, like 
+// strings, lists, dictionaries, etc.
+
+// Every wrapper classes have their own '__represent__' method
+// defined.
+
+take list = List(1, 2, 3);
+
+show "'list' is ${typeof list} but shows as '";
+show list;
+showl "' because of '__represent__' method.";
+
+// List's '__represent__' method returns the actual list stays
+// within the instance, thus making it completely behave like a list.
+
+showl "The '__represent__' method comes in handy in other ways to, as it's ".append(
+      "representing the instance in every ways possible.");
+
+show 'Calculation with instance representation : ';
+
+const class A {
+	__represent__() {
+		return 101;
+	}
+};
+
+showl A() + 99;    // Output : 200
+
+// Number, which is a wrapper class, also has the
+// '__represent__' method.
+
+take number = Number(101325);
+
+// showl number; is equivalent to
+// showl number.__represent__();  Which is automatically called.
+
+showl number;                    // Output : 101325
+showl number.__represent__();    // Output : 101325

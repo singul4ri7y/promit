@@ -1,0 +1,24 @@
+/**
+ * Demonstration of dictionary representation.
+ *
+ * Part of Promit Test Suit, location /test/Representation/DictionaryRepresentation.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 11:00 PM (UTC +06).
+ */
+
+// If you haven't checked out InstanceRepresentation.promit,
+// you are requested to do so, if you want to comprehend 
+// this program completely.
+
+// Dictionaries are also representable using the '__represent__'
+// function.
+
+take dict = { a : 10, b : 20 };
+
+showl dict;    // Output : { b : 20, a : 10 }
+
+dict.__represent__ = fn(d) {
+	return typeof d;
+};
+
+showl dict;    // Output : dictionary
