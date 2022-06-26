@@ -865,6 +865,8 @@ static NativePack file__represent__(VM* vm, int argCount, Value* values) {
 
 	memcpy(buffer, result, length * sizeof(char));
 
+	buffer[length] = 0;
+
 	pack.value = OBJECT_VAL(TAKE_STRING(buffer, length, true));
 
 	return pack;
