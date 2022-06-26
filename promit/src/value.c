@@ -1,4 +1,5 @@
 #include <math.h>
+#include <string.h>
 
 #include "object.h"
 #include "memory.h"
@@ -42,11 +43,21 @@ void printValueRaw(const Value* value) {
 			double number = VALUE_NUMBER(*value);
 			
 			// -0 is the only exception here.
-			// '-' will be omitted for '0' in
-			// toSring(VM*, Value* const) function.
-			
-			if(number == -0) {
-				__printf("-0");
+			// '-' will be omitted for '-0' in
+			// toString(VM*, Value* const) function.
+
+			if(number == 0) {
+				// Now determine whether it's -0 or 0/+0.
+
+				uint64_t uinum;
+
+				memcpy(&uinum, &number, sizeof(double));
+
+				if(uinum & 0xA000000000000000) 
+					__printf("-");
+				
+				__printf("0");
+
 				break;
 			}
 			

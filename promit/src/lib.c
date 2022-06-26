@@ -2999,7 +2999,7 @@ void initTimeLib(VM* vm) {
 	tableInsert(&vm -> globals, name, (ValueContainer) { OBJECT_VAL(timeClass), true });
 }
 
-static ObjString* numberField;
+ObjString* numberField;
 
 extern ObjClass* vmNumberClass;
 
@@ -3562,7 +3562,7 @@ static NativePack numberStringify(VM* vm, int argCount, Value* values) {
 		double value = VALUE_NUMBER(values[1]);
 
 		if(value < 2 || value > 36) {
-			NATIVE_R_ERR("Expected the base range [2, 36], %lf found in Number.stringify(base)!", value);
+			NATIVE_R_ERR("Expected the base range [2, 36], %.0lf found in Number.stringify(base)!", value);
 		}
 
 		base = (uint8_t) value;

@@ -43,6 +43,7 @@ ObjString* timeClass;
 extern ObjString* listField;
 extern ObjString* stringField;
 extern ObjString* dictionaryField;
+extern ObjString* numberField;
 
 static NativePack len(VM* vm, int argCount, Value* args) {
 	NativePack pack;
@@ -406,7 +407,7 @@ bool valuesEqual(const Value value1, const Value value2) {
 		ObjString* string1;
 		ObjString* string2;
 
-		if(IS_STRING(value1) && IS_INSTANCE(value2) && !strcmp(VALUE_INSTANCE(value2) -> klass -> name -> buffer, "String")) {
+		if(IS_STRING(value1) && IS_INSTANCE(value2) && VALUE_INSTANCE(value2) -> klass == vmStringClass) {
 			string1 = VALUE_STRING(value1);
 
 			ValueContainer stringContainer;
@@ -418,7 +419,7 @@ bool valuesEqual(const Value value1, const Value value2) {
 			return string1 -> length == string2 -> length && string1 -> hash == string2 -> hash &&
 				!memcmp(string1 -> buffer, string2 -> buffer, string1 -> length * sizeof(char));
 		}
-		else if(IS_STRING(value2) && IS_INSTANCE(value1) && !strcmp(VALUE_INSTANCE(value1) -> klass -> name -> buffer, "String")) {
+		else if(IS_STRING(value2) && IS_INSTANCE(value1) && VALUE_INSTANCE(value1) -> klass == vmStringClass) {
 			string2 = VALUE_STRING(value2);
 
 			ValueContainer stringContainer;
@@ -430,6 +431,30 @@ bool valuesEqual(const Value value1, const Value value2) {
 			return string1 -> length == string2 -> length && string1 -> hash == string2 -> hash &&
 				!memcmp(string1 -> buffer, string2 -> buffer, string1 -> length * sizeof(char));
 		}
+	}
+	else if((IS_INSTANCE(value1) || IS_INSTANCE(value2)) && (IS_NUMBER(value1) || IS_NUMBER(value2))) {
+		double a, b;
+
+		if(IS_NUMBER(value1) && IS_INSTANCE(value2) && VALUE_INSTANCE(value2) -> klass == vmNumberClass) {
+			a = VALUE_NUMBER(value1);
+
+			ValueContainer numberContainer;
+
+			tableGet(&VALUE_INSTANCE(value2) -> fields, numberField, &numberContainer);
+
+			b = VALUE_NUMBER(numberContainer.value);
+		}
+		else if(IS_NUMBER(value2) && IS_INSTANCE(value1) && VALUE_INSTANCE(value1) -> klass == vmNumberClass) {
+			b = VALUE_NUMBER(value2);
+
+			ValueContainer numberContainer;
+
+			tableGet(&VALUE_INSTANCE(value1) -> fields, numberField, &numberContainer);
+
+			a = VALUE_NUMBER(numberContainer.value);
+		}
+
+		return a == b;
 	}
 
 	if(value1.type != value2.type) 
@@ -1019,7 +1044,22 @@ static double incdc(Value* value, bool dec, bool pre) {
 					break;
 				}
 
-				default: number = NAN;
+				case OBJ_INSTANCE: {
+					ObjInstance* instance = VALUE_INSTANCE(*value);
+
+					// Wrapper class.
+
+					if(instance -> klass == vmNumberClass) {
+						Entry* entry = findEntry(instance -> fields.entries, instance -> fields.capacity, numberField);
+
+						if(entry != NULL && entry -> key != NULL) 
+							return incdc(&entry -> valueContainer.value, dec, pre);
+					}
+
+					// Expected fallthrough.
+				}
+
+				default: value -> as.number = number = NAN;
 			}
 		}
 	}
@@ -1027,6 +1067,125 @@ static double incdc(Value* value, bool dec, bool pre) {
 	value -> type = VAL_NUMBER;
 
 	return number;
+}
+
+typedef struct {
+	bool hadError;
+	bool isRepresentable;
+	double number;
+} vmNumberData;
+
+static vmNumberData vmToNumber(VM* vm, Value* value) {
+	vmNumberData data;
+	
+	data.hadError        = false;
+	data.isRepresentable = true;
+	data.number          = NAN;
+	
+	switch(value -> type) {
+		case VAL_NUMBER:  data.number = value -> as.number; break;
+		case VAL_BOOLEAN: data.number = value -> as.boolean; break;
+		case VAL_NULL:    data.number = 0; break;
+		
+		case VAL_OBJECT: {
+			switch(OBJ_TYPE(*value)) {
+				case OBJ_INSTANCE: {
+					ObjInstance* instance = VALUE_INSTANCE(*value);
+
+					ValueContainer represent;
+
+					ObjString* name = takeString(vm, "__represent__", 13u, false);
+
+					bool found = false;
+
+					if((found = tableGet(&instance -> fields, name, &represent)));
+					else if((found = tableGet(&instance -> klass -> methods, name, &represent)));
+
+					if(found) {
+						Value callable = represent.value;
+
+						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
+							stack_push(vm, callable);
+
+							if(callValue(vm, callable, 0u)) {
+								vm -> stack[vm -> stackTop - 1u] = *value;
+
+								if(run(vm) != INTERPRET_RUNTIME_ERROR) {
+									data.number = VALUE_NUMBER(stack_pop(vm));
+									
+									return data;
+								}
+							}
+
+							data.hadError = true;
+							
+							return data;
+						}
+						else if(IS_NATIVE(callable)) {
+							NativeFn native = VALUE_NATIVE(callable) -> function;
+
+							NativePack pack = native(vm, 1, (Value*) value);
+
+							if(!pack.hadError) 
+								data.number = VALUE_NUMBER(pack.value);
+							
+							data.hadError = pack.hadError;
+							
+							return data;
+						}
+					}
+					
+					break;
+				}
+				
+				case OBJ_DICTIONARY: {
+					Table* fields = &VALUE_DICTIONARY(*value) -> fields;
+
+					ObjString* represent = TAKE_STRING("__represent__", 13u, false);
+
+					ValueContainer valueContainer;
+					
+					if(tableGet(fields, represent, &valueContainer)) {
+						Value callable = valueContainer.value;
+
+						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
+							stack_push(vm, callable);
+
+							if(callValue(vm, callable, 0u) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+								data.number = VALUE_NUMBER(stack_pop(vm));
+
+								return data;
+							}
+							
+							data.hadError = true;
+							
+							return data;
+						}
+						else if(IS_NATIVE(callable)) {
+							NativeFn native = VALUE_NATIVE(callable) -> function;
+
+							NativePack pack = native(vm, 1, (Value*) value);
+
+							if(!pack.hadError) 
+								data.number = VALUE_NUMBER(pack.value);
+							
+							data.hadError = pack.hadError;
+							
+							return data;
+						}
+					}
+					
+					break;
+				}
+				
+				case OBJ_STRING: data.number = pstrtod(VALUE_CSTRING(*value)); break;
+			}
+		}
+
+		default: data.isRepresentable = false;
+	}
+	
+	return data;
 }
 
 #define BITWISE(value1, value2, op) \
@@ -1509,12 +1668,12 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(a));
 					else if(IS_OBJECT(value2)) {
-						NumberData data = toNumber(vm, &value2);
+						vmNumberData data = vmToNumber(vm, &value2);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
 						
-						if(!isnan(data.number)) {
+						if(data.isRepresentable) {
 							PUSH(NUMBER_VAL(a + data.number));
 						} else {
 							char* str1 = toString(vm, &value1);
@@ -1545,12 +1704,12 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL((double) a));
 					else if(IS_OBJECT(value2)) {
-						NumberData data = toNumber(vm, &value2);
+						vmNumberData data = vmToNumber(vm, &value2);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
 						
-						if(!isnan(data.number)) {
+						if(data.isRepresentable) {
 							PUSH(NUMBER_VAL(a + data.number));
 						} else { NRM_ADD(a ? "true" : "false"); }
 					}
@@ -1566,26 +1725,26 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(0));
 					else if(IS_OBJECT(value2)) {
-						NumberData data = toNumber(vm, &value2);
+						vmNumberData data = vmToNumber(vm, &value2);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
 						
-						if(!isnan(data.number)) {
+						if(data.isRepresentable) {
 							PUSH(NUMBER_VAL(data.number));
 						} else { NRM_ADD("null"); }
 					}
 				}
 				else if(IS_OBJECT(value1)) {
-					NumberData data = toNumber(vm, &value1);
+					vmNumberData data = vmToNumber(vm, &value1);
 						
 					if(data.hadError) 
 						return INTERPRET_RUNTIME_ERROR;
 					
-					if(!isnan(data.number)) {
+					if(data.isRepresentable) {
 						double a = data.number;
 						
-						data = toNumber(vm, &value2);
+						data = vmToNumber(vm, &value2);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
@@ -1635,7 +1794,16 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(a));
 					else if(IS_STRING(value2)) { NRM_SUB(a); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(a - data.number));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_BOOL(value1)) {
 					bool a = VALUE_BOOL(value1);
@@ -1653,11 +1821,18 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL((double) a));
 					else if(IS_STRING(value2)) { NRM_SUB((double) a); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(a - data.number));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_NULL(value1)) {
-					POP();
-
 					if(IS_NUMBER(value2)) {
 						value2.as.number = -value2.as.number;
 
@@ -1672,7 +1847,16 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(0));
 					else if(IS_STRING(value2)) { NRM_SUB(0); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(-data.number));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_STRING(value1)) {
 #define nrm(value) PUSH(NUMBER_VAL(a - (value)))
@@ -1684,7 +1868,23 @@ InterpretResult run(VM* vm) {
 					else if(IS_STRING(value2)) nrm(pstrtod(VALUE_CSTRING(value2)));
 					else PUSH_NAN;
 #undef nrm
-				} else PUSH_NAN;
+				} else {
+					vmNumberData data = vmToNumber(vm, &value1);
+
+					if(data.hadError) 
+						return INTERPRET_RUNTIME_ERROR;
+
+					if(data.isRepresentable) {
+						double a = data.number;
+
+						data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						PUSH(NUMBER_VAL(a - data.number));
+					} else PUSH_NAN;
+				}
 
 				break;
 #undef NRM_SUB
@@ -1712,7 +1912,16 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(a * 0));
 					else if(IS_STRING(value2)) { NRM_MUL(a); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(a * data.number));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_BOOL(value1)) {
 					bool a = VALUE_BOOL(value1);
@@ -1730,15 +1939,32 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(0));
 					else if(IS_STRING(value2)) { NRM_MUL(a); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(a * data.number));
+						else PUSH_NAN;
+					};
 				}
 				else if(IS_NULL(value1)) {
 					if(IS_NUMBER(value2)) 
 						PUSH(NUMBER_VAL(0 * VALUE_NUMBER(value2)));
 					else if(IS_STRING(value2)) 
 						PUSH(NUMBER_VAL(0 * pstrtod(VALUE_CSTRING(value2))));
-					else if(IS_OBJECT(value2)) PUSH_NAN;
-					else PUSH(NUMBER_VAL(0));
+					else if(IS_OBJECT(value2)) {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(0 * data.number));
+						else PUSH_NAN;
+					} else PUSH(NUMBER_VAL(0));
 				}
 				else if(IS_STRING(value1)) {
 #define nrm(value) PUSH(NUMBER_VAL(a * (value)))
@@ -1748,9 +1974,34 @@ InterpretResult run(VM* vm) {
 					else if(IS_BOOL(value2)) nrm(VALUE_BOOL(value2));
 					else if(IS_NULL(value2)) nrm(0);
 					else if(IS_STRING(value2)) nrm(pstrtod(VALUE_CSTRING(value2)));
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(a * data.number));
+						else PUSH_NAN;
+					}
 #undef nrm
-				} else PUSH_NAN;
+				} else {
+					vmNumberData data = vmToNumber(vm, &value1);
+
+					if(data.hadError) 
+						return INTERPRET_RUNTIME_ERROR;
+
+					if(data.isRepresentable) {
+						double a = data.number;
+
+						data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						PUSH(NUMBER_VAL(a * data.number));
+					} else PUSH_NAN;
+				}
 
 				break;
 #undef NRM_MUL
@@ -1778,7 +2029,16 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(isnan(a) ? NAN : INFINITY));
 					else if(IS_STRING(value2)) { NRM_DIV(a); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(a / data.number));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_BOOL(value1)) {
 					bool a = VALUE_BOOL(value1);
@@ -1796,13 +2056,31 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH(NUMBER_VAL(!a ? NAN : INFINITY));
 					else if(IS_STRING(value2)) { NRM_DIV(a); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(a / data.number));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_NULL(value1)) {
 					if(IS_NUMBER(value2)) PUSH(NUMBER_VAL(0 / VALUE_NUMBER(value2)));
 					else if(IS_STRING(value2)) PUSH(NUMBER_VAL(0 / pstrtod(VALUE_CSTRING(value2))));
 					else if(IS_BOOL(value2)) PUSH(NUMBER_VAL(0 / VALUE_BOOL(value2)));
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(0 / data.number));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_STRING(value1)) {
 #define nrm(value) PUSH(NUMBER_VAL(a / (value)))
@@ -1812,9 +2090,34 @@ InterpretResult run(VM* vm) {
 					else if(IS_BOOL(value2)) nrm(VALUE_BOOL(value2));
 					else if(IS_NULL(value2)) PUSH(NUMBER_VAL(isnan(a) ? NAN : INFINITY));
 					else if(IS_STRING(value2)) nrm(pstrtod(VALUE_CSTRING(value2)));
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(a / data.number));
+						else PUSH_NAN;
+					}
 #undef nrm
-				} else PUSH_NAN;
+				} else {
+					vmNumberData data = vmToNumber(vm, &value1);
+
+					if(data.hadError) 
+						return INTERPRET_RUNTIME_ERROR;
+
+					if(data.isRepresentable) {
+						double a = data.number;
+
+						data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						PUSH(NUMBER_VAL(a / data.number));
+					} else PUSH_NAN;
+				}
 
 				break;
 #undef NRM_DIV
@@ -1842,7 +2145,16 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH_NAN;
 					else if(IS_STRING(value2)) { NRM_MOD(a); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(fmod(a, data.number)));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_BOOL(value1)) {
 					bool a = VALUE_BOOL(value1);
@@ -1860,7 +2172,16 @@ InterpretResult run(VM* vm) {
 					else if(IS_NULL(value2)) 
 						PUSH_NAN;
 					else if(IS_STRING(value2)) { NRM_MOD(a); }
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(fmod(a, data.number)));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_NULL(value1)) {
 					if(IS_NUMBER(value2)) 
@@ -1869,7 +2190,16 @@ InterpretResult run(VM* vm) {
 						PUSH(NUMBER_VAL(fmod(0, pstrtod(VALUE_CSTRING(value2)))));
 					else if(IS_BOOL(value2)) 
 						PUSH(NUMBER_VAL(fmod(0, VALUE_BOOL(value2))));
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(fmod(0, data.number)));
+						else PUSH_NAN;
+					}
 				}
 				else if(IS_STRING(value1)) {
 #define nrm(value) PUSH(NUMBER_VAL(fmod(a, value)))
@@ -1879,9 +2209,34 @@ InterpretResult run(VM* vm) {
 					else if(IS_BOOL(value2)) nrm(VALUE_BOOL(value2));
 					else if(IS_NULL(value2)) PUSH_NAN;
 					else if(IS_STRING(value2)) nrm(pstrtod(VALUE_CSTRING(value2)));
-					else PUSH_NAN;
+					else {
+						vmNumberData data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						if(data.isRepresentable) 
+							PUSH(NUMBER_VAL(fmod(a, data.number)));
+						else PUSH_NAN;
+					}
 #undef nrm
-				} else PUSH_NAN;
+				} else {
+					vmNumberData data = vmToNumber(vm, &value1);
+
+					if(data.hadError) 
+						return INTERPRET_RUNTIME_ERROR;
+
+					if(data.isRepresentable) {
+						double a = data.number;
+
+						data = vmToNumber(vm, &value2);
+
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+
+						PUSH(NUMBER_VAL(fmod(a, data.number)));
+					} else PUSH_NAN;
+				}
 
 				break;
 #undef NRM_DIV
