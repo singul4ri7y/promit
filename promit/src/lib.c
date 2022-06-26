@@ -3782,8 +3782,6 @@ void initNumberLib(VM* vm) {
 	defineMethod(numberClass, TAKE_STRING("__represent__", 13u, false), number__represent__);
 	
 	defineStaticMethod(numberClass, TAKE_STRING("isNaN", 5u, false), numberIsNaN);
-
-	
 	defineStaticMethod(numberClass, TAKE_STRING("is_safe_integer", 15u, false), numberIsSafeInteger);
 	defineStaticMethod(numberClass, TAKE_STRING("numberify", 9u, false), numberNumberify);
 
