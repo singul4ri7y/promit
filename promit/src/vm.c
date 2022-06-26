@@ -259,10 +259,6 @@ static ObjFunction* getFunction(Obj* callee) {
 	return getClosure(callee) -> function;
 }
 
-static ObjFunction* getFrameFunction(CallFrame* frame) {
-	return getFunction(frame -> function);
-}
-
 void runtimeError(VM* vm, const char* format, ...) {
 	fprintf(stderr, "[Error][Runtime]: ");
 
@@ -279,7 +275,7 @@ void runtimeError(VM* vm, const char* format, ...) {
 	for(short i = vm -> frameCount - 1; i >= 0; i--) {
 		CallFrame* frame = vm -> frames + i;
 		
-		ObjFunction* function = getFrameFunction(frame);
+		ObjFunction* function = getFunction(frame -> function);
 		
 		size_t instruction = frame -> ip - function -> chunk.code - 1;
 		
@@ -293,9 +289,8 @@ void runtimeError(VM* vm, const char* format, ...) {
 	resetStack(vm);
 }
 
-
 static Value* peek(VM* vm, int distance) {
-	return &vm -> stack[vm -> stackTop - 1 - distance];
+	return vm -> stack + (vm -> stackTop - 1 - distance);
 }
 
 static bool call(VM* vm, Obj* callee, uint8_t argCount) {
@@ -614,26 +609,26 @@ bool toBoolean(VM* vm, Value* value) {
 			case OBJ_INSTANCE: {
 				ObjInstance* instance = VALUE_INSTANCE(*value);
 
-				const char* kname = instance -> klass -> name -> buffer;
+				ObjClass* klass = instance -> klass;
 
 				// For number instance.
 
 				ValueContainer container;
 
-				if(!strcmp(kname, "Number")) {
-					tableGet(&instance -> fields, TAKE_STRING("_p_number__", 11u, false), &container);
+				if(klass == vmNumberClass) {
+					tableGet(&instance -> fields, numberField, &container);
 
 					if(!IS_NAN(container.value)) 
 						boolean = !!container.value.as.number;
 					else boolean = false;
 				}
-				else if(!strcmp(kname, "List")) {
-					tableGet(&instance -> fields, TAKE_STRING("_p_list__", 9u, false), &container);
+				else if(klass == vmListClass) {
+					tableGet(&instance -> fields, listField, &container);
 
 					boolean = !!VALUE_LIST(container.value) -> count;
 				} 
-				else if(!strcmp(kname, "String")) {
-					tableGet(&instance -> fields, TAKE_STRING("_p_string__", 11u, false), &container);
+				else if(klass == vmStringClass) {
+					tableGet(&instance -> fields, stringField, &container);
 
 					boolean = !!VALUE_STRING(container.value) -> length;
 				} else boolean = true;
@@ -667,7 +662,7 @@ static uint32_t readBytes(CallFrame* frame, bool isLong) {
 }
 
 static Value readConstant(CallFrame* frame, ObjFunction* function, bool isLong) {
-	return function -> chunk.constants.values[readBytes(frame, isLong)];
+	return *(function -> chunk.constants.values + readBytes(frame, isLong));
 }
 
 static int istrcmp(const char* a, const char* b) {
@@ -1212,7 +1207,7 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 InterpretResult run(VM* vm) {
 	uint8_t currentFrameCount = vm -> frameCount;
 
-	register CallFrame* frame = &vm -> frames[vm -> frameCount - 1u];
+	register CallFrame* frame = vm -> frames + (vm -> frameCount - 1u);
 	
 	register ObjFunction* frame_function = getFunction(frame -> function);
 	register ObjClosure* frame_closure = getClosure(frame -> function);
