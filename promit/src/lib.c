@@ -3790,7 +3790,7 @@ void initNumberLib(VM* vm) {
 	setStatic(numberClass, TAKE_STRING("MIN_SAFE_INTEGER", 16u, false), NUMBER_VAL(MIN_SAFE_INTEGER));
 	setStatic(numberClass, TAKE_STRING("MAX_VALUE", 9u, false), NUMBER_VAL(MAX_VALUE));
 	setStatic(numberClass, TAKE_STRING("MIN_VALUE", 9u, false), NUMBER_VAL(MIN_VALUE));
-	setStatic(numberClass, TAKE_STRING("EPSILON", 7u, false), NUMBER_VAL(nextGreaterDouble(1.0) - 1.0));
+	setStatic(numberClass, TAKE_STRING("DELTA", 5u, false), NUMBER_VAL(nextGreaterDouble(1.0) - 1.0));
 
 	tableInsert(&vm -> globals, name, (ValueContainer) { OBJECT_VAL(numberClass), true });
 }
