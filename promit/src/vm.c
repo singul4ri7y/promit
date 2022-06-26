@@ -1148,7 +1148,17 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
 							stack_push(vm, callable);
 
-							if(callValue(vm, callable, 0u) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+							uint8_t arity = IS_FUNCTION(callable) ? VALUE_FUNCTION(callable) -> arity :
+							                VALUE_CLOSURE(callable) -> function -> arity;
+							
+							if(arity >= 1) {
+								stack_push(vm, *value);
+
+								for(uint8_t i = 0u; i < arity - 1; i++) 
+									stack_push(vm, NULL_VAL);
+							}
+
+							if(callValue(vm, callable, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
 								callable = stack_pop(vm);
 
 								return vmToNumber(vm, &callable);

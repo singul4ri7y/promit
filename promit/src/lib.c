@@ -3093,7 +3093,19 @@ NumberData toNumber(VM* vm, Value* value) {
 						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
 							stack_push(vm, callable);
 
-							if(callValue(vm, callable, 0u) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+							uint8_t arity = IS_FUNCTION(callable) ? VALUE_FUNCTION(callable) -> arity :
+							                VALUE_CLOSURE(callable) -> function -> arity;
+							
+							if(arity >= 1) {
+								stack_push(vm, *value);
+
+								for(uint8_t i = 0u; i < arity - 1; i++) 
+									stack_push(vm, NULL_VAL);
+							}
+
+							if(callValue(vm, callable, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+								// Reuse the variable.
+
 								callable = stack_pop(vm);
 
 								return toNumber(vm, &callable);
@@ -5432,7 +5444,17 @@ char* toStringRaw(VM* vm, Value* const value) {
 						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
 							stack_push(vm, callable);
 
-							if(callValue(vm, callable, 0u) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+							uint8_t arity = IS_FUNCTION(callable) ? VALUE_FUNCTION(callable) -> arity :
+							                VALUE_CLOSURE(callable) -> function -> arity;
+							
+							if(arity >= 1) {
+								stack_push(vm, *value);
+
+								for(uint8_t i = 0u; i < arity - 1u; i++) 
+									stack_push(vm, NULL_VAL);
+							}
+
+							if(callValue(vm, callable, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
 								// Reuse callable.
 
 								callable = stack_pop(vm);
@@ -5717,15 +5739,21 @@ extern ObjClass* vmStringClass;
 static NativePack stringInit(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
-	ObjString* string;
+	ObjString* string = TAKE_STRING("", 0u, false);;
 
 	if(argCount > 1) {
 		char* result = toString(vm, (Value* const) (values + 1u));
 
+		if(result == NULL) {
+			pack.hadError = true;
+
+			return pack;
+		}
+
 		size_t length = strlen(result);
 
 		string = TAKE_STRING(result, length, true);
-	} else string = TAKE_STRING("", 0u, false);
+	} 
 
 	setField(VALUE_INSTANCE(values[0]), stringField, OBJECT_VAL(string));
 
@@ -5891,6 +5919,12 @@ static NativePack _stringStringify(VM* vm, int argCount, Value* values) {
 	
 	char* buffer = toString(vm, (Value* const) (values + 1u));
 
+	if(buffer == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
+
 	size_t length = strlen(buffer);
 
 	vm -> bytesAllocated += (length + 1u) * sizeof(char);
@@ -5920,6 +5954,12 @@ static NativePack stringSplit(VM* vm, int argCount, Value* values) {
 	}
 
 	char* seperator = toString(vm, (Value* const) values + 1u);
+
+	if(seperator == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
 
 	register uint64_t i = 0u;
 	
@@ -6187,6 +6227,12 @@ static NativePack stringPadLeft(VM* vm, int argCount, Value* values) {
 	if(argCount > 2) {
 		pad = toString(vm, (Value* const) values + 2u);
 
+		if(pad == NULL) {
+			pack.hadError = true;
+
+			return pack;
+		}
+
 		padlen = strlen(pad);
 	}
 
@@ -6252,6 +6298,12 @@ static NativePack stringPadRight(VM* vm, int argCount, Value* values) {
 
 	if(argCount > 2) {
 		pad = toString(vm, (Value* const) values + 2u);
+
+		if(pad == NULL) {
+			pack.hadError = true;
+
+			return pack;
+		}
 
 		padlen = strlen(pad);
 	}
@@ -6378,6 +6430,12 @@ static NativePack stringContains(VM* vm, int argCount, Value* values) {
 
 	char* includes = toString(vm, (Value* const) values + 1u);
 
+	if(includes == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
+
 	size_t length = strlen(includes);
 
 	for(register uint64_t i = 0u; i < string -> length; i++) {
@@ -6422,6 +6480,12 @@ static NativePack stringIndex(VM* vm, int argCount, Value* values) {
 
 	char* includes = toString(vm, (Value* const) values + 1u);
 
+	if(includes == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
+
 	size_t length = strlen(includes);
 
 	if(occurance == 0) {
@@ -6460,6 +6524,12 @@ static NativePack stringReplace(VM* vm, int argCount, Value* values) {
 
 	char* rep = toString(vm, (Value* const) values + 1u);
 
+	if(rep == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
+
 	size_t rsiz = strlen(rep);
 
 	char* repwith = "null";
@@ -6468,6 +6538,12 @@ static NativePack stringReplace(VM* vm, int argCount, Value* values) {
 
 	if(argCount > 2) {
 		repwith = toString(vm, (Value* const) values + 2u);
+
+		if(repwith == NULL) {
+			pack.hadError = true;
+
+			return pack;
+		}
 
 		rwsiz = strlen(repwith);
 	}
@@ -6583,6 +6659,12 @@ static NativePack stringReplaceAll(VM* vm, int argCount, Value* values) {
 
 	char* rep = toString(vm, (Value* const) values + 1u);
 
+	if(rep == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
+
 	size_t rsiz = strlen(rep);
 
 	char* repwith = "null";
@@ -6591,6 +6673,12 @@ static NativePack stringReplaceAll(VM* vm, int argCount, Value* values) {
 
 	if(argCount > 2) {
 		repwith = toString(vm, (Value* const) values + 2u);
+
+		if(repwith == NULL) {
+			pack.hadError = true;
+
+			return pack;
+		}
 
 		rwsiz = strlen(repwith);
 	}
@@ -6737,6 +6825,12 @@ static NativePack stringStartsWith(VM* vm, int argCount, Value* values) {
 
 	char* match = toString(vm, (Value* const) values + 1u);
 
+	if(match == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
+
 	size_t length = strlen(match);
 
 	uint64_t index = 0u;
@@ -6780,6 +6874,12 @@ static NativePack stringEndsWith(VM* vm, int argCount, Value* values) {
 	}
 
 	char* match = toString(vm, (Value* const) values + 1u);
+
+	if(match == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
 
 	size_t size = strlen(match);
 
@@ -7029,6 +7129,13 @@ static NativePack dictHasKey(VM* vm, int argCount, Value* values) {
 		return pack;
 
 	char* result = toString(vm, (Value* const) values + 1u);
+
+	if(result == NULL) {
+		pack.hadError = true;
+
+		return pack;
+	}
+
 	size_t size  = strlen(result);
 
 	vm -> bytesAllocated += size + 1u;

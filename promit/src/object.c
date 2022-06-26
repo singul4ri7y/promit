@@ -374,6 +374,54 @@ bool printObject(const Value* value) {
 			}
 		}
 	}
+	else if(IS_DICTIONARY(*value)) {
+		Table* fields = &VALUE_DICTIONARY(*value) -> fields;
+
+		ObjString* represent = takeString(currentVM, "__represent__", 13u, false);
+
+		ValueContainer valueContainer;
+
+		if(tableGet(fields, represent, &valueContainer)) {
+			Value callable = valueContainer.value;
+
+			if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
+				stack_push(currentVM, callable);
+
+				uint8_t arity = IS_FUNCTION(callable) ? VALUE_FUNCTION(callable) -> arity :
+								VALUE_CLOSURE(callable) -> function -> arity;
+				
+				if(arity >= 1) {
+					stack_push(currentVM, *value);
+
+					for(uint8_t i = 0u; i < arity - 1u; i++) 
+						stack_push(currentVM, NULL_VAL);
+				}
+
+				if(callValue(currentVM, callable, arity) && run(currentVM) != INTERPRET_RUNTIME_ERROR) {
+					// Reuse callable.
+
+					callable = stack_pop(currentVM);
+
+					printValueRaw(&callable);
+
+					return true;
+				} else return false;
+			}
+			else if(IS_NATIVE(callable)) {
+				NativeFn native = VALUE_NATIVE(callable) -> function;
+
+				NativePack pack = native(currentVM, 1, (Value*) value);
+
+				if(!pack.hadError) {
+					printValueRaw(&pack.value);
+
+					return true;
+				}
+				
+				return false;
+			}
+		}
+	}
 
 	printObjectRaw(value);
 
