@@ -1111,9 +1111,11 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 								vm -> stack[vm -> stackTop - 1u] = *value;
 
 								if(run(vm) != INTERPRET_RUNTIME_ERROR) {
-									data.number = VALUE_NUMBER(stack_pop(vm));
-									
-									return data;
+									// Reuse variable.
+
+									callable = stack_pop(vm);
+
+									return vmToNumber(vm, &callable);
 								}
 							}
 
@@ -1127,7 +1129,7 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 							NativePack pack = native(vm, 1, (Value*) value);
 
 							if(!pack.hadError) 
-								data.number = VALUE_NUMBER(pack.value);
+								return vmToNumber(vm, &pack.value);
 							
 							data.hadError = pack.hadError;
 							
@@ -1152,9 +1154,9 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 							stack_push(vm, callable);
 
 							if(callValue(vm, callable, 0u) && run(vm) != INTERPRET_RUNTIME_ERROR) {
-								data.number = VALUE_NUMBER(stack_pop(vm));
+								callable = stack_pop(vm);
 
-								return data;
+								return vmToNumber(vm, &callable);
 							}
 							
 							data.hadError = true;
@@ -1167,7 +1169,7 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 							NativePack pack = native(vm, 1, (Value*) value);
 
 							if(!pack.hadError) 
-								data.number = VALUE_NUMBER(pack.value);
+								return vmToNumber(vm, &pack.value);
 							
 							data.hadError = pack.hadError;
 							

@@ -3050,9 +3050,10 @@ NumberData toNumber(VM* vm, Value* value) {
 								vm -> stack[vm -> stackTop - 1u] = *value;
 
 								if(run(vm) != INTERPRET_RUNTIME_ERROR) {
-									data.number = VALUE_NUMBER(stack_pop(vm));
+									callable = stack_pop(vm);
 									
-									return data;
+									
+									return toNumber(vm, &callable);
 								}
 							}
 
@@ -3066,7 +3067,7 @@ NumberData toNumber(VM* vm, Value* value) {
 							NativePack pack = native(vm, 1, (Value*) value);
 
 							if(!pack.hadError) 
-								data.number = VALUE_NUMBER(pack.value);
+								return toNumber(vm, &pack.value);
 							
 							data.hadError = pack.hadError;
 							
@@ -3091,9 +3092,9 @@ NumberData toNumber(VM* vm, Value* value) {
 							stack_push(vm, callable);
 
 							if(callValue(vm, callable, 0u) && run(vm) != INTERPRET_RUNTIME_ERROR) {
-								data.number = VALUE_NUMBER(stack_pop(vm));
+								callable = stack_pop(vm);
 
-								return data;
+								return toNumber(vm, &callable);
 							}
 							
 							data.hadError = true;
@@ -3106,7 +3107,7 @@ NumberData toNumber(VM* vm, Value* value) {
 							NativePack pack = native(vm, 1, (Value*) value);
 
 							if(!pack.hadError) 
-								data.number = VALUE_NUMBER(pack.value);
+								return toNumber(vm, &pack.value);
 							
 							data.hadError = pack.hadError;
 							
