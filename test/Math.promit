@@ -1,0 +1,43 @@
+/**
+ * Demonstration of 'Math' class.
+ *
+ * Part of Promit Test Suit, location /test/Math.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 11:52 PM (UTC +06).
+ */
+
+// The math library of Promit is pretty big and almost
+// same as C's math library.
+
+// So, in this case, I'm just going to provide a C's
+// math library link, as all the features are same
+// except all the exception Promit's math library
+// has.
+
+// Follow the link : https://cplusplus.com/reference/cmath/
+
+// Functions Promit do not have : 
+//    logb, ilogb, scalbn, scalbln,
+//    lround, llround (they are the same in Promit)
+//    rint, lrint, llrint, nearbyint, remquo,
+//    copysign, nan, nextafter, nexttoward, fma
+
+// Exceptions : 
+//     modf
+
+// New : 
+//     blog, random
+
+// Math::modf(number) returns a dictionary dividing provided
+// number into decimal part and fractional part.
+
+showl Math::modf(1334.5567);    // Output : { 'wnum' : 1334, 'frac' : 0.5567000000000917 }
+
+// Math::blog(base, number) operates provided base logarithm.
+// Math::blog(5.66, 10) means log(10) of base 5.66 .
+
+showl Math::blog(5.66, 10);    // Output : 1.328345076663066
+
+// Math::random() generates random values.
+
+showl Math::random();
