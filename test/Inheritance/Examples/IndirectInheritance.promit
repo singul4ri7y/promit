@@ -1,0 +1,35 @@
+/**
+ * Demostration of indirect inheritance.
+ *
+ * Part of Promit Test Suit, location /test/Inheritance/Examples/IndirectInheritance.promit
+ *
+ * Created by SD Asif Hossein in 24th June, 2022 (Friday) at 08:45 PM (UTC +06).
+ */
+
+// These stroke me as the most practical example
+// presentable.
+
+const class Grandfather {
+	stick() {
+		showl 'My grandfather had a stick!';
+	}
+};
+
+// Kinda, doesn't make sense.
+// But it's inheritance.
+
+const class Father is Grandfather {
+	glasses() {
+		showl 'My father loves those glasses!';
+	}
+};
+
+const class Son is Father { /** Empty */ };
+
+take son = Son();
+
+// Now call the methods inherited from class
+// 'Father' and 'Grandfather'.
+
+son.stick();
+son.glasses();
