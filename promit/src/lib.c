@@ -3743,7 +3743,7 @@ static NativePack numberIsNaN(VM* vm, int argCount, Value* values) {
 	else if(IS_INSTANCE(values[1])) {
 		ObjInstance* instance = VALUE_INSTANCE(values[1]);
 
-		if(!strcmp(instance -> klass -> name -> buffer, "Number")) {
+		if(instance -> klass == vmNumberClass) {
 			ValueContainer valueContainer;
 
 			getField(instance, numberField, valueContainer);
@@ -3781,7 +3781,7 @@ void initNumberLib(VM* vm) {
 	defineMethod(numberClass, TAKE_STRING("value", 5u, false), numberValue);
 	defineMethod(numberClass, TAKE_STRING("__represent__", 13u, false), number__represent__);
 	
-	defineStaticMethod(numberClass, TAKE_STRING("isNaN", 5u, false), numberIsNaN);
+	defineStaticMethod(numberClass, TAKE_STRING("is_nan", 6u, false), numberIsNaN);
 	defineStaticMethod(numberClass, TAKE_STRING("is_safe_integer", 15u, false), numberIsSafeInteger);
 	defineStaticMethod(numberClass, TAKE_STRING("numberify", 9u, false), numberNumberify);
 
