@@ -1,0 +1,15 @@
+/**
+ * Example of the easiest way to convert a floating point
+ * number to an integer.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Examples/MakeItInteger.promit
+ *
+ * Created by SD Asif Hossein in 26th June, 2022 (Sunday) at 04:24 PM (UTC +06).
+ */
+
+// C/C++ users, 'Sup!
+
+take float = 123.44577;
+
+showl 'Floating point number is : $float';
+showl 'Number after converting to integer : ${float | 0}';
