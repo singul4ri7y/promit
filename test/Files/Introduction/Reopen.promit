@@ -1,0 +1,33 @@
+/**
+ * Demonstration of 'File.reopen'.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Reopen.promit
+ *
+ * Created by SD Asif Hossein in 27th June, 2022 (Monday) at 07:52 PM (UTC +06).
+ */
+
+// Use 'File.reopen(new_mode) to reopen a closed file with provided
+// mode.
+// If no mode is provided, the file will be reopened with previously
+// used mode.
+
+take file = File('common_file.txt', File::MODE_READ);
+
+// Now closing the file.
+
+file.close();
+
+showl file;    // Output : <File closed>
+
+// Now reopen the file with, say append mode?
+
+file.reopen(File::MODE_APPEND);
+
+if(file.is_opened()) {
+	showl 'The file is now opened with append mode!';
+	showl "The 'file' variable : $file";
+}
+
+// Don't forget to close the file.
+
+file.close();

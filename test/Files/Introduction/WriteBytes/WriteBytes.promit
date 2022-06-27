@@ -1,0 +1,42 @@
+/**
+ * Demonstration of wrting bytes.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/WriteBytes/WriteBytes.promit
+ *
+ * Created by SD Asif Hossein in 27th June, 2022 (Monday) at 07:15 PM (UTC +06).
+ */
+
+// Use File.write(content) and File::bytelist(list) to write
+// bytes.
+
+// Construct a ByteList from list.
+
+take bytelist = File::bytelist([ 101, 98, 93, 85, 78, 200, 11, 22, 65, 233 ]);
+
+// Now open a file and write the ByteList.
+
+take file = File('binary', File::MODE_WRITE);
+
+// Check for file opening errors.
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'binary'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+take wrote;
+
+# Note : File.write_line(string) won't work here.
+#        ByteList's only can be written using 
+#        File.write(content)
+
+if((wrote = file.write(bytelist)) == File::EOF) {
+	System::stderr.write_line('Failed to write binary file!');
+	System::exit(System::EXIT_FAILURE);
+}
+
+showl 'Successfully wrote $wrote bytes!';
+
+// Now close the file.
+
+file.close();

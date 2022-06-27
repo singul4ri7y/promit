@@ -1,0 +1,36 @@
+/**
+ * Demonstration of 'File.flush' and it's use.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Flush/Flush.promit
+ *
+ * Created by SD Asif Hossein in 27th June, 2022 (Monday) at 07:35 PM (UTC +06).
+ */
+
+// File.flush() flushes the written contents to a file.
+
+take file = File('flush_me.txt', File::MODE_WRITE);
+
+if(!file.is_opened()) {
+	Sysem::print_error("Failed to open file 'flush_me.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+if(file.write_line('Contents wrote!') == File::EOF) {
+	System::stderr.write_line('Failed to write lines!');
+	System::exit(System::EXIT_FAILURE);
+}
+
+// But if you open the file 'flush_me.txt',
+// you won't see the text 'Contents wrote!'.
+
+// That's because contents have not yet been flushed.
+
+// Now flush the contents.
+
+if(file.flush()) showl 'Flushing contents successful!';
+else System::stderr.write_line('Failed to flush contents!');
+
+// Now you can view the file contents even if the file
+// is still opened in the RAM.
+
+file.close();

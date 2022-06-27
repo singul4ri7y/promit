@@ -1,0 +1,85 @@
+/**
+ * What the heck is 'Wrapper Class'?
+ *
+ * Part of Promit Test Suit, location /test/WrapperClass.promit
+ *
+ * Created by SD Asif Hossein in 27th June, 2022 (Monday) at 06:05 PM (UTC +06).
+ */
+
+// What is wrapper class?
+// Well, a wrapper class is an exceptional
+// class, which refers to any primitive data
+// types of Promit, where those primitive data
+// types can use all the methods the class has
+// to offer without instantiating it. For example,
+// the class 'List' is a wrapper class of list 
+// primitive data types. That means, I can call
+// all the methods of 'List' class, without 
+// instantiating the 'List' class, through any
+// list.
+
+// To be clear, say 'List' class has a method called
+// 'join' (well, list literally has it). As, any
+// list data types refers to that 'List' class, 
+// I can call that 'join' method on lists without
+// any instantiation of that class, which is 'List'
+// in our case.
+
+// Notice that I am calling 'join', a 'List' class
+// method on a bare bone list.
+
+showl [ 1, 2, 3, 4, 5 ].join(', ');    // Output : 1, 2, 3, 4, 5
+
+// Which is equivalent to,
+
+showl List(1, 2, 3, 4, 5)    // Which will construct a list instance.
+      .join(', ');           // The 'join' method of the list class.
+
+// Basically I got the gist idea from JavaScript (If you
+// are a JS dev, you probably know what I mean).
+
+// Well you see libraries are crucial to a programming language.
+// But what becomes more crucial is, how you use the library
+// functions. There are 3 ways of using libraries.
+
+// (1) Have a powerful version of any primitive types like C++,
+//     you have arrays and it's successor vector<type>. In Promit's
+//     case that would be primitive lists and some class called PowerList.
+//     Which is convenient in some cases, but sometimes it can be confusing.
+// (2) Have powerful library function for primitve types externaly, like C,
+//     Lua and other PL's where, I could have something like a list [ 1, 2, 3 ],
+//     and I have library functions like list_join(list, seperator) or 
+//     List::join(list, seperator). It provides more imperative paradigm feel,
+//     but as Promit is an OOP Language, it's not convenient.
+// (3) Finally, the JS way. Have a class as a library for every primitive data
+//     types which is exceptional, acts like the primitve data types and open
+//     all the method of that class to that specific data type to bring out
+//     the OOP feel, in short Wrapper Classes (that's what I call them). Which
+//     seems more convenient for Promit and also I designed it less confusing
+//     than JavaScript.
+
+// There you have it.
+
+# Note : If any of Promit's data types (e.g. numbers, lists, boolean, function)
+#        have a wrapper class, the data types/data type variables will be 
+#        considered it's wrapper class's instance.
+
+showl [ 1, 2, 3] instof List;                   // Ouptut : true
+showl 101325 instof Number;                     // Output : true
+showl { what : 'What?' } instof Dictionary;     // Output : true
+
+// List of data types and it's wrapper classes.
+
+// All the numbers -> Number
+// All the functions, native functions, closures, bound methods -> Function
+// All the lists -> List
+// All the strings -> String
+// All the dictionaries -> Dictionary
+
+// Library classes which are not wrapper class are :
+// Time -> For time manipulation (Not real time, though).
+// File -> For file manipulation.
+// System -> Has static functions related to Promit system.
+
+// Data types which do not have any wrapper class :
+// null, Boolean, ByteList

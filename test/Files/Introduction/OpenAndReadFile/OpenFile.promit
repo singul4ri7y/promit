@@ -1,0 +1,42 @@
+/**
+ * This program showcases how to open a file, read a line and print it.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/OpenAndReadFile/OpenFile.promit
+ * 
+ * Created by SD Asif Hossein on 6 June, 2022 (Monday) at 3:23 AM (UTC +06).
+ */
+
+// Use the 'File' class to manipulate files.
+
+take file = File('openme.txt', File::MODE_READ);
+
+// If the file is not opened, then print the
+// error and exit.
+
+// File.is_opened() returns true if the file is opened,
+// otherwise false.
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'openme.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+// Now read the first line and print it.
+
+#  Note : using file.read_line(true) will read the line ignoring
+#         the newline character.
+
+# Returns number of read characters, EOF (-1) otherwise.
+
+take read = file.read_line();
+
+if(read == File::EOF) {
+	System::stderr.write_line("Failed to read file 'openme.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+showl read;
+
+// Now close the file.
+
+file.close();

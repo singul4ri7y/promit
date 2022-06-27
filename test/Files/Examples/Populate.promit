@@ -1,0 +1,42 @@
+/**
+ * This is a Promit program example, which creates a file and writes contents
+ * to it.
+ *
+ * Part of Promit Test Suit, location /test/File/Examples/Populate.promit
+ *
+ * Created by SD Asif Hossein on 18 April, 2022 (Monday) at 2:50 PM (UTC +06).
+ */
+ 
+show 'Enter the file name to be populated : ';
+
+// Create the file with given name, open it in write mode.
+
+take name = recieve;
+
+take file = File(name, File::MODE_WRITE);
+
+// Check wheather the file is opened or not. If it's not opened, show a
+// error message and exit.
+
+if(!file.is_opened()) {
+ 	System::print_error("Failed to create the file '$name'!");
+	System::exit(System::EXIT_FAILURE);
+}
+
+// If the file is opened, recieve every string input and write it to the file.
+// Write '.done' if finished.
+// Reusing the name variable. As we no longer need it.
+
+showl "Write '.done' to finish...";
+
+while((name = recieve) != '.done') {
+	if(file.write_line(name) == File::EOF) {
+		System::stderr.write_line("An error occured while writing the line '$name'!");
+
+		break;
+	}
+}
+
+// Now close the file.
+
+file.close();

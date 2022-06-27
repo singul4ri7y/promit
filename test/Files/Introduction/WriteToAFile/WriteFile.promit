@@ -1,0 +1,41 @@
+/**
+ * Demonstration of writing to a file using the 'File' class.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/WriteToAFile/WriteFile.promit
+ *
+ * Created by SD Asif Hossein in 27th June, 2022 (Monday) at 06:50 PM (UTC +06).
+ */
+
+// Use 'File' class to write to a file.
+// Use File::MODE_WRITE or File::MODE_HYPER_WRITE
+// to be in write and write/read mode.
+
+take file = File('write_to_me.txt', File::MODE_WRITE);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'write_to_me.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+// Now write to the file.
+
+// Use File.write(content) and File.write_line(string)
+// to write to file.
+
+// If any of them returns -1 (Which is File::EOF), means that
+// writing is not successful. Otherwise they will return 
+// the number of written characters.
+
+take wrote = file.write('This is a text without newline character  ->  ');
+wrote += file.write_line('This is a text with a newline character!');
+
+// Now write the time.
+
+wrote += file.write('Current writing time is : ');
+wrote += file.write_line(Time());
+
+System::stdout.write_line('Successfully wrote $wrote character(s)!');
+
+// Now close the file.
+
+file.close();
