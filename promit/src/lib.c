@@ -5511,7 +5511,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 				case OBJ_BYTELIST: {
 					ObjByteList* byteList = VALUE_BYTELIST(*value);
 
-					char* buffer = malloc(((byteList -> size * 5u) + 15u) * sizeof(char));
+					char* buffer = malloc((byteList -> size + 1) * sizeof(char));
 
 					if(buffer == NULL) {
 						RUNTIME_ERROR("Failed to allocate memory while converting bytelist to string!");
@@ -5519,12 +5519,9 @@ char* toStringRaw(VM* vm, Value* const value) {
 						return NULL;
 					}
 
-					size_t index = sprintf(buffer, "<bytelist b'");
+					memcpy(buffer, byteList -> bytes, byteList -> size * sizeof(char));
 
-					for(size_t i = 0u; i < byteList -> size; i++) 
-						index += sprintf(buffer + index, "\\x%03hhu", byteList -> bytes[i]);
-					
-					sprintf(buffer + index, "'>");
+					buffer[byteList -> size] = 0;
 
 					return buffer;
 				}
