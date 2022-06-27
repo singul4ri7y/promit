@@ -395,6 +395,10 @@ static NativePack fileReopen(VM* vm, int argCount, Value* values) {
 		}
 		
 		mode = fileModes[modeType];
+
+		// Now store the mode type.
+
+		setField(instance, modeField, NUMBER_VAL((double) modeType));
 	}
 	
 	if(file -> file != NULL && !fclose(file -> file)) 
