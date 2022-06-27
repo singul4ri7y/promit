@@ -21,7 +21,7 @@ take name = recieve(string);
 showl 'Your name is : $name!';
 ```
 - Fast, stack-based bytecode interpreter with rich single-pass compiler.
-- Fully Object Oriented with class and instances.
+- Fully Object Oriented with classes and instances.
 ```dart
 const cities = [ 'New York', 'Constantinople', 'Sin City (Vegas)' ];
 
@@ -110,7 +110,7 @@ showl typeof result;    // Expected 'closure'.
 
 showl result();         // Expected "Now it's inner!";
 ```
- - Has ```continue ``` in switch.
+ - Has ```continue``` in switch.
 ```dart
 take bird = 'Duck';
 
