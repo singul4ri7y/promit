@@ -64,7 +64,7 @@ showl List(1, 2, 3, 4, 5)    // Which will construct a list instance.
 #        have a wrapper class, the data types/data type variables will be 
 #        considered it's wrapper class's instance.
 
-showl [ 1, 2, 3 ] instof List;                   // Ouptut : true
+showl [ 1, 2, 3 ] instof List;                  // Ouptut : true
 showl 101325 instof Number;                     // Output : true
 showl { what : 'What?' } instof Dictionary;     // Output : true
 
