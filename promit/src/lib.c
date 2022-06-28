@@ -738,13 +738,13 @@ static NativePack fileSeek(VM* vm, int argCount, Value* values) {
 	fileInstanceFile;
 	
 	if(argCount < 2) {
-		NATIVE_R_ERR("Too few arguments to call File.seek()!");
+		NATIVE_R_ERR("Too few arguments to call File.seek(position, offset)!");
 	}
 	
 	long offset;
 	
 	if(!IS_NUMBER(values[1])) {
-		NATIVE_R_ERR("Expected the first argument to be a number in File.seek()!");
+		NATIVE_R_ERR("Expected the first argument to be a number in File.seek(offset, position)!");
 	}
 	
 	offset = (long) VALUE_NUMBER(values[1]);
@@ -753,7 +753,7 @@ static NativePack fileSeek(VM* vm, int argCount, Value* values) {
 	
 	if(argCount > 2) {
 		if(!IS_NUMBER(values[2])) {
-			NATIVE_R_ERR("Expected the second argument to be a number in File.seek()!");
+			NATIVE_R_ERR("Expected the second argument to be a number in File.seek(offset, position)!");
 		}
 		
 		origin = (int) VALUE_NUMBER(values[2]);
@@ -764,38 +764,8 @@ static NativePack fileSeek(VM* vm, int argCount, Value* values) {
 
 		return pack;
 	}
-	
-	ValueContainer siz;
-	
-	getField(instance, sizeField, siz);
-	
-	long size = (long) VALUE_NUMBER(siz.value);
-	
-	if(size < 0) {
-		size = calcSize(file -> file, -1);
-		
-		setField(instance, sizeField, NUMBER_VAL((double) size));
-	}
-	
-	long totalOffset;
-	
-	switch(origin) {
-		case SEEK_SET: 
-			totalOffset = offset;
-			break;
-		
-		case SEEK_CUR: 
-			totalOffset = ftell(file -> file) + offset;
-			break;
-		
-		case SEEK_END: 
-			totalOffset = size;
-			break;
-	}
-	
-	if(totalOffset > size) 
-		pack.value = BOOL_VAL(false);
-	else pack.value = BOOL_VAL(fseek(file -> file, offset, origin) == 0);
+
+	pack.value = BOOL_VAL(fseek(file -> file, offset, origin) == 0);
 	
 	return pack;
 }
@@ -895,8 +865,8 @@ void initFileLib(VM* vm) {
 	setStatic(fileClass, TAKE_STRING("MODE_HYPER_WRITE", 16u, false), NUMBER_VAL(3));
 	setStatic(fileClass, TAKE_STRING("MODE_APPEND", 11u, false), NUMBER_VAL(4));
 	setStatic(fileClass, TAKE_STRING("MODE_HYPER_APPEND", 17u, false), NUMBER_VAL(5));
-	setStatic(fileClass, TAKE_STRING("SEEK_TOP", 8u, false), NUMBER_VAL(SEEK_SET));
-	setStatic(fileClass, TAKE_STRING("SEEK_CUR", 8u, false), NUMBER_VAL(SEEK_CUR));
+	setStatic(fileClass, TAKE_STRING("SEEK_BEGIN", 10u, false), NUMBER_VAL(SEEK_SET));
+	setStatic(fileClass, TAKE_STRING("SEEK_CURSOR", 11u, false), NUMBER_VAL(SEEK_CUR));
 	setStatic(fileClass, TAKE_STRING("SEEK_END", 8u, false), NUMBER_VAL(SEEK_END));
 	setStatic(fileClass, TAKE_STRING("MAX_OPENABLE", 12u, false), NUMBER_VAL(FOPEN_MAX));
 	setStatic(fileClass, TAKE_STRING("EOF", 3u, false), NUMBER_VAL(EOF));
