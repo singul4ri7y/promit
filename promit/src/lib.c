@@ -811,6 +811,10 @@ static NativePack _fileReadAll(VM* vm, int argCount, Value* values) {
 
 	pack.value = OBJECT_VAL(buff);
 
+	// Closing the file.
+
+	fclose(file);
+
 	return pack;
 }
 
