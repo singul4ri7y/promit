@@ -68,6 +68,10 @@ showl [ 1, 2, 3 ] instof List;                  // Ouptut : true
 showl 101325 instof Number;                     // Output : true
 showl { what : 'What?' } instof Dictionary;     // Output : true
 
+# Note : All the wrapper class's methods and properties
+#        are demonstrated within their respective data
+#        type section.
+
 // List of data types and it's wrapper classes.
 
 // All the numbers -> Number

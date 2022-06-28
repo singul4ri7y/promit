@@ -1,0 +1,38 @@
+/**
+ * Demonsration of dictionaries in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Dictionary/Introduction/Dictionary.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Tuesday) at 01:15 AM (UTC +06).
+ */
+
+// Use a left curly brace '{' as an expression to
+// start declaring a dictionary.
+
+// The reason I said expression is, because
+
+{
+	'This is a scope, not a dictionary, which works like a statement.';
+}
+
+// But
+
+({ wow : 'This can be a dictionary!' });    // Which is an expression (inside the parenthesis).
+
+// The dictionaries in Promit has many names in other programming
+// languages.
+// Plain Objects -> JavaScript
+// Table -> Lua
+// Dictionary -> Python (where Promit got inspired from)
+
+// Dictionary consists "key : value" pairs, where 'value' can be any expression.
+
+take dict = {
+	key1 : 'value1',
+	key2 : 101325,
+	key3 : null,
+	key4 : { __represent__: fn() { return 'Another dictionary!' } },
+	key5 : Time()
+};
+
+showl dict;

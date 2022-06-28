@@ -1,0 +1,17 @@
+/**
+ * Demonsration of 'Dictionary.has_key' method.
+ *
+ * Part of Promit Test Suit, location /test/Dictionary/Introduction/WrapperClass/HasKey.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Tuesday) at 01:33 AM (UTC +06).
+ */
+
+// 'Dictionary.has_key(key)' checks whether the provided key exist within
+// the dictionary or not.
+
+take dict = {
+	'exists' : 'Hell yeah!'
+};
+
+showl dict.has_key('does_not_exist');    // Output : false
+showl dict.has_key('exists');            // Output : true

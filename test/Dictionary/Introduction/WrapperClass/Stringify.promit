@@ -1,0 +1,12 @@
+/**
+ * Demonsration of 'Dictionary.stringify'.
+ *
+ * Part of Promit Test Suit, location /test/Dictionary/Introduction/WrapperClass/Dictionary.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Tuesday) at 01:50 AM (UTC +06).
+ */
+
+// Returns basic string representation of a dictionary.
+// It's same with any dictionary value.
+
+showl (({}).stringify());
