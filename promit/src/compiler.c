@@ -1116,8 +1116,6 @@ static void dictionary(bool canAssign) {
 			}
 		}
 		
-		consume(TOKEN_COLON, "Expected a ':' after key!");
-		
 		expression();
 		
 		SET_N_GET(OP_ADD_DICTIONARY, key);
