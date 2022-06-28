@@ -6,7 +6,7 @@
  * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 04:25 AM (UTC +06).
  */
 
-// The 'Function' wrapper class has only 3 static wrapper class funcitons.
+// The 'Function' wrapper class has only 3 static wrapper class functions.
 
 // Function::bind(bound_method, reciever);
 // Function::call(bound_method, reciever, args...);
