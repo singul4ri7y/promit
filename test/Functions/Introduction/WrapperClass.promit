@@ -1,0 +1,53 @@
+/**
+ * Demonstration of Function wrapper class functions.
+ *
+ * Part of Promit Test Suit, location /test/Functions/Introduction/WrapperClass.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 04:25 AM (UTC +06).
+ */
+
+// The 'Function' wrapper class has only 3 static wrapper class funcitons.
+
+// Function::bind(bound_method, reciever);
+// Function::call(bound_method, reciever, args...);
+// Function::pass(bound_method, reciever, [ args...]);
+
+const class A {
+	any_method(prop) {
+		showl "'this' is : $this";
+
+		this.prop = prop;
+	}
+};
+
+// Instantiation.
+
+take a = A();
+
+// Create a empty dictionary pass it as a reciever.
+
+take dict = {};
+
+take bound = Function::bind(a.any_method, dict);
+
+// Address can be different due to machine or OS.
+
+showl bound;    // Output : <fn 'any_method' at 0x00000000839680C0 of instance 'Dictionary'>
+
+bound('Hellow dictionary!!');
+
+showl dict.prop;    // Output : Hellow dictionary!!
+
+// Create a dummy calss and instance.
+
+const class Dummy {};
+
+take dummy = Dummy();
+
+Function::call(a.any_method, dummy, 'Very dummy!');
+
+showl dummy.prop;    // Output : Very dummy!
+
+// Function::pass(bound_method, reciever, [args...]) has similar manner as Function::call(...).
+// Only difference is you pass the arguments as an array in Function::pas rather
+// than parameters.

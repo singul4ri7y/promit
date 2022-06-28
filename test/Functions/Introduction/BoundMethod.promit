@@ -1,0 +1,47 @@
+/**
+ * Demonstration of bound method/method.
+ *
+ * Part of Promit Test Suit, location /test/Functions/Introduction/BoundMethod.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 04:08 AM (UTC +06).
+ */
+
+// Bound Method or in short Method are functions, which stays
+// within a class to characterize an object (instance), which
+// then can be called from instance.
+
+// Characteristics of a Bound Mehtod : 
+// (1) Can use 'this' keyword, which denotes current instance.
+// (2) Can only be called from instance.
+// (3) Alwyas has instance bounded within it.
+
+const class A {
+	any_method(prop) {
+		// Characteristic 1.
+
+		this.prop = prop;    // Where 'this' denotes current instance.
+
+		# Note : 'super' denotes super class. Not super instance.
+
+		return prop;
+	}
+};
+
+// Characteristic 2.
+
+take a = A();
+
+a.any_method('hellow');
+
+// Characteristic 3.
+
+take container = a.any_method;
+
+// Address can be different due to your machine, OS.
+
+showl container;    // Output : <fn 'any_method' at 0x00000000864EA1A0 of instance 'A'>
+
+showl container("From 'container'.");    // Output : From 'container'.
+
+# Note : Static functions are not bound method. They are just regular functions
+#        accessible from a class.

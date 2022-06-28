@@ -1,0 +1,40 @@
+/**
+ * A Promit example to convert an integer to string from base 2 - 36.
+ *
+ * Part of Promit Test Suit, location /test/Functions/Examples/ConvertToString.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 03:44 AM (UTC +06).
+ */
+
+// You can do the same thing with a Promit Wrapper Class
+// method 'String.stringify(base)'.
+
+// But this is just a function example.
+
+take numbers = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+// The function we are going to use.
+
+const fn to_string(number, base) {
+	if(base < 2 || base > 36) {
+		System::stderr.write_line('Provided base should be in range of [2-36]!');
+		return '';
+	}
+
+	number |= 0;    // Simple way to conver it to string.
+
+	if(number < base) 
+		return numbers[number];
+	
+	return to_string(number / base, base) + numbers[number % base];
+}
+
+show 'Enter any integer number to be converted to string : ';
+
+take number = recieve(num);
+
+show 'Enter the base : ';
+
+take base = recieve(num);
+
+showl 'The string representation of $number with $base is : ${to_string(number, base)}';

@@ -1,0 +1,32 @@
+/**
+ * Demonstration of functions in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Functions/Introduction/Functions.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 03:56 AM (UTC +06).
+ */
+
+// Use the 'fn' keyword to create a function.
+// Use 'const' to make it constant.
+
+const fn any_function() {
+	showl "Printing from 'any_function'!";
+
+	return 'Returning from any function!';
+}
+
+// Here 'any_function' is just a variable of function
+// type. That means you can pass it to other variables.
+
+# Note : If you pass any function to other variables,
+#        the function name will still be the same.
+
+take container = any_function;
+
+// Address can be different in differnet machines, OS's.
+
+showl container;    // Output : <fn 'any_function' at 0x000000009E922680>
+
+showl "Calling 'container' variable...";
+
+showl "Returned : ${container()}";

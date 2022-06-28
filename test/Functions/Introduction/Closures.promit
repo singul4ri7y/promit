@@ -1,0 +1,39 @@
+/**
+ * Demonstration of closures in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Functions/Introduction/Closures.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 04:02 AM (UTC +06).
+ */
+
+# It is recommended to read /test/Variables/Introduction/Upvalues.promit
+# to have a good understanding of captured values.
+
+// In short closures are functions, which captures a variable, which no
+// longer exists or should not exist. It's not global variables, as global
+// variables are accessible everywhere. It's local variables, which gets 
+// cleaned when getting out of scope.
+
+// In definition, functions which captures upvalues are called closures,
+// which also got closed in a local scope environment.
+
+const fn callme() {
+	take close_me = 'This value will be closed by another function!';
+
+	return fn _() {
+		showl close_me;
+	};
+}
+
+take func = callme();
+
+// Now 'callme' has been called, so theres no way in hell 'close_me'
+// variable can live, as it's a local variable. But, the function '_'
+// closed the variable 'close_me' as an upvalue becoming a closure,
+// so that it can print the value no matter what.
+
+// Address can be different due to your machine, OS.
+
+showl func;    // Output : <closure '_' at 0x000000001AD35F20 with 1 upvalues>
+
+func();
