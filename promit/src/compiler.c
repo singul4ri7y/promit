@@ -1089,6 +1089,8 @@ static void dictionary(bool canAssign) {
 	size_t key;
 	
 	while(match(TOKEN_IDENTIFIER) || match(TOKEN_STRING)) {
+		Token token = parser.previous;
+
 		key = identifierConstant(&parser.previous);
 
 		bool isConst = false;
@@ -1097,6 +1099,21 @@ static void dictionary(bool canAssign) {
 			consume(TOKEN_RIGHT_PAREN, "Expected a ')' after const notation!");
 
 			isConst = true;
+		}
+ 
+		if(!match(TOKEN_COLON)) {
+			if(token.type == TOKEN_IDENTIFIER && (match(TOKEN_COMMA) || check(TOKEN_RIGHT_BRACE))) {
+				namedVariable(&token, false, false);
+
+				SET_N_GET(OP_ADD_DICTIONARY, key);
+				emitByte(isConst);
+
+				continue;
+			} else {
+				error("Expected a ':' after key!");
+
+				break;
+			}
 		}
 		
 		consume(TOKEN_COLON, "Expected a ':' after key!");
