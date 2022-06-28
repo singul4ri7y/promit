@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'File' static properties.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Statics/Fields.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Tuesday) at 01:00 AM (UTC +06).
+ */
+
+// File::EOF means End of File
+
+showl File::EOF;
+
+// File::MAX_OPENABLE denotes the maximum number of files
+// which can be opened simultaneously.
+
+showl File::MAX_OPENABLE;

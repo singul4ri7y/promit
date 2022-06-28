@@ -1,0 +1,23 @@
+/**
+ * Demonsration of 'File::opened' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Opened.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Tuesday) at 01:02 AM (UTC +06).
+ */
+
+// 'File::opened()' returns the number of currently opened
+// files in current VM.
+
+// Currently opened files are 3, because System::stdout, System::stdin
+// and System::stderr files are opened.
+
+showl 'Currently total opened files are : ${File::opened()}';    // Output : Currently total opened files are : 3
+
+// Now let's see opening a file.
+
+take file = File('writeable.txt', File::MODE_WRITE);
+
+showl 'Total opened files after opening a file : ${File::opened()}';
+
+file.close();

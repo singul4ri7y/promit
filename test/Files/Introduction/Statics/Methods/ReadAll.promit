@@ -1,0 +1,15 @@
+/**
+ * Demonsration of 'File::read_all' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/ReadAll.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Tuesday) at 01:10 AM (UTC +06).
+ */
+
+// Use 'File::read_all(filename)' to read all the contents of
+// a file provided the name.
+
+// Returns empty string if failed, otherwise the whole contents
+// of the file.
+
+showl File::read_all('../../common_file.txt');
