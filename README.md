@@ -104,7 +104,7 @@ const fn call() {
 	}
 }
 
-take result = call();    // result is actually the returned closure.
+take result = call();   // Result is actually the returned closure.
 
 showl typeof result;    // Expected 'closure'.
 
@@ -153,7 +153,9 @@ apt install git build-essential
 ```
 **Windows :**
 
-Switch to linux 😁. Nah, just kidding.
+The only way is to switch to Linux 😁.
+
+Nah, just kidding.
 
 Install ``MinGW-w64``, ``Cygwin`` or ``TDM GCC`` which has ``make`` baked within it.
 
