@@ -1,0 +1,28 @@
+/**
+ * Example of 'File.tell' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Tell.promit
+ *
+ * Created by SD Asif Hossein in 28th June, 2022 (Tuesday) at 06:00 PM (UTC +06).
+ */
+
+// 'File.tell()' method returns the position of the cursor
+// from the beginning of the file.
+
+// For example : 
+
+take file = File('common_file.txt', File::MODE_READ);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'common_file.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+showl 'Reading a line from file...';
+showl file.read_line(true);
+
+showl 'Cursor position from the beginning : ${file.tell()}';
+
+// Close the file.
+
+file.close();

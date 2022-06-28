@@ -1,1 +1,6 @@
 Hey, this is a common file shared between programs.
+
+The purpose of this file is to use it in different scenerios, where
+different 'File' methods are used.
+
+## ---- APPEND ---- ##

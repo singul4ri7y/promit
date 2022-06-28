@@ -1,0 +1,41 @@
+/**
+ * Example of 'File.seek' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Seek.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Tuesday) at 12:15 AM (UTC +06).
+ */
+
+// 'File.seek(offset, position)' moves the cursor to desired
+// position in file.
+
+// Say, we have a file variable named 'file', then
+// 
+// file.seek(any_offset, File::SEEK_BEGIN) will move
+//     the cursor to 'any_offset' characters right
+//     from the beginning of the file.
+// file.seek(any_offset, File::SEEK_CURSOR) will move
+//     the cursor to 'any_offset' characters right
+//     from current cursor position.
+// file.seek(any_offset, File::SEEK_END) will move the
+//     cursor to the very end of the file, no matter
+//     'any_offset'.
+
+take file = File('common_file.txt', File::MODE_READ);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'common_file.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+showl 'First line of the file : ${file.read_line(true)}';
+showl 'Rewinding...';
+showl 'Seeking 5 characters to right from the beginning...';
+
+file.seek(5, File::SEEK_BEGIN);
+
+showl 'First line after seeking : ${file.read_line(true)}';
+
+// Close the file.
+
+file.close();

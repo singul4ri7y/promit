@@ -1,0 +1,31 @@
+/**
+ * Example of 'File.rewind' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Rewind.promit
+ *
+ * Created by SD Asif Hossein in 28th June, 2022 (Tuesday) at 06:36 PM (UTC +06).
+ */
+
+// Use 'File.rewind()' moves the cursor to the beginning of the file.
+// Equivalent to 'File.seek(0, File::SEEK_SET)'.
+
+take file = File('common_file.txt', File::MODE_READ);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'common_file.txt'");
+	System::exit(System::EXIT_FAULURE);
+}
+
+show 'Now reading a line : ';
+showl file.read_line(true);
+
+showl 'Now rewinding...';
+
+file.rewind();
+
+show 'Now reading the same line becasue of rewind : ';
+showl file.read_line(true);
+
+// Close the file.
+
+file.close();

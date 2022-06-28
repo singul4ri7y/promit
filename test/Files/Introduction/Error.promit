@@ -1,0 +1,22 @@
+/**
+ * Example of 'File.error' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Error.promit
+ *
+ * Created by SD Asif Hossein in 28th June, 2022 (Tuesday) at 06:13 PM (UTC +06).
+ */
+
+// Use 'File.error()' to checks the file error indecator.
+// In simple terms, the method checks whether an error
+// has occured with that file.
+
+take file;
+
+System::stdout.write_line((file = File('common_file.txt', File::MODE_READ)).error());    // Output : false
+
+// Use 'File.clear_error' to clear any errors associated
+// with that file.
+
+file.clear_error();
+
+file.close();

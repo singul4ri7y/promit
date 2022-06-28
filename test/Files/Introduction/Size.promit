@@ -1,0 +1,15 @@
+/**
+ * Example of 'File.size' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Size.promit
+ *
+ * Created by SD Asif Hossein in 28th June, 2022 (Tuesday) at 06:30 PM (UTC +06).
+ */
+
+// 'File.size()' returns the size of whole file.
+
+take file;
+
+showl "The size of 'common_file.txt' file is : ${(file = File('common_file.txt', File::MODE_READ)).size()}";
+
+file.close();

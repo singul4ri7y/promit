@@ -1,0 +1,24 @@
+/**
+ * Example of 'File.read_rest' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/ReadRest.promit
+ *
+ * Created by SD Asif Hossein in 28th June, 2022 (Tuesday) at 12:50 AM (UTC +06).
+ */
+
+// 'File.read_rest()' reads rest of the file, moving the cursor to the very
+// end of the file.
+
+take file = File('common_file.txt', File::MODE_READ);
+
+// Now read a single line and show it.
+
+showl file.read_line(false);    // Do not ignore newline.
+
+showl 'Now printing rest of the file...';
+
+showl file.read_rest();
+
+// Close the file.
+
+file.close();

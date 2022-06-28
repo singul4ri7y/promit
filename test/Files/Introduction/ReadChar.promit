@@ -1,0 +1,30 @@
+/**
+ * Example of 'File.readc' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/ReadChar.promit
+ *
+ * Created by SD Asif Hossein in 28th June, 2022 (Tuesday) at 01:01 AM (UTC +06).
+ */
+
+// Use 'File.readc()' to read a character.
+
+// Returns read character if reading character is successful,
+// otherwise File::EOF (-1)
+
+take file = File('common_file.txt', File::MODE_READ);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'common_file.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+showl "Reading the whole 'common_file.txt' with 'File.readc()'...\n";
+
+take ch;
+
+while((ch = file.readc()) != File::EOF) 
+	show ch;
+
+// Close the file.
+
+file.close();

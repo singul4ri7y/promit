@@ -1,0 +1,28 @@
+/**
+ * Demonstration of File modes.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Modes.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Tuesday) at 12:27 AM (UTC +06).
+ */
+
+// Available file modes are : 
+// File::MODE_READ -> Read mode
+// File::MODE_WRITE -> Write mode
+// File::MODE_APPEND -> Append mode
+// File::MODE_HYPER_READ -> Read and write mode
+// File::MODE_HYPER_WRITE -> Write and read mode
+// File::MODE_HYPER_APPEND -> Append and read mode
+
+take file = File('common_file.txt', File::MODE_APPEND);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'common_file.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+file.write_line('This is an appended line.');
+
+// Close the file.
+
+file.close();

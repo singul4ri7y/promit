@@ -1,0 +1,35 @@
+/**
+ * Example of 'File.eof' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Eof.promit
+ *
+ * Created by SD Asif Hossein in 28th June, 2022 (Tuesday) at 06:00 PM (UTC +06).
+ */
+
+// Use 'File.eof()' to check whether the cursor is at the end
+// of file.
+
+take file = File('common_file.txt', File::MODE_READ);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'common_file.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+showl 'File is at EOF : ${file.eof()}';    // Output : File is at EOF : false
+
+// Now read the whole file, leaving the cursor
+// at the very last.
+
+showl "Now reading the whole 'common_file.txt' file...";
+
+take line;
+
+while((line = file.read_line(false)) != File::EOF) 
+	show line;
+
+showl 'After reading the whole file : ${file.eof()}';    // Output : After reading the whole file : true
+
+// Close the file.
+
+file.close();

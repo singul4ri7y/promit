@@ -1,0 +1,30 @@
+/**
+ * Example of 'File.read' method.
+ *
+ * Part of Promit Test Suit, location /test/Files/Introduction/Read.promit
+ *
+ * Created by SD Asif Hossein in 28th June, 2022 (Tuesday) at 01:10 AM (UTC +06).
+ */
+
+// Use 'File.read(size)' to read bytes from a file.
+
+// Returns the amount of bytes read, if reading
+// is at the end of the file, returns File::EOF (-1).
+
+take file = File('common_file.txt', File::MODE_READ);
+
+if(!file.is_opened()) {
+	System::print_error("Could not open file 'common_file.txt'");
+	System::exit(System::EXIT_FAILURE);
+}
+
+take bytes = file.read(10);
+
+if(bytes != File::EOF) {
+	showl bytes;
+	showl "Bytes after converted to string : '${String(bytes)}'";
+}
+
+// Close the file.
+
+file.close();
