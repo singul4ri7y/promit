@@ -1,0 +1,24 @@
+/**
+ * Demonstration of 'List.inject' constructor.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Inject.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 03:50 AM (UTC +06).
+ */
+
+// 'List.inject(index, values...)' injects a provided values to a specific
+// index (moving that index variable to the right.
+
+# Note : The maximum value of 'index' only can be len(list) - 1. If any more
+#        that is provided, it will reset to the maximum value it can hold.
+#        And for negative value, that will be 0.
+
+// Returns the length of the list after injection is complete.
+
+take list = ['Not', 'injected!'];
+
+showl 'List : ${list.join(' ')}';
+
+list.inject(1, 1, 2, 3);
+
+showl 'Now list : ${list.join(' ')}';

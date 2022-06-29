@@ -1,0 +1,25 @@
+/**
+ * Demonstration of 'List.foreach'.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Foreach.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 02:37 AM (UTC +06).
+ */
+
+// 'List.foreach(callback)' loops through all the list elements
+// by calling the 'callback' function passing element, element_index
+// and list intsef as the parameters respectively.
+
+take list = ['Yo, ', 'this ', 'is ', 'a ', 'list', '!!'];
+
+list.foreach(fn(elem) {
+	show elem;
+
+	// And do other stuff.
+});    // Output : Yo, this is a list!!
+
+showl;
+
+// It's equivalent to :
+// for(take i = 0; i < len(list); i++) 
+// 	show list[i];

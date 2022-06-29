@@ -1,0 +1,20 @@
+/**
+ * Demonstration of 'List.search_index' constructor.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/SearchIndex.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 03:25 AM (UTC +06).
+ */
+
+# Note : You are requested to read /test/Lists/Introduction/WrapperClass/Search.promit
+#        before continuing if you haven't.
+
+// 'List.search_index(predicate, occurance)' returns the first/last index of a value
+// which satisfies the 'predicate'. Only difference of it between 'List.search'
+// is, 'List.search_index' returns index rather than the actual value.
+
+take list = [1, 2, 3, 4, 5];
+
+show 'The last occurance index of value which is < 4 : ';
+
+showl list.search_index(fn(x) { return x < 4 }, List::LAST_OCCURANCE);

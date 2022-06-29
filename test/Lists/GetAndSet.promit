@@ -1,0 +1,45 @@
+/**
+ * Demonstration of getting and setting elements
+ * to a list.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/GetAndSet.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 03:18 PM (UTC +06).
+ */
+
+// Use '[index]' on a list variable to get the element of that specific
+// index.
+// In short 'list[i]' to get a element.
+
+# Note : Using '[index]' is just like using '[prop_expr]'
+#        in instances and dictionaries. It also uses the
+#        same instruction :).
+
+take list = [1, 2, 3, 4, 5];
+
+showl list[3];    // Output : 4
+
+# Note : List index in promit are 0 base index.
+
+// Getting values out of bound (say using an index of 6 on 5 sized list) will
+// trigger an error.
+
+## showl list[5];     Error : List index out of bound.
+
+// But for setting values, any value can be set in any index.
+// Even in indices which are out of bound.
+
+# Note : This can also be done in ByteList, though it's not
+#        recommended.
+
+list[10] = 'Way out of bound!';
+
+showl list;    // Output : [ 1, 2, 3, 4, 5, null, null, null, null, null, 'Way out of bound!' ]
+
+# Note : Negative indices are allowed.
+
+showl list[-7];    // Output : 5
+
+// Which is evaluated as :
+
+showl list[len(list) - 7];    // Output : 5

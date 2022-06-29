@@ -1,0 +1,17 @@
+/**
+ * Demonstration of 'List.shift' method.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Shfit.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 12:48 AM (UTC +06).
+ */
+
+// 'List.shift' removes and returns the very last element
+// of the list.
+
+take list = [1, 2, 3, 4, 5];
+
+showl 'The list we are using : ${list.join(', ')}';
+
+showl 'The last element after shift : ${list.shift()}';
+showl 'The list now : ${list.join(', ')}';

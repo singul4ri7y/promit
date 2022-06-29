@@ -1,0 +1,27 @@
+/**
+ * Demonstration of 'List.fold_right' method.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/FoldRight.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 12:05 AM (UTC +06).
+ */
+
+// 'List.fold_right(folder, init_val)' folds all the elements
+// of a list from the right. Almost equivalent to 'List.fold',
+// with difference of starting from the right.
+
+// 'folder' function get passed init_val, current_element,
+// current_index and list parameters respectively.
+// Returns the folder result.
+
+take list = [1, 2, 3, 4, 5];
+
+showl 'Current list : ${list.join(', ')}';
+showl "Reversing the list, using 'List.fold'...";
+
+show 'Now list is : ';
+showl list.fold_right(fn _(acc, elem) {
+	acc.insert(elem);
+
+	return acc;
+}, []).join(', ');

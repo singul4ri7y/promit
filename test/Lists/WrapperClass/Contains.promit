@@ -1,0 +1,17 @@
+/**
+ * Demonstration of 'List.contains'.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Contains.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 03:09 AM (UTC +06).
+ */
+
+// 'List.contains(value, start_index)' returns true if an element exist
+// in a list, otherwise false.
+
+// Search will start from 'start_index'. If none provided, default
+// 'search_index' will be 0.
+
+showl [1, 2, 3, 4].contains(3);            // Output : true
+showl ['Nothing'].contains('Anything');    // Output : false
+showl [1, 2, 3, 4, 5].contains(2, 2);      // Output : false

@@ -1,0 +1,18 @@
+/**
+ * Demonstration of lists in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/Lists.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 02:57 PM (UTC +06).
+ */
+
+// Create a list in Promit using a '[' left square brace
+// and expressions [expression, expresssion, ...]
+
+take list = [1, 2, true ? 100 : -100, { a : 10, b : 20, c(const) : 30 }, 'singul4ri7y'];
+
+showl list;    // Output : [ 1, 2, 100, { c(c) : 30, b : 20, a : 10 }, 'singul4ri7y' ]
+
+// Empty list.
+
+showl [];    // Output : []

@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'List.join' method.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Join.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 04:00 AM (UTC +06).
+ */
+
+// As you probably already know, 'List.join(seperator)' binds all the elements
+// into one string seperated by the 'seperator' and returning it.
+
+// Any values other than string as 'seperator' will be converted to string.
+
+showl [1, 2, 3, 4, 5].join(' <-> ');    // See for yourself.
+showl ['Very', 'weird', 'crazy', 'shit!'].join(System());
+showl ['Crazier', 'shit!!'].join([].at);

@@ -1,0 +1,20 @@
+/**
+ * Demonstration of 'List.fill' method.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Fill.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 03:10 AM (UTC +06).
+ */
+
+// 'List.fill(value, start, end)' fills a portion of a list, 
+// starting from 'start' and 'end' (exclusive).
+
+// If none provided for 'start' or 'end', default values will
+// be set, which are 0 for 'start', len(list) for 'end'.
+
+# Note : 'List.fill' makes changes to the list.
+
+take list = List(10);
+
+showl 'The list we have now : ${list.join(', ')}';
+showl 'The list after filling : ${list.fill('Filled', 2, 9).join(', ')}';

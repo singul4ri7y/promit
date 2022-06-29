@@ -1,0 +1,24 @@
+/**
+ * Demonstration of 'List.stringify'.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Stringify.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 12:05 AM (UTC +06).
+ */
+
+// 'List.stringify()' converts a list to string and returns it.
+
+// 'List.stringify' is automatically called, if any string operations
+// are done to string, such as using list in string interpolation,
+// doing crazy things, like ('A string and ' + [1, 2, 3]) etc.
+
+take list = [1, 2, 3];
+
+showl 'This is list : $list';
+
+// Which is equivalent to : 
+
+showl 'This is list : ${list.stringify()}';
+
+// And 'list.stringify()' is equivalent to 'list.join(',')'.
+// Notice no spaces.

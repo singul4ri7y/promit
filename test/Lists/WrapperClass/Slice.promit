@@ -1,0 +1,26 @@
+/**
+ * Demonstration of 'List.slice' method.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Slice.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 12:20 AM (UTC +06).
+ */
+
+// The 'List.slice(start, end, steps)' returns a new list
+// shallow copy selected from 'start' to 'end' (exclusive),
+// performing 'steps' step each time.
+
+// Equivalent to 'Array.prototype.slice(start, end)' in JavaScript
+// with some little upgrade.
+
+take list = List::range(16, 1);
+
+showl 'The list we are using : ${list.join(', ')}';
+showl 'Creating a new list starting from 0 to 10 (exclusive) : ';
+
+showl 'With step 2 : ${list.slice(0, 10, 2).join(', ')}';
+
+# Note : If no 'step' is provided, default step will
+#        be used, which is 1.
+
+showl 'With step 1 : ${list.slice(0, 10).join(', ')}';
