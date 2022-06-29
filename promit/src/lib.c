@@ -3934,13 +3934,13 @@ static NativePack listInsert(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack listReduce(VM* vm, int argCount, Value* values) {
+static NativePack listFold(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	listInstanceList;
 
 	if(argCount < 2) {
-		NATIVE_R_ERR("Too few arguments to call List.reduce(reducer, initial_value)!");
+		NATIVE_R_ERR("Too few arguments to call List.fold(folder, initial_value)!");
 	}
 
 	if(list -> count == 0u) {
@@ -3950,26 +3950,26 @@ static NativePack listReduce(VM* vm, int argCount, Value* values) {
 	}
 
 	if(!IS_FUNCTION(values[1]) && !IS_CLOSURE(values[1])) {
-		NATIVE_R_ERR("The first argument should be callable in List.reduce(reducer, initial_value)!");
+		NATIVE_R_ERR("The first argument should be callable in List.fold(folder, initial_value)!");
 	}
 
 	register uint64_t i = 0u;
 
-	Value reducer = values[1],
+	Value folder  = values[1],
 	      initval = argCount > 2 ? values[2] : list -> values[i++];
 	
-	uint64_t arity = getArity(reducer);
+	uint64_t arity = getArity(folder);
 	arity = arity <= 4u ? arity : 4u;
 	
 	for(; i < list -> count; i++) {
-		stack_push(vm, reducer);
+		stack_push(vm, folder);
 
 		Value args[] = { initval, list -> values[i], NUMBER_VAL(i), OBJECT_VAL(list) };
 
 		for(short j = 0; j < arity; j++) 
 			stack_push(vm, args[j]);
 		
-		if(callValue(vm, reducer, arity) && (IS_NATIVE(reducer) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
+		if(callValue(vm, folder, arity) && (IS_NATIVE(folder) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			initval = stack_pop(vm);
 		} else {
 			pack.hadError = true;
@@ -3983,13 +3983,13 @@ static NativePack listReduce(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack listReduceRight(VM* vm, int argCount, Value* values) {
+static NativePack listFoldRight(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	listInstanceList;
 
 	if(argCount < 2) {
-		NATIVE_R_ERR("Too few arguments to call List.reduce_right(reducer, initial_value)!");
+		NATIVE_R_ERR("Too few arguments to call List.fold_right(reducer, initial_value)!");
 	}
 
 	if(list -> count == 0u) {
@@ -3999,26 +3999,26 @@ static NativePack listReduceRight(VM* vm, int argCount, Value* values) {
 	}
 
 	if(!IS_FUNCTION(values[1]) && !IS_CLOSURE(values[1])) {
-		NATIVE_R_ERR("The first argument should be callable in List.reduce_right(reducer, initial_value)!");
+		NATIVE_R_ERR("The first argument should be callable in List.fold_right(folder, initial_value)!");
 	}
 
 	register long i = list -> count - 1;
 
-	Value reducer = values[1],
+	Value folder  = values[1],
 	      initval = argCount > 2 ? values[2] : list -> values[i--];
 	
-	uint64_t arity = getArity(reducer);
+	uint64_t arity = getArity(folder);
 	arity = arity <= 4u ? arity : 4u;
 	
 	for(; i >= 0; i--) {
-		stack_push(vm, reducer);
+		stack_push(vm, folder);
 
 		Value args[] = { initval, list -> values[i], NUMBER_VAL(i), OBJECT_VAL(list) };
 
 		for(short j = 0; j < arity; j++) 
 			stack_push(vm, args[j]);
 		
-		if(callValue(vm, reducer, arity) && (IS_NATIVE(reducer) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
+		if(callValue(vm, folder, arity) && (IS_NATIVE(folder) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			initval = stack_pop(vm);
 		} else {
 			pack.hadError = true;
@@ -5654,8 +5654,8 @@ void initListLib(VM* vm) {
 
 	defineMethod(listClass, TAKE_STRING("insert", 6u, false), listInsert);
 	defineMethod(listClass, TAKE_STRING("insert_front", 12u, false), listInsertFront);
-	defineMethod(listClass, TAKE_STRING("reduce", 6u, false), listReduce);
-	defineMethod(listClass, TAKE_STRING("reduce_right", 12u, false), listReduceRight);
+	defineMethod(listClass, TAKE_STRING("fold", 4u, false), listFold);
+	defineMethod(listClass, TAKE_STRING("fold_right", 10u, false), listFoldRight);
 	defineMethod(listClass, TAKE_STRING("map", 3u, false), listMap);
 	defineMethod(listClass, TAKE_STRING("slice", 5u, false), listSlice);
 	defineMethod(listClass, TAKE_STRING("append", 6u, false), listAppend);
