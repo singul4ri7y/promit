@@ -1,0 +1,20 @@
+/**
+ * Demonstration of 'List.value()';
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Value.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 02:30 AM (UTC +06).
+ */
+
+// 'List.value()' returns the primitive list representation 
+// of 'List' wrapper class.
+
+
+# Note : Learn more about wrapper classes in /test/WrapperClass.promit
+
+take list = List(1, 2, 3, 4);
+
+showl 'Looks like list : ${list.join(', ')}';                   // Output : 1, 2, 3, 4
+showl 'But typeof list is : ${typeof list}';                    // Output : instance
+showl 'Primitive list : ${list.value().join(', ')}';            // Output : 1, 2, 3, 4
+showl 'Type of got primitive list : ${typeof list.value()}';    // Output : list

@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'List::range' static method.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Statics/Range.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 04:07 AM (UTC +06).
+ */
+
+// 'List::range(end, start, steps)' creates a list full of integers
+// starting from 'start' (inclusive) to 'end' (exclusive) following
+// 'step' steps forward.
+
+// It's equivalent to Python's range(end, start, step) function.
+
+showl 'List of 1-50 : ${List::range(51, 1).join(', ')}';
+showl 'List of 1-50 (only odds) : ${List::range(51, 1, 2).join(', ')}';

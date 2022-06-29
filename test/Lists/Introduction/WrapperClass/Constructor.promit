@@ -1,0 +1,39 @@
+/**
+ * Demonstration of 'List' constructor.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Constructor.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 12:05 AM (UTC +06).
+ */
+
+// The 'List' constructor creates a new list.
+
+// Usage : List(length | elements...)
+
+// If only one argument is passed in the constructor,
+// and the element is a number, then the constructor
+// will count it as list length and construct a list
+// using 'null' of that length.
+// Otherwise, 'List' will create a new list having
+// only that value.
+
+// If only one argument is passed and if it happens
+// to be a list, then 'List' constructor will create
+// a shallow copy of provided list.
+
+// For multiple arguments, 'List' will use all of them
+// to create a new list.
+
+take normal_list = [1, 2, 3];
+
+take list = List(normal_list);
+
+showl normal_list == list;    // Output : false
+
+list = List(10);
+
+showl list;    // Output : [ null, null, ..., null ]
+
+list = List(normal_list, 10);
+
+showl list;    // Output : [ [ 1, 2, 3 ], 10 ]

@@ -1,0 +1,13 @@
+/**
+ * Get the length of a list.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/LengthOfList.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 03:30 PM (UTC +06).
+ */
+
+// Use the 'len' function to identify the length of a list.
+
+take list = [1, 2, 3, 4, 5];
+
+showl len(list);    // Output : 5

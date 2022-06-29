@@ -1,0 +1,31 @@
+/**
+ * Demonstration of 'List.fold' method.
+ *
+ * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Fold.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 11:50 PM (UTC +06).
+ */
+
+// 'List.fold(folder, init_val)' folds over all the elements
+// of a list.
+
+// Equivalent to 'Array.prototype.reduce(reducer, init)' in JavaScript.
+
+// In 'folder' function, init_val, current_element, current_index and
+// list will be passed respectively.
+// Returns the reduces element.
+
+# Note : If 'init_val' is not provided, then the very first
+#        element will be used as initial value.
+
+take list = [1, 2, 3, 4, 5];
+
+showl list.fold(fn _(acc, elem) { return acc + elem }, 5);    // Output : 20
+
+take another_list = [{}, 11, 22, 33, 44, 55];
+
+showl another_list.fold(fn _(acc, elem, i, list) {
+	acc['key' + i] = 'Value' + elem;
+	
+	return acc;
+});    // Output : See for yourself :).
