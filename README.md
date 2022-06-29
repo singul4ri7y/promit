@@ -11,6 +11,8 @@
 ## Introduction
 Promit is <b>object oriented</b>, <b>bytecode interpreted</b>, <b>lightweight</b>, <b>elegant</b> and <b>fast</b> programming language. It has simple yet <b>aesthetic syntax</b> and easy, <b>condensed</b> library  which helps to tackle down any modern programs.
 
+<p><b>It's a community project. Feel free to contribute 😀.</b> I will merge all the pull request related to bug fixing, feature update and improvements.
+
 **Key features :** 
 - High-Level Language with dynamically typed syntax.
 ```dart
@@ -168,6 +170,7 @@ git clone https://github.com/singul4ri7y/promit
 cd promit/promit
 make build_release_x64
 cd ../bin/Release-x64/
+./promit
 ```
 Enjoy the binary.
 
