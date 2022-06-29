@@ -1,0 +1,20 @@
+/**
+ * Demonsration of 'Dictionary' class constructor.
+ *
+ * Part of Promit Test Suit, location /test/Dictionary/Introduction/WrapperClass/Constructor.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 01:35 AM (UTC +06).
+ */
+
+// Dictionary(dict) constructor creates identical but new dictionary
+// within the instance.
+
+take dict = { a : 10, b : 20, c : 30 };
+
+showl dict;    // Output : { c : 30, b : 20, a : 10 };
+
+take instance_dict = Dictionary(dict);
+
+showl instance_dict;    // Output : { c : 30, b : 20, a : 10 }
+
+showl dict == instance_dict.value();    // Output : false

@@ -1,0 +1,18 @@
+/**
+ * Determine the number of key-value pairs (lenght) of a dictionary.
+ *
+ * Part of Promit Test Suit, location /test/Dictionary/Introduction/LengthOfDictionary.promit
+ *
+ * Created by SD Asif Hossein in 29th June, 2022 (Wednesday) at 04:20 AM (UTC +06).
+ */
+
+// Use the 'len' function to determine the number of key-value
+// pairs of a dictionary.
+
+take dict = {
+	a : 10,
+	b : 20,
+	c : 30
+};
+
+showl len(dict);    // Output : 3
