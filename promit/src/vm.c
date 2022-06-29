@@ -1240,7 +1240,7 @@ InterpretResult run(VM* vm) {
 
 		printf(" ]\n\nIntruction: ");
 
-		disassembleInstruction(&getFrameFunction(frame) -> chunk, (size_t) (frame -> ip - getFrameFunction(frame) -> chunk.code));
+		disassembleInstruction(&getFunction(frame -> function) -> chunk, (size_t) (frame -> ip - getFunction(frame -> function) -> chunk.code));
 
 		printf("\n\n");
 #endif

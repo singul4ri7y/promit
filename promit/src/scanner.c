@@ -8,7 +8,6 @@ void initScanner(Scanner* scanner, const char* source) {
 	scanner -> start               = scanner -> current = source;
 	scanner -> buffer              = source;
 	scanner -> line                = 1;
-	scanner -> stringFragmented    = false;
 	scanner -> singleInterpolation = false;
 	scanner -> globalInterpolation = false;
 	scanner -> interpolationDepth  = 0;
@@ -321,6 +320,9 @@ static void identifier(Scanner* scanner) {
 }
 
 static void string(Scanner* scanner, int recursionDepth, char quotation) {
+	bool interpolated = false;
+	bool dictionary   = false;
+
 	char c;
 
 	while(!isAtEnd(scanner)) {
@@ -354,17 +356,22 @@ static void string(Scanner* scanner, int recursionDepth, char quotation) {
 					switch(c) {
 						case '(': enqueue(scanner, makeToken(scanner, TOKEN_LEFT_PAREN)); break;
 						case ')': enqueue(scanner, makeToken(scanner, TOKEN_RIGHT_PAREN)); break;
+						case '{': {
+							// If any error happens, that will be informed
+							// by the compiler.
+
+							dictionary = true;
+
+							enqueue(scanner, makeToken(scanner, TOKEN_LEFT_BRACE));
+
+							break;
+						}
 						case '}': {
-							scanner -> interpolationDepth--;
+							if(dictionary == false) 
+								scanner -> interpolationDepth--;
+							else dictionary = false;
 
-							Token token;
-
-							token.start  = scanner -> start;
-							token.length = 1;
-							token.type   = TOKEN_INTERPOLATION_END;
-							token.line   = scanner -> line;
-
-							enqueue(scanner, token);
+							enqueue(scanner, makeToken(scanner, TOKEN_RIGHT_BRACE));
 							
 							break;
 						}
@@ -412,8 +419,6 @@ static void string(Scanner* scanner, int recursionDepth, char quotation) {
 						case '\'': 
 						case '"': {
 							char q = *scanner -> start++;
-							
-							advance(scanner);
 
 							string(scanner, recursionDepth + 1, q);
 							
@@ -433,10 +438,11 @@ static void string(Scanner* scanner, int recursionDepth, char quotation) {
 			if(c == '\\') advance(scanner);
 
 			if(c == '$') {
-				if(scanner -> stringFragmented) enqueue(scanner, makeToken(scanner, TOKEN_STRING_CONTINUE));
+				if(interpolated == true) 
+					enqueue(scanner, makeToken(scanner, TOKEN_STRING_CONTINUE));
 				else {
-					scanner -> stringFragmented = true;
-					
+					interpolated = true;
+
 					enqueue(scanner, makeToken(scanner, TOKEN_STRING));
 				}
 
@@ -467,8 +473,9 @@ static void string(Scanner* scanner, int recursionDepth, char quotation) {
 			}
 
 			if((c == '\'' && quotation == '\'') || (c == '"' && quotation == '"')) {
-				if(scanner -> stringFragmented) {
-					if(scanner -> current != scanner -> start)  enqueue(scanner, makeToken(scanner, TOKEN_STRING_CONTINUE));
+				if(interpolated == true) {
+					if(scanner -> start != scanner -> current) 
+						enqueue(scanner, makeToken(scanner, TOKEN_STRING_CONTINUE));
 				} else enqueue(scanner, makeToken(scanner, TOKEN_STRING));
 
 				advance(scanner);
@@ -544,8 +551,6 @@ Token scanToken(Scanner* scanner) {
 			case '\'': 
 			case '"': {
 				char q = *scanner -> start++;
-
-				scanner -> stringFragmented = false;
 
 				string(scanner, 0, q);
 

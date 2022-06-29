@@ -798,20 +798,13 @@ static void globalInterpolation(bool canAssign) {
 static void stringContinue(bool canAssign) {
 	string(canAssign);
 
-	if(parser.stringDepth > 0) 
-		parser.stringDepth--;
-	else emitByte(OP_ADD);
+	emitByte(OP_ADD);
 }
 
 static void interpolation(bool canAssign) {
-	parser.stringDepth++;
-	
 	expression();
 	
-	if(parser.stringDepth > 0) 
-		parser.stringDepth--;
-	
-	consume(TOKEN_INTERPOLATION_END, "Expected an end of string interpolation!");
+	consume(TOKEN_RIGHT_BRACE, "Expected an end of string interpolation!");
 	
 	emitByte(OP_ADD);
 }
@@ -1333,7 +1326,6 @@ ParseRule parseRules[] = {
 	[TOKEN_INTERPOLATION_IDENTIFIER] = { NULL, singleInterpolation, NULL, PREC_ASSIGNMENT },
 	[TOKEN_GLOBAL_INTERPOLATION]     = { NULL, globalInterpolation, NULL, PREC_ASSIGNMENT },
 	[TOKEN_INTERPOLATION_START]      = { NULL, interpolation, NULL, PREC_ASSIGNMENT },
-	[TOKEN_INTERPOLATION_END]        = { NULL, NULL, NULL, PREC_NONE },
 
 	[TOKEN_TYPEOF]                   = { _typeof, NULL, NULL, PREC_NONE },
 	[TOKEN_CONST]                    = { NULL, NULL, NULL, PREC_NONE },
