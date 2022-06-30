@@ -5827,6 +5827,10 @@ static NativePack stringAppend(VM* vm, int argCount, Value* values) {
 		index += value -> length;
 	}
 
+	// Termination character.
+
+	buffer[size] = 0;
+
 	pack.value = OBJECT_VAL(TAKE_STRING(buffer, size, true));
 
 	return pack;
