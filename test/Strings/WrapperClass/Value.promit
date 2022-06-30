@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'String.value' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Constructor.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 10:41 PM (UTC +06).
+ */
+
+// 'String.value' returns the primitive string of a
+// wrapper string instance.
+
+take string = String('Is this a string?');
+
+showl typeof string;               // Output : instance
+showl typeof string.value();       // Output : string
+showl string.value() == string;    // Output : true

@@ -1,0 +1,20 @@
+/**
+ * Demonstration of 'String::stringify' static method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Statics/Stringify.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 01:12 AM (UTC +06).
+ */
+
+// 'String::stringify(value)' converts any value to it's string
+// representation.
+
+const class A { __represent__() { return NaN } };
+
+showl String::stringify(101325);
+showl String::stringify(System());
+showl String::stringify(A());
+
+showl typeof String::stringify(A());
+
+// See the output for yourself.

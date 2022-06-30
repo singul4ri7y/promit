@@ -1,0 +1,15 @@
+/**
+ * Demonstration of 'String.lowercase' mehtod.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Lowercase.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 10:48 PM (UTC +06).
+ */
+
+// 'String.lowercase' returns a new string by converting the current string 
+// to lowercase letters.
+
+take string = "DoN't LoweRCase Me";
+
+showl 'Current string : $string';
+showl 'Lowercase string : ${string.lowercase()}';

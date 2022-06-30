@@ -1,0 +1,19 @@
+/**
+ * Demonstration of 'String.substr' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Substr.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 11:44 PM (UTC +06).
+ */
+
+// As you can already guess by the name, 'String.substr(start, end)' returns
+// the substring which starts from 'start' index (inclusive) and ends at
+// the 'end' index (exclusive). If 'start' or 'end' is provided with positive
+// number more than len(string) or negative number less than 0, will be set
+// to len(string) or 0 respectively.
+
+take string = "Let's say, take this substring for example";
+
+showl 'The string we have : $string';
+showl 'Substring starting from 20 to 28 : ${string.substr(21, 30)}';
+showl 'Substring starting from -21 to -12 : ${string.substr(-21, -12)}';

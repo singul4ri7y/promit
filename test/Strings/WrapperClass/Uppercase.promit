@@ -1,0 +1,15 @@
+/**
+ * Demonstration of 'String.uppercase' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Uppercase.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 10:45 PM (UTC +06).
+ */
+
+// 'String.uppercase()' returns a new string by coverting all the characters
+// of current string to uppercase.
+
+take string = 'SD Asif Hossein';
+
+showl 'Current string : $string';
+showl 'Uppercase string : ${string.uppercase()}';

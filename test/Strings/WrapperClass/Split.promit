@@ -1,0 +1,20 @@
+/**
+ * Demonstration of 'String.split' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Split.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 11:05 PM (UTC +06).
+ */
+
+// 'String.split(delimeter)' returns a list splitting the current
+// string into an ordered substrings by search for the 'delimeter'.
+
+# Note : The 'delimeter' must be a string. If anything other than
+#        that is provided, will be converted to string.
+
+showl 'Now a very crazy example...';
+
+take string = ['This', 'is', 'string'].join(System());
+
+showl 'The string we are using : $string';
+showl 'Now the splitted substrings : ${string.split(System()).join(', ')}';

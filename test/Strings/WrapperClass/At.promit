@@ -1,0 +1,24 @@
+/**
+ * Demonstration of 'String.at' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/At.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 08:57 PM (UTC +06).
+ */
+
+// 'String.at(index)' returns the specific character string denoted
+// by the provided 'index'. This function mostly does what '[index]'
+// operator does. The only difference is 'String.at' won't raise
+// any error if positive index is greater than len(string) - 1 or
+// negative index is less than 0.
+
+# Note : A character in Promit means a string with just 1 character.
+# Note : Negative index are supported
+# Note : If no index is passed, default index will be used, whcih is 0.
+
+take string = 'This is a string!!';
+
+showl string.at(5);            // Output : i
+showl string.at(1234235);      // Output : !
+showl string.at(-13);          // Output : i
+showl string.at(-78746314);    // Output : T

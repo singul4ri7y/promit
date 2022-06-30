@@ -1,0 +1,11 @@
+/**
+ * Demonstration of 'String.reverse' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Repeat.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:55 AM (UTC +06).
+ */
+
+// 'String.reverse()' returns a new reversed version of current string.
+
+showl 'SD Asif Hossein'.reverse();

@@ -1,0 +1,14 @@
+/**
+ * Demonstration of 'String.pad_right' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/PadRight.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:00 AM (UTC +06).
+ */
+
+// With similar manner 'String.pad_right(length, pad)' adds pad the
+// the right of the string of the provided length.
+
+take cellphone = '01239556102';
+
+showl 'We have sent a varification code in number : ${cellphone.substr(0, 5).pad_right(6, '*')}. Please kindly check it out.';

@@ -1,0 +1,13 @@
+/**
+ * Demonstration of identification of length of a string.
+ *
+ * Part of Promit Test Suit, location /test/Strings/LengthOfString.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 04:33 PM (UTC +06).
+ */
+
+// Use the 'len' function to identify the length of a string.
+
+take string = 'This is a string!!';
+
+showl "The length of 'string' variable is : ${len(string)}";    // Output : The length of 'string' variable is : 18

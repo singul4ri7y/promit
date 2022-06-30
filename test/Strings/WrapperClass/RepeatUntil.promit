@@ -1,0 +1,15 @@
+/**
+ * Demonstration of 'String.repeat' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/PadLeft.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:11 AM (UTC +06).
+ */
+
+// 'String.repeat_until(length)' returns a new formed string by repeating
+// current string until it reaches the provided 'length'.
+
+take string = 'Something';
+
+showl 'Current string : $string';
+showl 'After repeating until length 50 : ${string.repeat_until(50)}';

@@ -1,0 +1,24 @@
+/**
+ * Demonstration of 'String.index' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Repeat.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:09 AM (UTC +06).
+ */
+
+// 'String.index(substr, occurance)' returns the first character 
+// index of first/last occurance of provided substring if it 
+// exists. Otherwise -1.
+
+// The 'occurance' can be : 
+// String::FIRST_OCCURANCE -> Returns the first occurance substring index.
+// String::LAST_OCCURANCE -> Returns the last occurance substring index.
+
+// If no value is provided to the 'occurance' parameter, default will
+// be set, which is String::FIRST_OCCURANCE.
+
+take string = 'Substring is a Substring. Period.';
+
+showl 'The string we have : $string';
+showl "The first occurance of 'Substring' is : ${string.index('Substring')}";
+showl "The last occurance of 'Substring' is : ${string.index('Substring', String::LAST_OCCURANCE)}";

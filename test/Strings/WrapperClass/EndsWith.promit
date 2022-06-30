@@ -1,0 +1,15 @@
+/**
+ * Demonstration of 'String.ends_with' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/EndsWith.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 01:02 AM (UTC +06).
+ */
+
+// 'String.ends_with(substr)' returns true if current string ends
+// with the provided substring, otherwise false.
+
+take name = 'SD Asif Hossein';
+
+showl name.ends_with('Hossein');    // Output : true
+showl name.ends_with('SD');         // Output : false

@@ -1,0 +1,28 @@
+/**
+ * Demonstration of 'String.replace' and 'String.replace_all' methods.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Replace.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:32 AM (UTC +06).
+ */
+
+// 'String.replace(string, replacer, occurance)' replaces first/last 
+// 'string' portion of current string with 'replacer'.
+
+// 'occurance' can be :
+// String::FIRST_OCCURANCE -> Replaces the first occurance.
+// String::LAST_OCCURANCE -> Replaces the last occurance.
+
+// If no occurance value is passed, default will be used, which 
+// is String::FIRST_OCCURANCE.
+
+take string = 'ReplaceMe hellow promit ReplaceMe';
+
+showl 'Current string : $string';
+showl "After replacing first occurance of 'ReplaceMe' : ${string.replace('ReplaceMe', 'Replaced!')}";
+showl "After replacing last occurance of 'ReplaceMe' : ${string.replace('ReplaceMe', 'Replaced!', String::LAST_OCCURANCE)}";
+
+// Use 'String.replace_me(string, replacer)' to replace all the occurances.
+
+showl "After replacing all the occurance of 'ReplaceMe' : ${string.replace_all('ReplaceMe', 'Replaced!')}";
+

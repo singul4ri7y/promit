@@ -1,0 +1,15 @@
+/**
+ * Demonstration of 'String.repeat' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Repeat.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:09 AM (UTC +06).
+ */
+
+// 'String.repeat(times)' returns a new formed string by repeating current
+// string specific amount of 'times'.
+
+take string = "5 Times! ";
+
+showl 'Current string : $string';
+showl 'After repeating 5 times : ${string.repeat(5)}';

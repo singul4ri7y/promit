@@ -1,0 +1,44 @@
+/**
+ * Demonstration of string inteprolation in Promit
+ *
+ * Part of Promit Test Suit, location /test/Strings/StringInterpolation.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 08:40 PM (UTC +06).
+ */
+
+// Promit supports modern string interpolation.
+
+// String inteprolation is a feature accross programming languages
+// which let's you to write expressions inside of a string and use
+// the expression and include variable values into a string.
+
+// E.g. '1 + 2 = ${1 + 2}';    where ${1 + 2} section is the 
+// written expression inside of a string, whhich will be
+// evaluated.
+
+take global = 'A simple global!';
+
+// Promit supports 3 types of string inteprolations.
+// (1) Normal curly inteprolaion -> ${ single expression }
+// (2) Singlular/Identifier interpolation -> $variable_name
+// (3) Global identifier interpolation -> $:global_variable
+
+showl 'This is a string ${'inteprolation'}!!';    // Output : This is a string interpolation!!
+showl 'This is generated expression within a string : ${(100 - 1) / 77}';    // Output : This is generated expression within a string : 1.2857142857142858
+
+// You will encounter other interpolation examples in other written programs
+// within this test suit.
+
+showl 'This is a identifer interpolation : $global';
+
+{
+	take global = "But it's actually local!";
+
+	showl 'Getting \$global : $global';      // Output : Getting $global : But it's actually local!
+
+	showl 'Getting \$:global : $:global';    // Output : Getting $:global : A simple global!
+}
+
+// Nested string interpolation.
+
+showl "This is string ${"interpolaion with '$global' and ${"wait ${"are"} you ${'m' + '${'a' + 'd'}'}!!"}"}";

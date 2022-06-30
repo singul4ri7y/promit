@@ -1,0 +1,15 @@
+/**
+ * Demonstration of multiline strings in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Strings/MultilineStrings.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 04:47 PM (UTC +06).
+ */
+
+// Promit supports multiline strings.
+
+take string = "This is a
+multiline string! 'Sup
+everyone!!";
+
+showl string;

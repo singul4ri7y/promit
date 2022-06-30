@@ -1,0 +1,21 @@
+/**
+ * Demonstration of 'String.slice' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Slice.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 01:07 AM (UTC +06).
+ */
+
+# If you haven't read /test/Strings/WrapperClass/Substr.promit, you
+# are requested to do so.
+
+// 'String.slice(start, end, steps)' is completely same as
+// 'String.substr(start, end)', except it supports steps.
+
+// It moves 'step' steps forward while constructing the string.
+
+take string = 'This is a string without substring?';
+
+showl string.slice(10, len(string), 2);    // Output : srn ihu usrn?
+
+// WTF? Yeah, I know.

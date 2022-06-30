@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'String.pad_left' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/PadLeft.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:00 AM (UTC +06).
+ */
+
+// 'String.pad_left(length, pad)' adds pad to the left of provided length.
+
+# Note : If no pad string is provided as 'pad', space ' ' character will be
+#        used as pads.
+
+take number = ' <- pads';
+
+showl 'After adding pads : ${number.pad_left(7, '*')}';

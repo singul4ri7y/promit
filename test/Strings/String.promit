@@ -1,0 +1,12 @@
+/**
+ * Demonstration of strings in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Strings/String.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 04:33 PM (UTC +06).
+ */
+
+// Use single or double quotes to create a string.
+
+showl 'This is a single quote string!';
+showl "This is a double quote stirng!";

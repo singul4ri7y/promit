@@ -1,0 +1,12 @@
+/**
+ * Demonstration of 'String::from_code' static method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Statics/FromCode.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 01:15 AM (UTC +06).
+ */
+
+// 'String::from_code(codes...)' constructs a string from provided
+// ASCII codes.
+
+showl String::from_code(65, 66, 67, 33);    // Output : ABC!

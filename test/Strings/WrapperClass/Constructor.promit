@@ -1,0 +1,27 @@
+/**
+ * Demonstration of 'String' constructor.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Constructor.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 08:51 PM (UTC +06).
+ */
+
+// The 'String' constructor creates a string wrapper instance, creating
+// a string from the provided parameter.
+
+# Note : If any value other than string is passed, it will be converted
+#        to string.
+
+# Note : 'String' constructor does not create a new shallow copy of string.
+#        It represents the same string.
+
+take string = 'This is a string!';
+take inst_string = String(string);
+
+showl "'string' : $string";
+showl "'inst_string' : $inst_string";
+
+showl "Due to string interning immutability, 'string == inst_string' : ${string == inst_string}";    // Output : Due to string interning immutability, 'string == inst_string' : true
+
+showl "'typeof string' : ${typeof string}";              // Output : 'typeof string' : string
+showl "'typeof inst_string' : ${typeof inst_string}";    // Output : 'typeof inst_string' : instance

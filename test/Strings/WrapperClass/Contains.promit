@@ -1,0 +1,14 @@
+/**
+ * Demonstration of 'String.contains' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Contains.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:20 AM (UTC +06).
+ */
+
+// 'String.contains(substr)' whether the substring exists in current string.
+// If exists returns true, otherwise false.
+
+take string = "Are you searching for this substring?";
+
+showl string.contains('substring');    // Output : true

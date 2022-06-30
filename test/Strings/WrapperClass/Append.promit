@@ -1,0 +1,19 @@
+/**
+ * Demonstration of 'String.append' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Append.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 10:33 PM (UTC +06).
+ */
+
+// 'String.append(strings...)' returns a new formed string by 
+// appending provided string with current string.
+
+// Again, strings are immutable. 'String.append' creates a new string without
+// modifing current string.
+
+take string = 'This ';
+
+showl "'string' : $string";
+showl 'Now after appending strings : ${string.append('is ', 'appended ', 'string!!')}';
+showl "Now the actual 'string' variable : $string";

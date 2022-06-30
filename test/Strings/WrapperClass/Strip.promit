@@ -1,0 +1,21 @@
+/**
+ * Demonstration of string stripping (Stripper!!!) in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Strip.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 11:11 PM (UTC +06).
+ */
+
+// Stripping a string means removing whitespaces from string.
+
+// List of string stripper methods in promit : 
+// (1) String.strip_left() -> Strips left end of the string.
+// (2) String.strip_right() -> Strips right end of the string.
+// (3) String.strip() -> Strips both end of the string.
+
+take string = '  \t  \v This is a string.  \t\t\f';
+
+showl 'The string : $string';
+showl "Using 'string.srtip_left' : ${string.strip_left()}";
+showl "Using 'string.strip_right' : ${string.strip_right()}";
+showl "Using 'string.strip()' : ${string.strip()}";

@@ -1,0 +1,26 @@
+/**
+ * Demonstration of getting a character from a string.
+ *
+ * Part of Promit Test Suit, location /test/Strings/GetACharacter.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 04:55 PM (UTC +06).
+ */
+
+// Use '[index]' to get a character of specified index from 
+// a string.
+
+# Note : If the index is greater than len(string), it will
+#        trigger a string index out of bound error.
+
+# Note : Negative index are supported.
+
+take string = 'This is a string!!';
+
+showl string[5];    // Output : i
+
+## showl string[100];    Error : String index out of bound!
+
+showl string[-13];    // Output : i
+
+// Which is equivalent to :
+// showl string[len(string) - 13];

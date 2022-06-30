@@ -1,0 +1,22 @@
+/**
+ * Demonstration of escape string characters in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Strings/EscapeCharacters.promit
+ *
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 04:39 PM (UTC +06).
+ */
+
+// Escape string characters are : 
+// (1) \b -> Backspace
+// (2) \f -> Form feed (New page)
+// (3) \n -> New line
+// (4) \r -> Carriage return
+// (5) \t -> Horizontal tab
+// (6) \v -> Vertical Tab
+// (7) \' -> Single quotation
+// (8) \" -> Double quotation
+// (9) \\ -> Backslash
+
+showl 'This is horizontal \ttab!';
+showl 'This is new \nline';
+showl 'This is vertical \vtab';

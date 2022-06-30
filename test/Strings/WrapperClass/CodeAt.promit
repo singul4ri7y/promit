@@ -1,0 +1,18 @@
+/**
+ * Demonstration of 'String.code_at' method.
+ *
+ * Part of Promit Test Suit, location /test/Strings/WrapperClass/Repeat.promit
+ *
+ * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:55 AM (UTC +06).
+ */
+
+// 'String.code_at(index)' works as the same manner of 'String.at(index).
+// Only difference is 'String.code_at' returns the character code rather
+// than the character string.
+
+# Note : Returned codes are ASCII codes only (for now).
+
+take string = 'Time to abort the mission!';
+
+showl string.code_at();       // Output : 84
+showl string.code_at(-18);    // Output : 97
