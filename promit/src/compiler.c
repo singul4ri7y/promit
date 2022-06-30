@@ -18,7 +18,6 @@ typedef struct {
 	Token current;
 	bool hadError;
 	bool panicMode;
-	int stringDepth;
 } Parser;
 
 typedef struct {
@@ -2259,7 +2258,6 @@ ObjFunction* compile(VM* vm, const char* source) {
 	initScanner(&scanner, source);
 
 	parser.hadError = parser.panicMode = false;
-	parser.stringDepth = 0;
 	
 	globalScanner = &scanner;
 	globalVM      = vm;
