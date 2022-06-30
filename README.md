@@ -3,6 +3,8 @@
 <div align= "center">
 	<a href= "#introduction">Introduction</a>
 	.
+	<a href= "#contribution">Contribution</a>
+	.
 	<a href= "#why">Why</a>
 	.
 	<a href= "#build">Build</a>
@@ -10,8 +12,6 @@
 
 ## Introduction
 Promit is <b>object oriented</b>, <b>bytecode interpreted</b>, <b>lightweight</b>, <b>elegant</b> and <b>fast</b> programming language. It has simple yet <b>aesthetic syntax</b> and easy, <b>condensed</b> library  which helps to tackle down any modern programs.
-
-<p><b>It's a community project. Feel free to contribute 😀.</b> I will merge all the pull request related to bug fixing, feature updates and improvements.
 
 **Key features :** 
 - High-Level Language with dynamically typed syntax.
@@ -132,6 +132,17 @@ switch(bird) {
 }
 ```
  - Has loops (``while``, ``for``, ```do ... while```), control flow (``if``, ``else`` and ternary operator ```condition ? expr : else_expr```) and many more!
+
+## Contribution
+<p>First of all it's a community project. <b>So, feel free to contribute 😀.</b> I will try to merge all the pull request I will get related to bug fixes, feature updates and improvements.</p>
+
+**Follow the below rules of contribution:**
+ - All the codes contributed in this repository must be of MIT license.
+ - If you are a contributor, leave your fullname, email and current age (Yes, ``age``. I want person of any age to contribute to this project and I want to show it to the people, even if you are 8 or 70 year old) in such manners ``(index) fullname <email> age``. If you do not want to put your age, Use <restricted> in the age portion.
+ - Leave full details of your contribution in the commit changes log and in the pull request as well.
+ - Try leaving comments, as that helps (Like I'm the one to talk).
+
+<i>Happy contribution.</i>
 
 ## Why
 <img src= "logos/logo.jpg" type= "image/jpg" align= "right" width= "350" />
