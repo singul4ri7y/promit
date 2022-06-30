@@ -6031,8 +6031,6 @@ static bool trimable(char ch) {
 	switch(ch) {
 		case '\n':
 		case '\f':
-		case '\r':
-		case '\b':
 		case '\v':
 		case '\t':
 		case ' ':
@@ -6163,6 +6161,12 @@ static NativePack stringSubstr(VM* vm, int argCount, Value* values) {
 		if(abs(end) <= string -> length) 
 			end = end >= 0 ? end : string -> length + end;
 		else end = end > 0 ? string -> length : 0;
+	}
+
+	if(end <= start) {
+		pack.value = OBJECT_VAL(TAKE_STRING("", 0u, false));
+
+		return pack;
 	}
 
 	size_t length = end - start;
