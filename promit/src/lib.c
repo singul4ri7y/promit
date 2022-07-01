@@ -2112,7 +2112,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 					NATIVE_R_ERR("Invalid minute value found in dictionary provided in Time.init(dict)");
 				}
 
-				_time -> tm_mday = (int) value;
+				_time -> tm_min = (int) value;
 			}
 
 			if(getField(dict, TAKE_STRING("sec", 3u, false), container)) {
