@@ -23,7 +23,7 @@ const num    = 49;
 showl Number(Anything()) + Number(dict) + Number(string) + Number(num);    // Output : 700
 
 // Note : If any instance representation
-// (with the __represent__() method) cannot
+// (with the __represent__() method) cannot be
 // represented with number, constructor
 // will convert it to NaN.
 

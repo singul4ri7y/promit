@@ -3,7 +3,7 @@
  *
  * Part of Promit Test Suit, location /test/Strings/WrapperClass/Repeat.promit
  *
- * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 12:55 AM (UTC +06).
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 12:55 AM (UTC +06).
  */
 
 // 'String.code_at(index)' works as the same manner of 'String.at(index).

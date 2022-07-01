@@ -3,18 +3,40 @@
  *
  * Part of Promit Test Suit, location /test/Strings/WrapperClass/Statics/Stringify.promit
  *
- * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 01:12 AM (UTC +06).
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 01:12 AM (UTC +06).
  */
 
 // 'String::stringify(value)' converts any value to it's string
 // representation.
 
-const class A { __represent__() { return NaN } };
+const class A {
+    stringify() { return 'stringify A' }
+    
+    __represent__() { return '__represent__ A' }
+};
 
-showl String::stringify(101325);
-showl String::stringify(System());
-showl String::stringify(A());
+const class B { __represent__() { return '__represent__ B' } };
+
+# While coverting an instance/dictionary to string, 
+# first it tries to call the 'stringify' method.
+# if 'stringify' method is not found, then it
+# tries to call '__represent__' method and
+# converts it to string.
+
+# Note : If stringify method does not return any
+#        string value, it will be converted to 
+#        string.
+
+showl String::stringify(101325);      // Output : 101325
+showl String::stringify(System());    // Output : <instance of 'System' class>
+showl String::stringify(A());         // Output : stringify A
+showl String::stringify(B());         // Output : __represent__ B
 
 showl typeof String::stringify(A());
 
 // See the output for yourself.
+
+# Note : In any string operations for instance
+#        dictionaries, 'stringify' or alternatively
+#        '__represent__' functions will be invoked
+#        automatically.

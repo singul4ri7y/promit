@@ -3,7 +3,7 @@
  *
  * Part of Promit Test Suit, location /test/Strings/WrapperClass/StartsWith.promit
  *
- * Created by SD Asif Hossein in 31 July, 2022 (Friday) at 01:00 AM (UTC +06).
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 01:00 AM (UTC +06).
  */
 
 // 'String.starts_with(substring)' returns true if current string
