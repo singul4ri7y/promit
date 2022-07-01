@@ -53,6 +53,11 @@ typedef struct NumberData {
 	double number;
 } NumberData;
 
+typedef struct BooleanData {
+	bool hadError;
+	bool boolean;
+} BooleanData;
+
 bool callValue(VM*, Value, uint8_t);
 
 void initVM(VM*); 
@@ -67,7 +72,7 @@ void stack_push(VM*, Value);
 Value stack_pop(VM*);
 
 bool valuesEqual(const Value, const Value);
-bool toBoolean(VM*, Value*);
+BooleanData toBoolean(VM*, Value*);
 
 int __printf(const char*, ...);
 NumberData toNumber(VM*, Value* value);
