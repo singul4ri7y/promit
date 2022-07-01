@@ -1,0 +1,17 @@
+/**
+ * Demonstration of unary operators in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Operators/Unary.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 02:25 PM (UTC +06).
+ */
+
+// Promit supports unary operators.
+
+take number = 101553;
+
+showl '!number : ${!number}';
+showl '~number : ${~number}';
+showl '-number : ${-number}';
+showl '++number : ${++number}';    // Pre increment operator.
+showl 'number++ : ${number++}';    // Post increment operator.

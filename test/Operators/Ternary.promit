@@ -1,0 +1,16 @@
+/**
+ * Demonstration of a ternary operator in promit.
+ *
+ * Part of Promit Test Suit, location /test/Operators/Ternary.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 03:32 PM (UTC +06).
+ */
+
+// Promit has one ternary operator,
+// which does control flow in expressions.
+
+// condition ? expression_if_true : expression_if_false
+
+take ss = true ? 'Taken screenshot' : "Haven't taken screenshot";
+
+showl ss;    // Ouptut : Taken screenshot;

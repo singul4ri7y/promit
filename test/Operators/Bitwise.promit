@@ -1,0 +1,19 @@
+/**
+ * Demonstration of bitwise operators in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Operators/Bitwise.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 02:34 PM (UTC +06).
+ */
+
+// Promit has cuple of bitwise operators.
+
+take a = 32779234,
+     b = 23455;
+
+showl 'a & b : ${a & b}';
+showl 'a | b : ${a | b}';
+showl 'a ^ b : ${a ^ b}';
+showl 'a << b : ${a << b}';
+showl 'a >> b : ${a >> b}';
+showl '~a and ~b : ${~a} and ${~b}';

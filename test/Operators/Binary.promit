@@ -1,0 +1,26 @@
+/**
+ * Demonstration of binary operators in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Operators/Binary.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 03:29 PM (UTC +06).
+ */
+
+take a = 10034229,
+     b = 3343;
+
+showl 'a + b : ${a + b}';
+showl 'a - b : ${a - b}';
+showl 'a / b : ${a / b}';
+showl 'a * b : ${a * b}';
+showl 'a % b : ${a % b}';
+showl 'a == b : ${a == b}';
+showl 'a != b : ${a != b}';
+showl 'a && b : ${a && b}';
+showl 'a || b : ${a || b}';
+
+showl 'As conditions : ';
+showl 'true && true : ${true && true}';
+showl 'false && true : ${false && true}';
+showl 'true || false : ${true || false}';
+showl 'false || false : ${false || false}';
