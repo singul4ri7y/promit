@@ -558,24 +558,27 @@ static char* concat(VM* vm, char* str1, char* str2) {
 	return result;
 }
 
-bool toBoolean(VM* vm, Value* value) {
-	bool boolean = false;
+BooleanData toBoolean(VM* vm, Value* value) {
+	BooleanData data;
+
+	data.hadError = false;
+	data.boolean  = false;
 				
 	if(IS_NUMBER(*value)) {
 		if(!IS_NAN(*value)) 
-			boolean = !!value -> as.number;
-		else boolean = false;
+			data.boolean = !!value -> as.number;
+		else data.boolean = false;
 	}
 	else if(IS_BOOL(*value)) 
-		boolean = value -> as.boolean;
+		data.boolean = value -> as.boolean;
 	else if(IS_NULL(*value)) 
-		boolean = false;
+		data.boolean = false;
 	else if(IS_OBJECT(*value)) {
 		switch(OBJ_TYPE(*value)) {
 			case OBJ_STRING: {
 				ObjString* string = VALUE_STRING(*value);
 				
-				boolean = !!string -> length;
+				data.boolean = !!string -> length;
 				
 				break;
 			}
@@ -583,7 +586,7 @@ bool toBoolean(VM* vm, Value* value) {
 			case OBJ_LIST: {
 				ObjList* list = VALUE_LIST(*value);
 				
-				boolean = !!list -> count;
+				data.boolean = !!list -> count;
 				
 				break;
 			}
@@ -591,7 +594,7 @@ bool toBoolean(VM* vm, Value* value) {
 			case OBJ_BYTELIST: {
 				ObjByteList* byteList = VALUE_BYTELIST(*value);
 				
-				boolean = !!byteList -> size;
+				data.boolean = !!byteList -> size;
 				
 				break;
 			}
@@ -599,7 +602,7 @@ bool toBoolean(VM* vm, Value* value) {
 			case OBJ_FILE: {
 				ObjFile* file = VALUE_FILE(*value);
 				
-				boolean = file -> file != NULL;
+				data.boolean = file -> file != NULL;
 				
 				break;
 			}
@@ -619,30 +622,127 @@ bool toBoolean(VM* vm, Value* value) {
 					tableGet(&instance -> fields, numberField, &container);
 
 					if(!IS_NAN(container.value)) 
-						boolean = !!container.value.as.number;
-					else boolean = false;
+						data.boolean = !!container.value.as.number;
+					else data.boolean = false;
 				}
 				else if(klass == vmListClass) {
 					tableGet(&instance -> fields, listField, &container);
 
-					boolean = !!VALUE_LIST(container.value) -> count;
+					data.boolean = !!VALUE_LIST(container.value) -> count;
 				} 
 				else if(klass == vmStringClass) {
 					tableGet(&instance -> fields, stringField, &container);
 
-					boolean = !!VALUE_STRING(container.value) -> length;
-				} else boolean = true;
+					data.boolean = !!VALUE_STRING(container.value) -> length;
+				} else {
+					ObjInstance* instance = VALUE_INSTANCE(*value);
+
+					ValueContainer represent;
+
+					ObjString* name = takeString(vm, "__represent__", 13u, false);
+
+					bool found = false;
+
+					if((found = tableGet(&instance -> fields, name, &represent)));
+					else if((found = tableGet(&instance -> klass -> methods, name, &represent)));
+
+					if(found) {
+						Value callable = represent.value;
+
+						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
+							stack_push(vm, callable);
+
+							if(callValue(vm, callable, 0u)) {
+								vm -> stack[vm -> stackTop - 1u] = *value;
+
+								if(run(vm) != INTERPRET_RUNTIME_ERROR) {
+									callable = stack_pop(vm);
+									
+									return toBoolean(vm, &callable);
+								}
+							}
+
+							data.hadError = true;
+							
+							return data;
+						}
+						else if(IS_NATIVE(callable)) {
+							NativeFn native = VALUE_NATIVE(callable) -> function;
+
+							NativePack pack = native(vm, 1, (Value*) value);
+
+							if(!pack.hadError) 
+								return toBoolean(vm, &pack.value);
+							
+							data.hadError = pack.hadError;
+							
+							return data;
+						}
+					}
+				}
+
+				break;
+			}
+
+			case OBJ_DICTIONARY: {
+				Table* fields = &VALUE_DICTIONARY(*value) -> fields;
+
+				ObjString* represent = TAKE_STRING("__represent__", 13u, false);
+
+				ValueContainer valueContainer;
+				
+				if(tableGet(fields, represent, &valueContainer)) {
+					Value callable = valueContainer.value;
+
+					if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
+						stack_push(vm, callable);
+
+						uint8_t arity = IS_FUNCTION(callable) ? VALUE_FUNCTION(callable) -> arity :
+										VALUE_CLOSURE(callable) -> function -> arity;
+						
+						if(arity >= 1) {
+							stack_push(vm, *value);
+
+							for(uint8_t i = 0u; i < arity - 1; i++) 
+								stack_push(vm, NULL_VAL);
+						}
+
+						if(callValue(vm, callable, arity) && run(vm) != INTERPRET_RUNTIME_ERROR) {
+							// Reuse the variable.
+
+							callable = stack_pop(vm);
+
+							return toBoolean(vm, &callable);
+						}
+						
+						data.hadError = true;
+						
+						return data;
+					}
+					else if(IS_NATIVE(callable)) {
+						NativeFn native = VALUE_NATIVE(callable) -> function;
+
+						NativePack pack = native(vm, 1, (Value*) value);
+
+						if(!pack.hadError) 
+							return toBoolean(vm, &pack.value);
+						
+						data.hadError = pack.hadError;
+						
+						return data;
+					}
+				}
 
 				break;
 			}
 			
 			default: 
-				boolean = true;
+				data.boolean = true;
 				break;
 		}
 	}
 				
-	return boolean;
+	return data;
 }
 
 static uint32_t readBytes(CallFrame* frame, bool isLong) {
@@ -2272,8 +2372,13 @@ InterpretResult run(VM* vm) {
 				uint32_t stride = readBytes(frame, true);
 				
 				Value value = POP();
+
+				BooleanData data = toBoolean(vm, &value);
+
+				if(data.hadError) 
+					return INTERPRET_RUNTIME_ERROR;
 				
-				if(!toBoolean(vm, &value)) 
+				if(!data.boolean) 
 					frame -> ip += stride;
 				
 				break;
@@ -2285,8 +2390,13 @@ InterpretResult run(VM* vm) {
 				uint32_t stride = readBytes(frame, true);
 				
 				Value value = *peek(vm, 0);
+
+				BooleanData data = toBoolean(vm, &value);
+
+				if(data.hadError) 
+					return INTERPRET_RUNTIME_ERROR;
 				
-				if(!toBoolean(vm, &value)) 
+				if(!data.boolean) 
 					frame -> ip += stride;
 				
 				break;
@@ -2314,8 +2424,13 @@ InterpretResult run(VM* vm) {
 			
 			case OP_NOT: {
 				Value* value = peek(vm, 0);
+
+				BooleanData data = toBoolean(vm, value);
+
+				if(data.hadError) 
+					return INTERPRET_RUNTIME_ERROR;
 				
-				value -> as.boolean = !toBoolean(vm, value);
+				value -> as.boolean = !data.boolean;
 				value -> type = VAL_BOOLEAN;
 				
 				break;

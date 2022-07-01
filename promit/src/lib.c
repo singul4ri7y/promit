@@ -3214,7 +3214,6 @@ NumberData toNumber(VM* vm, Value* value) {
 								if(run(vm) != INTERPRET_RUNTIME_ERROR) {
 									callable = stack_pop(vm);
 									
-									
 									return toNumber(vm, &callable);
 								}
 							}
@@ -4737,7 +4736,15 @@ static NativePack listSearch(VM* vm, int argCount, Value* values) {
 			if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 				Value fnres = stack_pop(vm);
 
-				if(toBoolean(vm, &fnres)) {
+				BooleanData data = toBoolean(vm, &fnres);
+
+				if(data.hadError) {
+					pack.hadError = true;
+
+					return pack;
+				}
+
+				if(data.boolean) {
 					pack.value = value;
 
 					return pack;
@@ -4762,7 +4769,15 @@ static NativePack listSearch(VM* vm, int argCount, Value* values) {
 			if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 				Value fnres = stack_pop(vm);
 
-				if(toBoolean(vm, &fnres)) {
+				BooleanData data = toBoolean(vm, &fnres);
+
+				if(data.hadError) {
+					pack.hadError = true;
+
+					return pack;
+				}
+
+				if(data.boolean) {
 					pack.value = value;
 
 					return pack;
@@ -4826,7 +4841,15 @@ static NativePack listSearchIndex(VM* vm, int argCount, Value* values) {
 			if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 				Value fnres = stack_pop(vm);
 
-				if(toBoolean(vm, &fnres)) {
+				BooleanData data = toBoolean(vm, &fnres);
+
+				if(data.hadError) {
+					pack.hadError = true;
+
+					return pack;
+				}
+
+				if(data.boolean) {
 					pack.value = NUMBER_VAL(i);
 
 					return pack;
@@ -4851,7 +4874,15 @@ static NativePack listSearchIndex(VM* vm, int argCount, Value* values) {
 			if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 				Value fnres = stack_pop(vm);
 
-				if(toBoolean(vm, &fnres)) {
+				BooleanData data = toBoolean(vm, &fnres);
+
+				if(data.hadError) {
+					pack.hadError = true;
+
+					return pack;
+				}
+
+				if(data.boolean) {
 					pack.value = NUMBER_VAL(i);
 
 					return pack;
@@ -4906,7 +4937,15 @@ static NativePack listFilter(VM* vm, int argCount, Value* values) {
 		if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			Value fnres = stack_pop(vm);
 
-			if(toBoolean(vm, &fnres)) {
+			BooleanData data = toBoolean(vm, &fnres);
+
+			if(data.hadError) {
+				pack.hadError = true;
+
+				return pack;
+			}
+
+			if(data.boolean) {
 				if(result -> count + 1u >= result -> capacity) {
 					size_t oldCapacity = result -> capacity;
 
@@ -5066,7 +5105,15 @@ static NativePack listCheck(VM* vm, int argCount, Value* values) {
 		if(callValue(vm, predicate, arity) && (IS_NATIVE(predicate) || run(vm) != INTERPRET_RUNTIME_ERROR)) {
 			Value fnres = stack_pop(vm);
 
-			bool ret = toBoolean(vm, &fnres);
+			BooleanData data = toBoolean(vm, &fnres);
+
+			if(data.hadError) {
+				pack.hadError = true;
+
+				return pack;
+			}
+
+			bool ret = data.boolean;
 
 			if(type ^ ret) {
 				pack.value = BOOL_VAL(ret & true);
