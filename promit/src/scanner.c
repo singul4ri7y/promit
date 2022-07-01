@@ -389,14 +389,12 @@ static void string(Scanner* scanner, int recursionDepth, char quotation) {
 						case '>': {
 							if(match(scanner, '>')) enqueue(scanner, makeToken(scanner, TOKEN_RIGHT_SHIFT));
 							else if(match(scanner, '=')) enqueue(scanner, makeToken(scanner, TOKEN_GREATER_EQUAL));
-							
-							enqueue(scanner, makeToken(scanner, TOKEN_GREATER)); break;
+							else enqueue(scanner, makeToken(scanner, TOKEN_GREATER)); break;
 						}
 						case '<': {
 							if(match(scanner, '<')) enqueue(scanner, makeToken(scanner, TOKEN_LEFT_SHIFT));
 							else if(match(scanner, '=')) enqueue(scanner, makeToken(scanner, TOKEN_LESS_EQUAL));
-							
-							enqueue(scanner, makeToken(scanner, TOKEN_LESS)); break;
+							else enqueue(scanner, makeToken(scanner, TOKEN_LESS)); break;
 						}
 						case '%': enqueue(scanner, makeToken(scanner, TOKEN_MODULUS)); break;
 						case ':': {
