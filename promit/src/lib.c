@@ -3130,6 +3130,8 @@ void initTimeLib(VM* vm) {
 	defineMethod(timeClass, TAKE_STRING("set_utc_hours", 13u, false), timeSetUTCHours);
 	defineMethod(timeClass, TAKE_STRING("get_minutes", 11u, false), timeGetMinutes);
 	defineMethod(timeClass, TAKE_STRING("get_utc_minutes", 15u, false), timeGetUTCMinutes);
+	defineMethod(timeClass, TAKE_STRING("set_minutes", 11u, false), timeSetMinutes);
+	defineMethod(timeClass, TAKE_STRING("set_utc_minutes", 15u, false), timeSetUTCMinutes);
 	defineMethod(timeClass, TAKE_STRING("get_seconds", 11u, false), timeGetSeconds);
 	defineMethod(timeClass, TAKE_STRING("get_utc_seconds", 15u, false), timeGetUTCSeconds);
 	defineMethod(timeClass, TAKE_STRING("set_seconds", 11u, false), timeSetSeconds);
