@@ -2052,7 +2052,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 
 				value = VALUE_NUMBER(container.value);
 
-				if(value < -4000 || value > 4000) {
+				if(value < -4000 || value > 4000 || isnan(value)) {
 					NATIVE_R_ERR("Invalid year value provided! How far are you willing to go?");
 				}
 
@@ -2066,7 +2066,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				
 				value = VALUE_NUMBER(container.value);
 
-				if(value < 0 || value > 11) {
+				if(value < 0 || value > 11 || isnan(value)) {
 					NATIVE_R_ERR("Invalid month index found in dictionary provided in Time.init(dict)!");
 				}
 
@@ -2080,7 +2080,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				
 				value = VALUE_NUMBER(container.value);
 
-				if(value < 1 || value > 31) {
+				if(value < 1 || value > 31 || isnan(value)) {
 					NATIVE_R_ERR("Invalid date found in dictionary provided in Time.init(dict)");
 				}
 
@@ -2094,7 +2094,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				
 				value = VALUE_NUMBER(container.value);
 
-				if(value < 0 || value > 23) {
+				if(value < 0 || value > 23 || isnan(value)) {
 					NATIVE_R_ERR("Invalid hour value found in dictionary provided in Time.init(dict)");
 				}
 
@@ -2108,7 +2108,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				
 				value = VALUE_NUMBER(container.value);
 
-				if(value < 0 || value > 59) {
+				if(value < 0 || value > 59 || isnan(value)) {
 					NATIVE_R_ERR("Invalid minute value found in dictionary provided in Time.init(dict)");
 				}
 
@@ -2122,7 +2122,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				
 				value = VALUE_NUMBER(container.value);
 
-				if(value < 0 || value > 59) {
+				if(value < 0 || value > 59 || isnan(value)) {
 					NATIVE_R_ERR("Invalid second value found in dictionary provided in Time.init(dict)");
 				}
 
@@ -2136,11 +2136,11 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				
 				value = VALUE_NUMBER(container.value);
 
-				if(value < 0 || value > 999) {
+				if(value < 0 || value > 999 || isnan(value)) {
 					NATIVE_R_ERR("Invalid millisecond value found in dictionary provided in Time.init(dict)");
 				}
 
-				tv.tv_usec = ((int) value) * 1000;
+				tv.tv_usec = (tv.tv_usec % 1000) + (((int) value) * 1000);
 			}
 
 			if(getField(dict, TAKE_STRING("usec", 4u, false), container)) {
@@ -2150,11 +2150,11 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				
 				value = VALUE_NUMBER(container.value);
 
-				if(value < 0 || value > 999) {
+				if(value < 0 || value > 999 || isnan(value)) {
 					NATIVE_R_ERR("Invalid microsecond value found in dictionary provided in Time.init(dict)");
 				}
 
-				tv.tv_usec = (int) value;
+				tv.tv_usec = (tv.tv_usec / 1000) * 1000 + (int) value;
 			}
 
 			setField(instance, secField, NUMBER_VAL((double) mktime(_time)));
