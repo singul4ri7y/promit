@@ -733,7 +733,7 @@ BooleanData toBoolean(VM* vm, Value* value) {
 					}
 				}
 
-				break;
+				// Fallthrough.
 			}
 			
 			default: 
