@@ -2247,6 +2247,8 @@ static NativePack timeGetUTCYear(VM* vm, int argCount, Value* values) {
 	struct tm* _time = gmtime(&sec);
 
 	pack.value = NUMBER_VAL((double) (_time -> tm_year + 1900));
+
+	return pack;
 }
 
 static NativePack timeSetYear(VM* vm, int argCount, Value* values) {
