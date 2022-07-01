@@ -3030,7 +3030,7 @@ static NativePack timeSetMicroseconds(VM* vm, int argCount, Value* values) {
 
 	timeInstanceTime;
 
-	pack.value = NUMBER_VAL(us - (usec / 1000));
+	pack.value = NUMBER_VAL(us - (usec % 1000));
 
 	setField(instance, usecField, NUMBER_VAL((usec / 1000) * 1000 + us));
 
@@ -3057,7 +3057,7 @@ static NativePack timeSetUTCMicroseconds(VM* vm, int argCount, Value* values) {
 
 	timeInstanceTime;
 
-	pack.value = NUMBER_VAL(us - (usec / 1000));
+	pack.value = NUMBER_VAL(us - (usec % 1000));
 
 	setField(instance, usecField, NUMBER_VAL((usec / 1000) * 1000 + us));
 
