@@ -1,0 +1,24 @@
+/**
+ * Demonstration of 'continue' and 'break' in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Loops/ContinueAndBreak.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 04:12 AM (UTC +06).
+ */
+
+// Like other programming languages, Promit
+// supports 'continue' and 'break' in all the 
+// loops.
+
+take i = 0;
+
+while(++i) {
+	if(i == 9) 
+		continue;    // Start from the very beginning of the loop.
+	
+	if(i == 20) break;
+
+	showl "Now 'i' is : $i";
+}
+
+showl "Notice no \"Now 'i' is : 9\"?";

@@ -1,0 +1,21 @@
+/**
+ * Demonstration of while loops in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Loops/While.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 04:02 AM (UTC +06).
+ */
+
+// 'while() {}' loop in Promit works in similar way
+// like other C/C++ like languages.
+
+take num = 10;
+
+while(num--) 
+	showl 'Hello Promit!';
+
+take i = 0;
+
+while(i++ < 10) {
+	showl 'Case #$i : Your solve!';
+}

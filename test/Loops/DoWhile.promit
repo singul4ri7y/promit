@@ -1,0 +1,18 @@
+/**
+ * Demonstration of do..while loop in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Loops/DoWhile.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 04:08 AM (UTC +06).
+ */
+
+// Promit also supports do.. while.. loops.
+
+do {
+	if('This condition is true') {
+		showl 'This is a very common use of do..while loop. Very useful though!';
+		break;
+	}
+	
+	showl 'Will not print!';
+} while(false);

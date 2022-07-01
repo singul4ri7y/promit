@@ -1,0 +1,20 @@
+/**
+ * Demonstration of for loops in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Loops/For.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 04:05 AM (UTC +06).
+ */
+
+// For loops works the similar manner
+// like other C/C++ programming languages.
+
+take list = [];
+
+for(take i = 1; i <= 100; i++) 
+	list.insert(i);
+
+showl list;
+
+for(; len(list); ) 
+	showl 'The last element of list : ${list.shift()}';
