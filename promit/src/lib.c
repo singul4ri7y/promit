@@ -2157,10 +2157,8 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				tv.tv_usec = (int) value;
 			}
 
-			uint64_t t = mktime(_time);
-
 			setField(instance, secField, NUMBER_VAL((double) mktime(_time)));
-			setField(instance, usecField, tv.tv_usec);
+			setField(instance, usecField, NUMBER_VAL(tv.tv_usec));
 		} else {
 			NATIVE_R_ERR("Expected the first argument to be a number/dictionary/time in Time.init(seconds | time)!");
 		}
