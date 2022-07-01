@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'Time.get_minutes' and 'Time.get_utc_minutes'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetMinutes.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 12:22 PM (UTC +06).
+ */
+
+// Use 'Time.get_minutes()' to get current minutes of a local
+// time and use 'Time.get_utc_minutes()' to get current minutes
+// of UTC time.
+
+take time = Time();
+
+showl 'Current local time minutes are : ${time.get_minutes()}';
+showl 'Current UTC time minutes are : ${time.get_utc_minutes()}';

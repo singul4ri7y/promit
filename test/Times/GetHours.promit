@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'Time.get_hours' and 'Time.get_utc_hours'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetHours.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 11:45 PM (UTC +06).
+ */
+
+// Use 'Time.get_hours()' to get current hours of local time
+// and use 'Time.get_utc_hours()' to get current hours of
+// UTC time.
+
+take time = Time();
+
+showl 'Current local time hours : ${time.get_hours()}';
+showl 'Current UTC time hours : ${time.get_utc_hours()}';

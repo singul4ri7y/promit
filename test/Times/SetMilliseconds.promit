@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'Time.set_milliseconds' and 'Time.set_utc_milliseconds''.
+ *
+ * Part of Promit Test Suit, location /test/Times/SetMinutes.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 01:14 PM (UTC +06).
+ */
+
+# Note : There is no timezone on earth which has milliseconds
+#        difference with the UTC time. So, 'Time.set_milliseconds(ms)'
+#        'Time.set_milliseconds(ms)' are practically the same thing.
+
+take time = Time();
+
+showl 'Current time is : ${time.stringify_iso()}';
+showl 'Changing milliseconds of time, ms difference : ${time.set_milliseconds(999)}';

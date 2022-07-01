@@ -1,0 +1,22 @@
+/**
+ * Demonstration of 'Time.set'.
+ *
+ * Part of Promit Test Suit, location /test/Times/Set.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 01:51 PM (UTC +06).
+ */
+
+// 'Time.set(sec, usec)' is used to set current Unix EPOCH
+// using 'sec' parameter and current microseconds using
+// 'usec' paramter.
+
+// Returns true if the values are successfully set, otherwise
+// false.
+
+take time = Time();
+
+showl 'Current time is : ${time.stringify_iso()}';
+
+showl 'Setting Unix EPOCH to 4828874355 and microseconds to 45576 : ${time.set(4828874355, 45576)}';
+
+showl 'Now time is : ${time.stringify_iso()}';

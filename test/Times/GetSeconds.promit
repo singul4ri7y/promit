@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'Time.get_seconds' and 'Time.get_utc_seconds'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetSeconds.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 12:52 PM (UTC +06).
+ */
+
+// Use 'Time.get_seconds()' to get current seconds of local time
+// and use 'Time.get_utc_seconds()' to get current seconds of 
+// UTC time.
+
+take time = Time();
+
+showl 'Current local time seconds : ${time.get_seconds()}';
+showl 'Current UTC time seconds : ${time.get_utc_seconds()}';

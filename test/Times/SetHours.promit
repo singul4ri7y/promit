@@ -1,0 +1,21 @@
+/**
+ * Demonstration of 'Time.set_hours' and 'Time.set_utc_hours'.
+ *
+ * Part of Promit Test Suit, location /test/Times/SetHours.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 11:47 PM (UTC +06).
+ */
+
+// Use 'Time.set_hours(hours)' to set the current hours of local time
+// and use 'Time.set_utc_hours(hours)' to set the current hours
+// of UTC time.
+
+take time = Time();
+
+showl 'Current time : $time';
+showl 'Changing local time hours, second(s) difference : ${time.set_hours(6)}';
+
+showl 'Now current time is : $time';
+showl 'Changing UTC time hours, second(s) difference : ${time.set_utc_hours(17)}';
+
+showl 'Now time is : $time';

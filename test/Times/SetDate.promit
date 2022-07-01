@@ -1,0 +1,20 @@
+/**
+ * Demonstration of 'Time.set_date' and 'Time.set_utc_date'.
+ *
+ * Part of Promit Test Suit, location /test/Times/SetDate.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 06:50 PM (UTC +06).
+ */
+
+// Use 'Time.set_date(date)' to the date of current local time
+// and use 'Time.set_utc_date(date)' set date of UTC time.
+
+take time = Time();
+
+showl 'Current time is : $time';
+showl 'Changing date of current local time, second(s) difference : ${time.set_date(16)}';
+
+showl 'Now time is : $time';
+showl 'Changing date of UTC time, second(s) difference : ${time.set_utc_date(6)}';
+
+showl 'Now time is : $time';

@@ -1,0 +1,40 @@
+/**
+ * Demonstration of 'Time.details' method.
+ *
+ * Part of Promit Test Suit, location /test/Times/Details.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 01:55 PM (UTC +06).
+ */
+
+// 'Time.details(preference)' returns broken down local/UTC
+// time as a dictionary upon preference.
+
+// Preferences :
+// Time::PREFER_UTC -> Returns broken down UTC time.
+// Time::PREFER_LOCAL -> Returns broken down local time.
+
+// If no preference is set, default will be used, which is
+// Time::PREFER_UTC
+
+// {
+//	yea r -> The year
+//	month -> The month index
+//	date  -> The date
+//	day   -> The weekday index
+//	hour  -> The hour
+//	min   -> The minute
+//	sec   -> The second
+//	msec  -> The millisecond
+//	usec  -> The microsecond
+//	dls   -> Daylight saving details, 0 -> No DLS, 1 -> DLS is on.
+// }
+
+take time = Time();
+
+show 'Broken down local time is : ';
+showl time.details(Time::PREFER_LOCAL);
+
+showl;
+
+show 'Broken down UTC time is : ';
+showl time.details();

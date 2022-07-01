@@ -1,0 +1,18 @@
+/**
+ * Demonstration of 'Time.get_day' and 'Time.get_utc_day'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetDay.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 10:56 PM (UTC +06).
+ */
+
+// Use 'Time.get_day()' to get the current weekday index of local time
+// and use 'Time.get_utc_day()' to get current weekday index of UTC
+// local time.
+
+take time = Time();
+take days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+showl 'Current local time day is : ${days[time.get_day()]}';
+showl 'Current UTC time day is : ${days[time.get_utc_day()]}';
+

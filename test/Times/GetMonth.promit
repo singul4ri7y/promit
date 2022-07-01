@@ -1,0 +1,19 @@
+/**
+ * Demonstration of 'Time.get_month' and 'Time.get_utc_month'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetMonth.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 11:24 PM (UTC +06).
+ */
+
+// Use 'Time.get_month()' to get current month index of
+// current local time and use 'Time.get_utc_month()' to
+// get current month index of UTC time.
+
+take time = Time();
+
+take months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+               'October', 'November', 'December'];
+
+showl 'Current local time month : ${months[time.get_month()]}';
+showl 'Current UTC time month : ${months[time.get_utc_month()]}';

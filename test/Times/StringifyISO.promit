@@ -1,0 +1,14 @@
+/**
+ * Demonstration of 'Time.stringify_iso' method.
+ *
+ * Part of Promit Test Suit, location /test/Times/StringifyISO.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 02:07 PM (UTC +06).
+ */
+
+// 'Time.stringify_iso()' returns a string denoting time 
+// in ISO standard.
+
+# Note : 'Time.stringify_iso' always returns UTC time.
+
+showl Time().stringify_iso();

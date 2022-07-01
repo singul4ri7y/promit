@@ -1,0 +1,18 @@
+/**
+ * Demonstration of 'Time.get_milliseconds' and 'Time.get_utc_milliseconds'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetMilliseconds.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 01:10 PM (UTC +06).
+ */
+
+// Use 'Time.get_milliseconds()' to get the current milliseconds
+// of local time and use 'Time.get_utc_milliseconds' to get 
+// milliseconds in UTC time.
+
+# Note : No timezone have milliseconds difference with the 
+#        UTC time. So, 'Time.get_milliseconds' and 
+#        'Time.get_utc_milliseconds' are basically the same
+#        thing.
+
+showl Time().get_milliseconds();

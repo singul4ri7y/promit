@@ -1,0 +1,21 @@
+/**
+ * Demonstration of 'Time.set_month' and 'Time.set_utc_month'.
+ *
+ * Part of Promit Test Suit, location /test/Times/SetMonth.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 11:28 PM (UTC +06).
+ */
+
+// Use 'Time.set_month(month_index)' to set the month index of current
+// local time and use 'Time.set_utc_month(month_index)' to set the month
+// index of current UTC time.
+
+take time = Time();
+
+showl 'Current time is : $time';
+showl 'Setting local time month index to 9, second(s) difference : ${time.set_month(9)}';
+
+showl 'Now time is : $time';
+showl 'Setting UTC time month index to 2, second(s) difference : ${time.set_utc_month(2)}';
+
+showl 'Now time is : $time';

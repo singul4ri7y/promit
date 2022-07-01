@@ -1,0 +1,13 @@
+/**
+ * Demonstration of 'Time.count' method.
+ *
+ * Part of Promit Test Suit, location /test/Times/Count.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 01:49 PM (UTC +06).
+ */
+
+// 'Time.count()' returns a dictionary consisting current
+// timestamps seconds (Unix EPOCH) and current microseconds.
+
+show 'Current time count is : ';
+showl Time().count();

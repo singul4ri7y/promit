@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'Time.get_year' and 'Time.get_utc_year'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetYear.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 07:47 PM (UTC +06).
+ */
+
+# This program won't explain the relation between Local time
+# and UTC time. So, you are requested to get a little idea
+# about Local and UTC time relation, if you do not have.
+
+take time = Time();    // Current time.
+
+showl 'Current Local year : ${time.get_year()}';
+showl 'Current UTC year : ${time.get_utc_year()}';

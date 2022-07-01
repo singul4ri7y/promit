@@ -1,0 +1,2 @@
+// time.__represent__() is equivalent to
+// time.stringify(Time::PREFER_UTC)

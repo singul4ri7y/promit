@@ -1,0 +1,16 @@
+/**
+ * Demonstration of 'Time.get_microseconds' and 'Time.get_utc_microseconds'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetMicroseconds.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 01:25 PM (UTC +06).
+ */
+
+# Note : Microseconds are not related to timezones.
+#        Use 'Time.get_microseconds()' or 'Time.get_utc_microseconds()'
+#        to get current microsecond of time.
+
+# Note : You will get microseconds if your OS supports it.
+#        In widnows you are likely to get 0.
+
+showl Time().get_microseconds();

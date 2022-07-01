@@ -1,0 +1,18 @@
+/**
+ * Demonstration of 'Time::snap' static method.
+ *
+ * Part of Promit Test Suit, location /test/Times/Snap.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 02:09 PM (UTC +06).
+ */
+
+// 'Time::snap()' function returns current elapsed
+// CPU time.
+
+take i = 0;
+
+take start_cpu_time = Time::snap();
+
+while(i++ != 10000000);
+
+showl 'Time elapsed : ${Time::snap() - start_cpu_time} seconds (CPU)';

@@ -1,0 +1,20 @@
+/**
+ * Demonstration of 'Time.set_minutes' and 'Time.set_utc_minutes'.
+ *
+ * Part of Promit Test Suit, location /test/Times/SetMinutes.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 12:27 PM (UTC +06).
+ */
+
+// Use 'Time.set_minutes(minutes)' to set current minutes in local time
+// and use 'Time.set_utc_minutes' to set current minutes in UTC time.
+
+take time = Time();
+
+showl 'Current time is : $time';
+showl 'Changing local time minutes, second(s) difference : ${time.set_minutes(55)}';
+
+showl 'Now time is : $time';
+showl 'Canging UTC time minutes, second(s) differense : ${time.set_utc_minutes(33)}';
+
+showl 'Now time is : $time';

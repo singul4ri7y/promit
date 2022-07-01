@@ -1,0 +1,21 @@
+/**
+ * Demonstration of 'Time.set_seconds' and 'Time.set_utc_seconds'.
+ *
+ * Part of Promit Test Suit, location /test/Times/SetSeconds.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 12:58 PM (UTC +06).
+ */
+
+// Use 'Time.set_seconds(seconds)' to set the current seconds of
+// local time and use 'Time.set_utc_seconds(seconds)' to set
+// current seconds of UTC time.
+
+take time = Time();
+
+showl 'Current time is : $time';
+showl 'Changing seconds of local time, second(s) difference : ${time.set_seconds(04)}';
+
+showl 'Now time is : $time';
+showl 'Changing seconds of UTC time, second(s) difference : ${time.set_utc_seconds(44)}';
+
+showl 'Now time is : $time';

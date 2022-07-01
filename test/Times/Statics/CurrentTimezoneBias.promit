@@ -1,0 +1,12 @@
+/**
+ * Demonstration of 'Time::current_timezone_bias' static method.
+ *
+ * Part of Promit Test Suit, location /test/Times/CurrentTimezoneBias.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 02:15 PM (UTC +06).
+ */
+
+// 'Time::current_timezone_bias()' returns current timezone offset
+// from UTC time as hours.
+
+showl Time::current_timezone_bias();

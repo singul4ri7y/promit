@@ -1,0 +1,21 @@
+/**
+ * Demonstration of 'Time.set_year' and 'Time.set_utc_year'.
+ *
+ * Part of Promit Test Suit, location /test/Times/SetYear.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 07:50 PM (UTC +06).
+ */
+
+// Use 'Time.set_year(year)' to set the year of current
+// local time instance and use 'Time.set_utc_year(year)'
+// to set UTC time instance year.
+
+take time = Time( { year : 1900 } );
+
+showl 'Current time is : $time';
+showl 'Changing time year as a local time, second(s) difference : ${time.set_year(2050)}';
+
+showl 'Now time is : $time';
+showl 'Changing time year as a UTC time, second(s) difference : ${time.set_utc_year(2022)}';
+
+showl 'Now time is : $time';

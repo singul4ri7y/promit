@@ -1,0 +1,15 @@
+/**
+ * Demonstration of 'Time.get_date' and 'Time.get_utc_date'.
+ *
+ * Part of Promit Test Suit, location /test/Times/GetDate.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 08:05 PM (UTC +06).
+ */
+
+// Use 'Time.get_date' to get the current date of local time and
+// use 'Time.get_utc_date' to get the current date of UTC time.
+
+take time = Time();
+
+showl 'Current local date is : ${time.get_date()}';
+showl 'Current UTC date is : ${time.get_utc_date()}';

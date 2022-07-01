@@ -1,0 +1,21 @@
+/**
+ * Demonstration of 'Time.set_microseconds' and 'Time.set_utc_microseconds'.
+ *
+ * Part of Promit Test Suit, location /test/Times/SetMicroseconds.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 01:27 PM (UTC +06).
+ */
+
+# Note : No timezone in this world has microseconds
+#        difference with UTC time. So, microsecond
+#        functions are not related to timezones.
+#        Basically 'Time.set_microseconds(us)' and
+#        'Time.set_utc_microseconds(us)' are the
+#        same thing.
+
+take time = Time();
+
+showl 'Current time : ${time.stringify_iso()}';
+showl 'Changing microseconds of time, microseconds difference : ${time.set_microseconds(459)}';
+
+showl 'Now time is : ${time.stringify_iso()}';

@@ -1,0 +1,51 @@
+/**
+ * Demonstration of 'Time' constructor in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Times/Constructor.promit
+ *
+ * Created by SD Asif Hossein in 01 July, 2022 (Friday) at 06:50 PM (UTC +06).
+ */
+
+// The 'Time' constructor creates times of certain point. The point can be
+// current, or something else.
+
+// 'Time()' will create a fork of current time in microseconds precision.
+
+// 'Time(seconds)' will create a time of specific time point denoted
+// by 'seconds' seconds, where 'seconds' is unix time epoch.
+
+// 'Time(time)' will create a new time instance from another time instance.
+
+// 'Time(dict)' will create a new time from provided broken down time dictionary.
+
+take time1 = Time();
+take time2 = Time(445299453);    // Totally arbitrary.
+take time3 = Time(time1);        // Fork of another time object.
+take time4 = Time({
+	year  : 1963,
+	month : 3,
+	date  : 13,
+	hour  : 23,
+	min   : 59,
+	sec   : 59,
+	msec  : 444,    // Milliseconds
+	usec  : 333     // Microseocnds
+});
+
+showl 'Simple time representations: ';
+
+// Also equivalent to time.__represent__() -> time.stringify(Time::PREFER_LOCAL)
+
+showl time1;
+showl time2;
+showl time3;
+showl time4;
+
+showl;
+
+showl 'ISO time representation : ';
+
+showl time1.stringify_iso();
+showl time2.stringify_iso();
+showl time3.stringify_iso();
+showl time4.stringify_iso();

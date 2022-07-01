@@ -1,0 +1,26 @@
+/**
+ * Demonstration of 'Time.stringify' method.
+ *
+ * Part of Promit Test Suit, location /test/Times/Stringify.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 02:01 PM (UTC +06).
+ */
+
+// 'Time.stringify(preference)' returns the time string upon preference.
+
+// Preferences are : 
+// Time::PREFER_UTC -> Returns UTC time string.
+// Time::PREFER_LOCAL -> Returns local time string.
+
+// If no preference is provided, default will be used,
+// which is Time::PREFER_UTC.
+
+take time = Time();
+
+showl 'Current time is : $time';
+
+// Which is equivalent to :
+
+showl 'Current time is : ${time.stringify(Time::PREFER_UTC)}';
+
+showl 'Current local time is : ${time.stringify(Time::PREFER_LOCAL)}';
