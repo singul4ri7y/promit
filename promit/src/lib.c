@@ -2401,8 +2401,6 @@ static NativePack timeStringify(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
-	
-	int tzone = gettzoffset();
 
 	struct tm* _time = NULL;
 
@@ -2424,20 +2422,24 @@ static NativePack timeStringify(VM* vm, int argCount, Value* values) {
 
 	pack.value = OBJECT_VAL(TAKE_STRING("", 0u, false));
 
-	if(type == 0) 
-		_time = gmtime(&sec);
-	else if(type == 1) 
-		_time = localtime(&sec);
-	else return pack;
-
 	char* buffer = ALLOCATE(char, 45 * sizeof(char));
 	
 	char* months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 	char* days  [] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
-	sprintf(buffer, "%s %s %.2d %.2d:%.2d:%.2d %.4d GMT%c%0.4d (UTC %c%.2d)", days[_time -> tm_wday], months[_time -> tm_mon], _time -> tm_mday,
-	        _time -> tm_hour, _time -> tm_min, _time -> tm_sec, _time -> tm_year + 1900, tzone < 0 ? '-' : '+', abs(tzone / 36),
-		    tzone < 0 ? '-' : '+', abs(tzone / 3600));
+	if(type == 0) {
+		_time = gmtime(&sec);
+
+		sprintf(buffer, "%s %s %.2d %.2d:%.2d:%.2d %.4d (UTC)", days[_time -> tm_wday], months[_time -> tm_mon], _time -> tm_mday,
+	    	    _time -> tm_hour, _time -> tm_min, _time -> tm_sec, _time -> tm_year + 1900);
+	}
+	else if(type == 1) {
+		_time = localtime(&sec);
+
+		sprintf(buffer, "%s %s %.2d %.2d:%.2d:%.2d %.4d GMT%c%0.4d (UTC %c%.2d)", days[_time -> tm_wday], months[_time -> tm_mon], _time -> tm_mday,
+	    	    _time -> tm_hour, _time -> tm_min, _time -> tm_sec, _time -> tm_year + 1900, tz < 0 ? '-' : '+', abs(tz / 36),
+			    tz < 0 ? '-' : '+', abs(tz / 3600));
+	} else return pack;
 
 	pack.value = OBJECT_VAL(TAKE_STRING(buffer, strlen(buffer), true));
 
