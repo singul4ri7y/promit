@@ -6,8 +6,8 @@
  * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 04:16 AM (UTC +06).
  */
 
-// Use 'show' keyword to print a line.
-// Use 'showl' keyword to print a line and go to a new line.
+// Use 'show' keyword to print an expression.
+// Use 'showl' keyword to print an expression and go to a new line.
 
 show 'Hello world! -> ';
 
