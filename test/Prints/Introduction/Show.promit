@@ -1,0 +1,18 @@
+/**
+ * Demonstration of printing in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Prints/Introduction/While.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 04:16 AM (UTC +06).
+ */
+
+// Use 'show' keyword to print a line.
+// Use 'showl' keyword to print a line and go to a new line.
+
+show 'Hello world! -> ';
+
+showl 'Hellow Promit!!';
+
+// Which is equivalent to : 
+
+show 'Hellow Promit!!\n';

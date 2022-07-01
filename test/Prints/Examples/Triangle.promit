@@ -1,0 +1,22 @@
+/**
+ * A simple triangle construction example with loops and
+ * show loops.
+ *
+ * Part of Promit Test Suit, location /test/Prints/Examples/Triangle.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 04:20 AM (UTC +06).
+ */
+
+// Get the triangle size.
+
+show 'Enter the size of the triangle: ';
+
+take size = recieve(num);
+
+for(take i = 0; i < size; i++) {
+	// Show loops.
+
+	show(size - i) ' ';
+	show(i * 2 + 1) '*';
+	showl;
+}

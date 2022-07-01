@@ -1,0 +1,15 @@
+/**
+ * Demonstration of loops within 'show' keyword.
+ *
+ * Part of Promit Test Suit, location /test/Prints/Introduction/ShowLoop.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 04:18 AM (UTC +06).
+ */
+
+// The 'show/showl' keyword also can be used as a loop!.
+
+// Idea 'show (number_of_loops) expression'.
+
+showl (10) 'The Promit Programming Language!';
+
+// Will print 'The Promit Programming Language' for 10 times.
