@@ -1,5 +1,0 @@
-show 'Enter the file name to be removed: ';
-
-if(System::remove(recieve)) 
-	showl 'Successfully removed the file!';
-else showl 'Failed to remove the file!';

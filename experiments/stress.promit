@@ -1,9 +1,0 @@
-take a = 0; 
-
-take start_time = time();
-
-for(take i = 0; i < 10000001; i++) 
-	a += i;
-
-showl 'The result is: $a';
-showl 'Time taken ${time() - start_time} seconds.';

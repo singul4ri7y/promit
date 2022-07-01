@@ -1,5 +1,0 @@
-take a, b, c;
-
-recieve(number) a, b, c;
-
-showl (10) a + b + c;

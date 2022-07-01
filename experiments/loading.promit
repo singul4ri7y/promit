@@ -1,6 +1,0 @@
-take loader = ['-', '\\', '|', '/'];
-
-for(take i = 0; ; i++) {
-	show '${loader[i % len(loader)]}\r';
-	Time::sleep(100, Time::MILLISECONDS);
-}

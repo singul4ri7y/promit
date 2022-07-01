@@ -1,9 +1,0 @@
-show 'Enter a file name to be created: ';
-
-take file = File(recieve, File::MODE_WRITE);
-
-if(file.is_opened()) 
-	showl 'Successfully created the file!';
-else showl 'Failed to create the file!';
-
-file.close();
