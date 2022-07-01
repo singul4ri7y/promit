@@ -1990,6 +1990,8 @@ int gettzoffset(void) {
 	return offset;
 }
 
+static int tz;
+
 static bool isLeap(int year) {
 	if(!(year % 400) || !(year % 4) && (year % 100)) return true;
 	
@@ -2311,7 +2313,7 @@ static NativePack timeSetUTCYear(VM* vm, int argCount, Value* values) {
 
 	_time -> tm_year = (int) (year - 1900);
 
-	time_t result = mktime(_time);
+	time_t result = mktime(_time) + tz;
 
 	if(result == -1) 
 		return pack;
@@ -2505,7 +2507,7 @@ static NativePack timeSetUTCDate(VM* vm, int argCount, Value* values) {
 
 	_time -> tm_mday = (int) date;
 
-	time_t result = mktime(_time);
+	time_t result = mktime(_time) + tz;
 
 	pack.value = NUMBER_VAL(result - sec);
 
@@ -2595,7 +2597,7 @@ static NativePack timeSetUTCMonth(VM* vm, int argCount, Value* values) {
 
 	_time -> tm_mon = (int) month;
 
-	time_t result = mktime(_time);
+	time_t result = mktime(_time) + tz;
 
 	pack.value = NUMBER_VAL(result - sec);
 
@@ -2685,7 +2687,7 @@ static NativePack timeSetUTCHours(VM* vm, int argCount, Value* values) {
 
 	_time -> tm_hour = (int) hour;
 
-	time_t result = mktime(_time);
+	time_t result = mktime(_time) + tz;
 
 	pack.value = NUMBER_VAL(result - sec);
 
@@ -2821,7 +2823,7 @@ static NativePack timeSetUTCMinutes(VM* vm, int argCount, Value* values) {
 
 	_time -> tm_min = (int) minute;
 
-	time_t result = mktime(_time);
+	time_t result = mktime(_time) + tz;
 
 	pack.value = NUMBER_VAL(result - sec);
 
@@ -2911,7 +2913,7 @@ static NativePack timeSetUTCSeconds(VM* vm, int argCount, Value* values) {
 
 	_time -> tm_sec = (int) second;
 
-	time_t result = mktime(_time);
+	time_t result = mktime(_time) + tz;
 
 	pack.value = NUMBER_VAL(result - sec);
 
@@ -3095,6 +3097,8 @@ static NativePack timeGetUTCDay(VM* vm, int argCount, Value* values) {
 void initTimeLib(VM* vm) {
 	usecField   = TAKE_STRING("_p_usec__", 9u, false);
 	secField    = TAKE_STRING("_p_sec__", 8u, false);
+
+	tz          = gettzoffset();
 	
 	ObjString* name = TAKE_STRING("Time", 4u, false);
 	
