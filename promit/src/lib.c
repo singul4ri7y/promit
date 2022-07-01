@@ -2036,7 +2036,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 			tableInsert(&instance -> fields, secField, timeContainer);
 
 			tableGet(&timeInstance -> fields, usecField, &timeContainer);
-			tableInsert(&timeInstance -> fields, usecField, timeContainer);
+			tableInsert(&instance -> fields, usecField, timeContainer);
 		}
 		else if(IS_DICTIONARY(values[1])) {
 			ObjDictionary* dict = VALUE_DICTIONARY(values[1]);
