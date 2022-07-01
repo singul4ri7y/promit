@@ -2053,7 +2053,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 				value = VALUE_NUMBER(container.value);
 
 				if(value < -4000 || value > 4000 || isnan(value)) {
-					NATIVE_R_ERR("Invalid year value provided! How far are you willing to go?");
+					NATIVE_R_ERR("Invalid year value in dictionary provided in Time.init(dict)! How far are you willing to go?");
 				}
 
 				_time -> tm_year = (int) (value - 1900);
