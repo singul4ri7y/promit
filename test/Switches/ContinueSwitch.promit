@@ -1,0 +1,30 @@
+/**
+ * Simple demonstration of 'continue' in switch.
+ *
+ * Part of Promit Test Suit, location /test/Switches/ContinueSwitch.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 03:15 PM (UTC +06).
+ */
+
+// Promit supports 'continue' in switch, unlike other languages.
+
+// 'continue' in switch creates a fallthrough to the next case,
+// completely opposite of 'break';
+
+take number = 10;
+
+switch(number) {
+	case 10: {
+		showl 'This will print!';
+		continue;
+		showl 'This will not!';
+	}
+
+	case 20: {
+		showl 'The number is 20. Exiting from fallthrough!';
+		break;
+	}
+
+	case 30: showl 'A number!'; break;
+	default: showl 'Default!';
+}

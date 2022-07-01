@@ -1,0 +1,20 @@
+/**
+ * Demonstration of switches in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Switches/Switch.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 03:20 PM (UTC +06).
+ */
+
+// Like any other C/C++ like languages,
+// Promit supports switches as a control flow.
+// It supports high level comparisons (like
+// comparing stirngs and other objects).
+
+take bird = 'Kuckoo';
+
+switch(bird) {
+	case 'Koel': showl 'The bird is Koel!'; break;
+	case 'Kuckoo': showl 'The bird is Kuckoo!'; break;
+	default: showl 'Donno.';
+}
