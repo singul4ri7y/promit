@@ -10,11 +10,11 @@
 #include "dtoa.h"
 #include "lib.h"
 
-#define setStatic(klass, name, value) tableInsert(&klass -> statics, name, ((ValueContainer) { value, true }));
-#define setField(instance, name, value) tableInsert(&instance -> fields, name, ((ValueContainer) { value, true }));
-#define setMethod(klass, name, value) tableInsert(&klass -> methods, name, ((ValueContainer) { value, true }));
+#define setStatic(klass, name, value) tableInsert(&klass -> statics, name, ((ValueContainer) { value, true }))
+#define setField(instance, name, value) tableInsert(&instance -> fields, name, ((ValueContainer) { value, true }))
+#define setMethod(klass, name, value) tableInsert(&klass -> methods, name, ((ValueContainer) { value, true }))
 
-#define getField(instance, name, value) tableGet(&instance -> fields, name, &value);
+#define getField(instance, name, value) tableGet(&instance -> fields, name, &value)
 
 #define NATIVE_R_ERR(format, ...) RUNTIME_ERROR(format, ##__VA_ARGS__);\
 	pack.hadError = true;\
@@ -1999,24 +1999,172 @@ static bool isLeap(int year) {
 static NativePack timeInit(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
+	pack.value = values[0];
+
 	if(!IS_INSTANCE(values[0]) || VALUE_INSTANCE(values[0]) -> klass != timeClass) {
 		NATIVE_R_ERR("Need a time instance to call Time.init(value...)!");
 	}
 
 	ObjInstance* instance = VALUE_INSTANCE(values[0]);
 	
+	struct timeval tv;
+
+	gettimeofday(&tv, NULL);
+	
 	if(argCount < 2) {
 		// Create a new time instance of current time.
 
-		struct timeval tv;
-
-		gettimeofday(&tv, NULL);
-
 		setField(instance, secField, NUMBER_VAL((double) tv.tv_sec));
 		setField(instance, usecField, NUMBER_VAL((double) tv.tv_usec));
+
+		return pack;
 	}
-	
-	pack.value = values[0];
+
+	struct tm* _time = localtime(&tv.tv_sec);
+
+	if(argCount < 3) {
+		if(IS_NUMBER(values[1])) {
+			setField(instance, secField, values[1]);
+			setField(instance, usecField, NUMBER_VAL((double) tv.tv_usec));
+		}
+		else if(IS_INSTANCE(values[1]) && VALUE_INSTANCE(values[1]) -> klass == timeClass) {
+			ObjInstance* timeInstance = VALUE_INSTANCE(values[1]);
+
+			ValueContainer timeContainer;
+
+			tableGet(&timeInstance -> fields, secField, &timeContainer);
+			tableInsert(&instance -> fields, secField, timeContainer);
+
+			tableGet(&timeInstance -> fields, usecField, &timeContainer);
+			tableInsert(&timeInstance -> fields, usecField, timeContainer);
+		}
+		else if(IS_DICTIONARY(values[1])) {
+			ObjDictionary* dict = VALUE_DICTIONARY(values[1]);
+
+			ValueContainer container;
+
+			double value;
+
+			if(getField(dict, TAKE_STRING("year", 4u, false), container)) {
+				if(!IS_NUMBER(container.value)) {
+					NATIVE_R_ERR("The 'year' property in provided dictionary must be a number in Time.init(dict)!");
+				}
+
+				value = VALUE_NUMBER(container.value);
+
+				if(value < -4000 || value > 4000) {
+					NATIVE_R_ERR("Invalid year value provided! How far are you willing to go?");
+				}
+
+				_time -> tm_year = (int) (value - 1900);
+			}
+
+			if(getField(dict, TAKE_STRING("month", 5u, false), container)) {
+				if(!IS_NUMBER(container.value)) {
+					NATIVE_R_ERR("The 'month' property in provided dictionary must be a number in Time.init(dict)!");
+				}
+				
+				value = VALUE_NUMBER(container.value);
+
+				if(value < 0 || value > 11) {
+					NATIVE_R_ERR("Invalid month index found in dictionary provided in Time.init(dict)!");
+				}
+
+				_time -> tm_mon = (int) value;
+			}
+
+			if(getField(dict, TAKE_STRING("date", 4u, false), container)) {
+				if(!IS_NUMBER(container.value)) {
+					NATIVE_R_ERR("The 'date' property in provided dictionary must be a number in Time.init(dict)!");
+				}
+				
+				value = VALUE_NUMBER(container.value);
+
+				if(value < 1 || value > 31) {
+					NATIVE_R_ERR("Invalid date found in dictionary provided in Time.init(dict)");
+				}
+
+				_time -> tm_mday = (int) value;
+			}
+
+			if(getField(dict, TAKE_STRING("hour", 4u, false), container)) {
+				if(!IS_NUMBER(container.value)) {
+					NATIVE_R_ERR("The 'hour' property in provided dictionary must be a number in Time.init(dict)!");
+				}
+				
+				value = VALUE_NUMBER(container.value);
+
+				if(value < 0 || value > 23) {
+					NATIVE_R_ERR("Invalid hour value found in dictionary provided in Time.init(dict)");
+				}
+
+				_time -> tm_hour = (int) value;
+			}
+
+			if(getField(dict, TAKE_STRING("min", 3u, false), container)) {
+				if(!IS_NUMBER(container.value)) {
+					NATIVE_R_ERR("The 'min' property in provided dictionary must be a number in Time.init(dict)!");
+				}
+				
+				value = VALUE_NUMBER(container.value);
+
+				if(value < 0 || value > 59) {
+					NATIVE_R_ERR("Invalid minute value found in dictionary provided in Time.init(dict)");
+				}
+
+				_time -> tm_mday = (int) value;
+			}
+
+			if(getField(dict, TAKE_STRING("sec", 3u, false), container)) {
+				if(!IS_NUMBER(container.value)) {
+					NATIVE_R_ERR("The 'sec' property in provided dictionary must be a number in Time.init(dict)!");
+				}
+				
+				value = VALUE_NUMBER(container.value);
+
+				if(value < 0 || value > 59) {
+					NATIVE_R_ERR("Invalid second value found in dictionary provided in Time.init(dict)");
+				}
+
+				_time -> tm_sec = (int) value;
+			}
+
+			if(getField(dict, TAKE_STRING("msec", 4u, false), container)) {
+				if(!IS_NUMBER(container.value)) {
+					NATIVE_R_ERR("The 'msec' property in provided dictionary must be a number in Time.init(dict)!");
+				}
+				
+				value = VALUE_NUMBER(container.value);
+
+				if(value < 0 || value > 999) {
+					NATIVE_R_ERR("Invalid millisecond value found in dictionary provided in Time.init(dict)");
+				}
+
+				tv.tv_usec = ((int) value) * 1000;
+			}
+
+			if(getField(dict, TAKE_STRING("usec", 4u, false), container)) {
+				if(!IS_NUMBER(container.value)) {
+					NATIVE_R_ERR("The 'usec' property in provided dictionary must be a number in Time.init(dict)!");
+				}
+				
+				value = VALUE_NUMBER(container.value);
+
+				if(value < 0 || value > 999) {
+					NATIVE_R_ERR("Invalid microsecond value found in dictionary provided in Time.init(dict)");
+				}
+
+				tv.tv_usec = (int) value;
+			}
+
+			uint64_t t = mktime(_time);
+
+			setField(instance, secField, NUMBER_VAL((double) mktime(_time)));
+			setField(instance, usecField, tv.tv_usec);
+		} else {
+			NATIVE_R_ERR("Expected the first argument to be a number/dictionary/time in Time.init(seconds | time)!");
+		}
+	}
 	
 	return pack;
 }
@@ -2251,6 +2399,8 @@ static NativePack timeStringify(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
+	
+	int tzone = gettzoffset();
 
 	struct tm* _time = NULL;
 
@@ -2282,8 +2432,6 @@ static NativePack timeStringify(VM* vm, int argCount, Value* values) {
 	
 	char* months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 	char* days  [] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-	
-	int tzone = gettzoffset();
 
 	sprintf(buffer, "%s %s %.2d %.2d:%.2d:%.2d %.4d GMT%c%0.4d (UTC %c%.2d)", days[_time -> tm_wday], months[_time -> tm_mon], _time -> tm_mday,
 	        _time -> tm_hour, _time -> tm_min, _time -> tm_sec, _time -> tm_year + 1900, tzone < 0 ? '-' : '+', abs(tzone / 36),
