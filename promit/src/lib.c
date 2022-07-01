@@ -3068,6 +3068,30 @@ static NativePack timeCurrentTimezoneBias(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
+static NativePack timeGetDay(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = localtime(&sec);
+
+	pack.value = NUMBER_VAL(_time -> tm_wday);
+
+	return pack;
+}
+
+static NativePack timeGetUTCDay(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	timeInstanceTime;
+
+	struct tm* _time = gmtime(&sec);
+
+	pack.value = NUMBER_VAL(_time -> tm_wday);
+
+	return pack;
+}
+
 void initTimeLib(VM* vm) {
 	usecField   = TAKE_STRING("_p_usec__", 9u, false);
 	secField    = TAKE_STRING("_p_sec__", 8u, false);
@@ -3088,6 +3112,8 @@ void initTimeLib(VM* vm) {
 	defineMethod(timeClass, TAKE_STRING("get_utc_date", 12u, false), timeGetUTCDate);
 	defineMethod(timeClass, TAKE_STRING("set_date", 8u, false), timeSetDate);
 	defineMethod(timeClass, TAKE_STRING("set_utc_date", 12u, false), timeSetUTCDate);
+	defineMethod(timeClass, TAKE_STRING("get_day", 7u, false), timeGetDay);
+	defineMethod(timeClass, TAKE_STRING("get_utc_day", 11u, false), timeGetUTCDay);
 	defineMethod(timeClass, TAKE_STRING("get_month", 9u, false), timeGetMonth);
 	defineMethod(timeClass, TAKE_STRING("get_utc_month", 13u, false), timeGetUTCMonth);
 	defineMethod(timeClass, TAKE_STRING("set_month", 9u, false), timeSetMonth);
