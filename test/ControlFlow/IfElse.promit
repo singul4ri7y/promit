@@ -1,0 +1,21 @@
+/**
+ * Demonstration of 'if' and 'else' control flow in Promit.
+ *
+ * Part of Promit Test Suit, location /test/ControlFlow/IfElse.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 02:25 PM (UTC +06).
+ */
+
+// Control flow if-else are same as C/C++
+// and C like languages.
+
+take number = 100;
+
+if(number > 0) 
+	showl 'The number is positive.';
+else if(number == 0) 
+	showl 'The number is 0';
+else showl 'The number is negative.';
+
+// if() {} else if() {} else {} is broken down to
+// if() {} else { if() {} else {} } :)

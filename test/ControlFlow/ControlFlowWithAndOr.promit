@@ -1,0 +1,19 @@
+/**
+ * Demonstration of '&&' (and) and '||' (or) used
+ * for control flows.
+ *
+ * Part of Promit Test Suit, location /test/ControlFlow/ControlFlowWithAndOr.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 02:25 PM (UTC +06).
+ */
+
+// '&&' and '||' can be used as a ternary operator, which does
+// expression control flow.
+
+// Learn more about ternary operators in Operators section.
+
+showl true && "It's true!" || "It's false";    // Output : It's true
+
+// Which is equivalent to : 
+
+showl true ? "It's true!" : "It's false";

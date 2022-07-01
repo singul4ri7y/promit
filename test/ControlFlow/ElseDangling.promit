@@ -1,0 +1,11 @@
+/**
+ * Demonstration of 'else' dangling in Promit.
+ *
+ * Part of Promit Test Suit, location /test/ControlFlow/IfElse.promit
+ *
+ * Created by SD Asif Hossein in 02 July, 2022 (Saturday) at 03:07 PM (UTC +06).
+ */
+
+// 'else' dangles itself to the rightmost 'if'.
+
+if(true) if(false) showl "Hey, it's true"; else showl 'Else dangling!';
