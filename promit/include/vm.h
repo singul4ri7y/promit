@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "debug.h"
 #include "value.h"
 
 #define FRAMES_MAX 64u
