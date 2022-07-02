@@ -1308,7 +1308,7 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 	double b = data.number;\
 	a = (isinf(a) || isnan(a)) ? 0 : a;\
 	b = (isinf(b) || isnan(b)) ? 0 : b;\
-	if(a > LLONG_MAX || b > LLONG_MAX || a < LLONG_MIN || b < LLONG_MIN) {\
+	if(a > MAX_SAFE_INTEGER || b > MAX_SAFE_INTEGER || a < MIN_SAFE_INTEGER || b < MIN_SAFE_INTEGER) {\
 		RUNTIME_ERROR("The provided number is out of bound to be converted to integer!");\
 		return INTERPRET_RUNTIME_ERROR;\
 	}\
@@ -4063,12 +4063,55 @@ InterpretResult run(VM* vm) {
 				
 				break;
 			}
+
+			// Right and Left shift operation is different from other
+			// bitwise calculations.
+
+			// Here, shiftee's bits actually gets moved.
+			// So, let's say, I'm to use something like 10 << 24332
+			// the result is unpredictable, as no data types (except BigInt
+			// which is out of question here) which has this amount of bits.
+			// So, shifting operations should be handled exceptionally.
 			
 			case OP_RIGHT_SHIFT: {
 				Value value2 = POP();
 				Value value1 = POP();
+
+				double a, b;
+
+				NumberData data = toNumber(vm, &value1);
+
+				if(data.hadError == true) 
+					return INTERPRET_RUNTIME_ERROR;
 				
-				BITWISE(value1, value2, >>);
+				a = data.number;
+
+				data = toNumber(vm, &value2);
+
+				if(data.hadError == true) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				b = data.number;
+
+				a = (isinf(a) || isnan(a)) ? 0 : a;
+				b = (isinf(b) || isnan(b)) ? 0 : fabs(b);
+
+				if(a > MAX_SAFE_INTEGER || b > MAX_SAFE_INTEGER || a < MIN_SAFE_INTEGER || b < MIN_SAFE_INTEGER) {
+					RUNTIME_ERROR("The provided number is out of bound to be converted to integer!");
+
+					return INTERPRET_RUNTIME_ERROR;
+				}
+
+				if(b > 52) {
+					PUSH(NUMBER_VAL(a > 0 ? INFINITY : -INFINITY));
+
+					break;
+				}
+
+				long long ba = (long long) trunc(a);
+				long long bb = (long long) trunc(b);
+
+				PUSH(NUMBER_VAL(ba >> bb));
 				
 				break;
 			}
@@ -4076,8 +4119,42 @@ InterpretResult run(VM* vm) {
 			case OP_LEFT_SHIFT: {
 				Value value2 = POP();
 				Value value1 = POP();
+
+				double a, b;
+
+				NumberData data = toNumber(vm, &value1);
+
+				if(data.hadError == true) 
+					return INTERPRET_RUNTIME_ERROR;
 				
-				BITWISE(value1, value2, <<);
+				a = data.number;
+
+				data = toNumber(vm, &value2);
+
+				if(data.hadError == true) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				b = data.number;
+
+				a = (isinf(a) || isnan(a)) ? 0 : a;
+				b = (isinf(b) || isnan(b)) ? 0 : fabs(b);
+
+				if(a > MAX_SAFE_INTEGER || b > MAX_SAFE_INTEGER || a < MIN_SAFE_INTEGER || b < MIN_SAFE_INTEGER) {
+					RUNTIME_ERROR("The provided number is out of bound to be converted to integer!");
+
+					return INTERPRET_RUNTIME_ERROR;
+				}
+
+				if(b > 52) {
+					PUSH(NUMBER_VAL(a > 0 ? INFINITY : -INFINITY));
+
+					break;
+				}
+
+				long long ba = (long long) trunc(a);
+				long long bb = (long long) trunc(b);
+
+				PUSH(NUMBER_VAL(ba << bb));
 				
 				break;
 			}
