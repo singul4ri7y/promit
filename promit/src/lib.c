@@ -2022,7 +2022,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 		return pack;
 	}
 
-	struct tm* _time = localtime((const time_t*) &tv.tv_sec);
+	struct tm* _time = localtime(&tv.tv_sec);
 
 	if(argCount < 3) {
 		if(IS_NUMBER(values[1])) {

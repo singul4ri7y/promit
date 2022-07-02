@@ -1314,7 +1314,7 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 	}\
 	long long ba = (long long) trunc(a);\
 	long long bb = (long long) trunc(b);\
-	PUSH(NUMBER_VAL(ba op bb))\
+	PUSH(NUMBER_VAL((double) (ba op bb)))\
 
 InterpretResult run(VM* vm) {
 	uint8_t currentFrameCount = vm -> frameCount;
@@ -1722,29 +1722,14 @@ InterpretResult run(VM* vm) {
 			}
 			
 			case OP_NEGATE: {
-				Value* value = peek(vm, 0);
+				Value value = POP();
 				
-				if(IS_NUMBER(*value)) { 
-						value -> as.number = -value -> as.number;
-				}
-				else if(IS_BOOL(*value)) {
-					value -> type      = VAL_NUMBER;
-					value -> as.number = -(double) value -> as.boolean;
-				}
-				else if(IS_NULL(*value)) {
-					value -> type      = VAL_NUMBER;
-					value -> as.number = -(double) 0;
-				}
-				else if(IS_STRING(*value)) {
-					const double a = pstrtod(VALUE_CSTRING(*value));
+				NumberData data = toNumber(vm, &value);
 
-					value -> type      = VAL_NUMBER;
-					value -> as.number = -a;
-				} else {
-					RUNTIME_ERROR("Operand must be a number or convertable to number while negation!");
-					
+				if(data.hadError) 
 					return INTERPRET_RUNTIME_ERROR;
-				}
+				
+				PUSH(NUMBER_VAL(-data.number));
 
 				break;
 			}
@@ -2390,10 +2375,8 @@ InterpretResult run(VM* vm) {
 				// Used by the operators. Keeps the value on the stack to be used.
 				
 				uint32_t stride = readBytes(frame, true);
-				
-				Value value = *peek(vm, 0);
 
-				BooleanData data = toBoolean(vm, &value);
+				BooleanData data = toBoolean(vm, peek(vm, 0));
 
 				if(data.hadError) 
 					return INTERPRET_RUNTIME_ERROR;
@@ -2439,30 +2422,22 @@ InterpretResult run(VM* vm) {
 			}
 			
 			case OP_BITWISE_NEGATION: {
-				Value* value = peek(vm, 0);
+				Value value = POP();
 
-				if(IS_NUMBER(*value)) {
-					long int a = round(value -> as.number);
-					
-					value -> as.number = (!IS_NAN(*value) && !isinf(value -> as.number)) ? ~a : -1;
-				}
-				else if(IS_BOOL(*value)) {
-					value -> type = VAL_NUMBER;
-					value -> as.number = ~value -> as.boolean;
-				}
-				else if(IS_NULL(*value)) {
-					value -> type = VAL_NUMBER;
-					value -> as.number = -1;
-				}
-				else if(IS_STRING(*value)) {
-					value -> type = VAL_NUMBER;
+				NumberData data = toNumber(vm, &value);
 
-					double a = pstrtod(VALUE_CSTRING(*value));
+				if(data.hadError) 
+					return INTERPRET_RUNTIME_ERROR;
+				
+				if(data.number > MAX_SAFE_INTEGER || data.number < MIN_SAFE_INTEGER) {
+					RUNTIME_ERROR("The provided number is out of bound to be converted to integer!");
 
-					long int ia = round(a);
-
-					value -> as.number = (!isnan(a) && !isinf(a))  ? ~ia : -1;
+					return INTERPRET_RUNTIME_ERROR;
 				}
+
+				long long inum = (long long) data.number;
+
+				PUSH(NUMBER_VAL((double) ~inum));
 				
 				break;
 			}
@@ -4103,7 +4078,7 @@ InterpretResult run(VM* vm) {
 				}
 
 				if(b > 52) {
-					PUSH(NUMBER_VAL(a > 0 ? INFINITY : -INFINITY));
+					PUSH(NUMBER_VAL(0));
 
 					break;
 				}
@@ -4111,7 +4086,7 @@ InterpretResult run(VM* vm) {
 				long long ba = (long long) trunc(a);
 				long long bb = (long long) trunc(b);
 
-				PUSH(NUMBER_VAL(ba >> bb));
+				PUSH(NUMBER_VAL((double) (ba >> bb)));
 				
 				break;
 			}
@@ -4154,7 +4129,7 @@ InterpretResult run(VM* vm) {
 				long long ba = (long long) trunc(a);
 				long long bb = (long long) trunc(b);
 
-				PUSH(NUMBER_VAL(ba << bb));
+				PUSH(NUMBER_VAL((double) (ba << bb)));
 				
 				break;
 			}
