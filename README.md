@@ -142,7 +142,7 @@ switch(bird) {
  - Leave full details of your contribution in the commit changes log and in the pull request as well.
  - Try leaving comments, as that helps (Like I'm the one to talk).
 
-<i>Happy contribution.</i>
+<b><i>Happy contribution.</i></b>
 
 ## Why
 <img src= "logos/logo.jpg" type= "image/jpg" align= "right" width= "350" />
