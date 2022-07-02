@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "object.h"
-#include "memory.h"
 #include "lib.h"
 
 void initValueArray(ValueArray* valueArray) {

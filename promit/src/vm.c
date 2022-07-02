@@ -6,8 +6,6 @@
 #include <ctype.h>
 #include <time.h>
 
-#include "vm.h"
-#include "memory.h"
 #include "object.h"
 #include "compiler.h"
 #include "lib.h"
@@ -1329,24 +1327,6 @@ InterpretResult run(VM* vm) {
 	register Value invokeTemp;
 
 	while(true) {
-
-#ifdef DEBUG_TRACE_EXECUTION
-		printf("\nCurrent stack: [ ");
-	
-		for(int i = 0; i < vm -> stackTop; i++) {
-			printValue(vm -> stack + i);
-			
-			if(i + 1 != vm -> stackTop) 
-				printf(", ");
-		}
-
-		printf(" ]\n\nIntruction: ");
-
-		disassembleInstruction(&getFunction(frame -> function) -> chunk, (size_t) (frame -> ip - getFunction(frame -> function) -> chunk.code));
-
-		printf("\n\n");
-#endif
-
 		goto __continue_switch;
 
 		__run_gc: 

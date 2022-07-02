@@ -4,10 +4,6 @@
 #include "scanner.h"
 #include "object.h"
 
-#ifdef DEBUG_PRINT_CODE
-#include "debug.h"
-#endif
-
 #define UINT24_MAX 0xFFFFFF
 #define UINT24_COUNT (UINT24_MAX + 1u)
 
@@ -300,12 +296,6 @@ static ObjFunction* endCompiler() {
 	emitReturn();
 
 	ObjFunction* function = current -> function;
-
-#ifdef DEBUG_PRINT_CODE
-	if(!parser.hadError) {
-		disassembleChunk(currentChunk(), function -> name != NULL ? function -> name -> buffer : "anonymous");
-	}
-#endif
 
 	freeCompiler(current);
 

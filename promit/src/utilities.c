@@ -17,8 +17,7 @@ ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp) {
 		if (c == -1) {
 			if (feof(fp))
 				return ptr == *buf ? -1 : ptr - *buf;
-			else
-				return -1;
+			else return -1;
 		}
 		*ptr++ = c;
 		if (c == delimiter) {
