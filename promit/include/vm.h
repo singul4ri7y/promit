@@ -9,6 +9,9 @@
 #define FRAMES_MAX 64u
 #define STACK_MAX (FRAMES_MAX * 256u)
 
+#define MAX_SAFE_INTEGER 9007199254740991
+#define MIN_SAFE_INTEGER -9007199254740992
+
 typedef struct {
 	Obj* function;
 	uint8_t* ip;
