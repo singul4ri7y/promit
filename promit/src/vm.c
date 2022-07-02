@@ -679,9 +679,9 @@ BooleanData toBoolean(VM* vm, Value* value) {
 							return data;
 						}
 					}
-				}
 
-				data.boolean = true;
+					data.boolean = true;
+				}
 
 				break;
 			}
