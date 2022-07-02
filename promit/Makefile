@@ -82,7 +82,7 @@ endif
 build_debug_x64 : project_promit all
 
 all : $(OBJ_FILES)
-	@echo -e "\n\n$(BLUE_BOLD)Linking C translations and building $(DESCRIPTION) '$(EXE_NAME)' ($(OS_NAME)).\n$(RESET)"
+	@echo -e "\n$(BLUE_BOLD)Linking C translations and building $(DESCRIPTION) '$(EXE_NAME)' ($(OS_NAME)).\n$(RESET)"
 	$(CC) $^ $(ARCH) -o $(OUTPUT_DIR)$(EXE_NAME) -lm
 	
 .PHONY : 
@@ -96,7 +96,7 @@ build_release_x86: build_debug_x64
 
 .SILENT : 
 $(OBJ_DIR)%.c.obj : $(SRC_DIR)%.c
-	@echo -n -e "$(GREEN)Building C translation '$(patsubst $(SRC_DIR)%.c,%.c, $<)', generating object '$@'$(RESET)\r"
+	@echo -e "$(GREEN)Building C translation '$(patsubst $(SRC_DIR)%.c,%.c, $<)', generating object '$@'$(RESET)"
 	$(CC) -c $(LFLAGS) $(patsubst $(SRC_DIR)%.c,$(DEPENDENCY_DIR)%.d, $<) -I$(INCLUDE) $< -o $@
 
 project_promit : 
