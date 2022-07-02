@@ -10,7 +10,7 @@ You are requested to follow this read order in order to get the best experience 
 
 <b>If you face ``Examples`` and ``Introduction`` inside of a directory, try reading all the files in ``Introduction`` sub directory. Then proceed to ``Examples``.</b>
 
-**Go through the ascending order : *
+**Go through the ascending order :**
  1. FirstProgram.promit
  2. Prints/all
  3. Variables/all
