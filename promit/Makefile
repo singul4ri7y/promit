@@ -82,7 +82,7 @@ endif
 build_debug_x64 : project_promit all
 
 all : $(OBJ_FILES)
-	@echo -e "\n$(BLUE_BOLD)Linking C translations and building $(DESCRIPTION) '$(EXE_NAME)' ($(OS_NAME)).\n$(RESET)"
+	@echo -e "\n\n$(BLUE_BOLD)Linking C translations and building $(DESCRIPTION) '$(EXE_NAME)' ($(OS_NAME)).\n$(RESET)"
 	$(CC) $^ $(ARCH) -o $(OUTPUT_DIR)$(EXE_NAME) -lm
 	
 .PHONY : 
@@ -96,12 +96,12 @@ build_release_x86: build_debug_x64
 
 .SILENT : 
 $(OBJ_DIR)%.c.obj : $(SRC_DIR)%.c
-	@echo -e "$(GREEN)Building C translation '$(patsubst $(SRC_DIR)%.c,%.c, $<)', generating object '$@'$(RESET)"
+	@echo -n -e "$(GREEN)Building C translation '$(patsubst $(SRC_DIR)%.c,%.c, $<)', generating object '$@'$(RESET)\r"
 	$(CC) -c $(LFLAGS) $(patsubst $(SRC_DIR)%.c,$(DEPENDENCY_DIR)%.d, $<) -I$(INCLUDE) $< -o $@
 
 project_promit : 
 	@echo -e "$(PURPLE_BOLD)<=======================================| Project Promit |=======================================>$(RESET)\n"
-	@echo -e "$(CYAN)Building Project Promit on $(shell date) with configuration $(CONFIG).$(RESET)\n"
+	@echo -e "$(CYAN)Building Project Promit 'promit' on $(shell date) with configuration $(CONFIG).$(RESET)\n"
 	@mkdir -p $(OBJ_DIR) $(OUTPUT_DIR) $(DEPENDENCY_DIR)
 
 clean : 
