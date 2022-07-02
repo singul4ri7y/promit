@@ -138,7 +138,7 @@ switch(bird) {
 
 **Follow the below rules of contribution:**
  - All the codes contributed in this repository must be of MIT license.
- - If you are a contributor, leave your fullname, email and current age (Yes, ``age``. I want person of any age to contribute to this project and I want to show it to the people, even if you are 8 or 70 year old) in such manners ``(index) fullname <email> age``. If you do not want to put your age, Use ``<restricted>`` in the age portion like ``fullname <email> <restricted>``.
+ - If you are a contributor, leave your fullname, email and current age (Yes, ``age``. I want person of any age to contribute to this project and I want to show it to the people, even if you are 8 or 70 year old) in such manners ``(index) fullname <email> age``. If you do not want to put your age, Use ``<restricted>`` in the age portion like ``fullname <email> <restricted>``. In the next line, please denote your contribution or designation in one line starting with a tab.
  - Leave full details of your contribution in the commit changes log and in the pull request as well.
  - Try leaving comments, as that helps (Like I'm the one to talk).
 
@@ -183,7 +183,7 @@ make build_release_x64
 cd ../bin/Release-x64/
 ./promit
 ```
-Enjoy the binary.
+It will start Promit's REPL (Run-Evaluate-Print-Loop) mode. Enjoy the binary.
 
 **Configurations :**
 - ``make`` or ``make build_debug_x64`` builds the project in Debug configuration and x64 architecture.
