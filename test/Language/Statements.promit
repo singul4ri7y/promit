@@ -1,0 +1,17 @@
+/**
+ * Demonstration of statements in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Language/Statements.promit
+ *
+ * Created by SD Asif Hossein in 03 July, 2022 (Sunday) at 01:07 AM (UTC +06).
+ */
+
+// Statements are instructions which does not
+// produce any result, but much like provides
+// a command to a language.
+
+showl 100 * 200 - 30 << 2;    // Output : 79880
+
+// Where '100 * 200 - 30 << 2' is an expression and
+// 'showl' is a statement, which does a command like 
+// "Hey, Promit print the expression I have, would ya?"

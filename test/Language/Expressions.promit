@@ -1,0 +1,16 @@
+/**
+ * Demonstration of expressions in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Language/Expressions.promit
+ *
+ * Created by SD Asif Hossein in 03 July, 2022 (Sunday) at 01:04 AM (UTC +06).
+ */
+
+// Well, in a program, expressions are
+// instructions, which generates a result.
+
+10 + 20 - 3 * 4;    // Result : 18
+
+showl 10 << 2;    // Output : 40
+
+// Where 10 << 2 is an expression, which generates the result 40.

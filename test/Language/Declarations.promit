@@ -1,0 +1,23 @@
+/**
+ * Demonstration of declarations in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Language/Declarations.promit
+ *
+ * Created by SD Asif Hossein in 03 July, 2022 (Sunday) at 01:11 AM (UTC +06).
+ */
+
+// In Promit, declarations are typeof statements
+// which provides specific command for variable
+// declaration.
+
+take a = 10;
+
+// Here, 'take' is a declarative statement.
+
+showl a;
+
+// 'showl' is just a normal statement.
+
+// There are other declarative statements in Promit, 
+// such as, 'class', 'fn', 'const' which declares
+// a class, a function and a constant variable.

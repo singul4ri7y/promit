@@ -1,0 +1,40 @@
+/**
+ * How the heck do I take inputs?
+ *
+ * Part of Promit Test Suit, location /test/TakeInput.promit
+ *
+ * Created by SD Asif Hossein in 03 July, 2022 (Sunday) at 12:53 AM (UTC +06).
+ */
+
+// To take inputs from console/stdin, use the 'recieve' keyword.
+
+// 'recieve' or 'recieve(string)' -> To take input a whole string as a line.
+// 'recieve(num)' -> To take the input as a number.
+// 'recieve(bool)' -> To take the input as a boolean. This basically takes
+// input a string and if the string is equal to 'true', the input value
+// will be true, otherwise false.
+
+take string, number, boolean;
+
+show 'Input a string, recieve(string) string = ';
+
+// String input the whole line.
+
+string = recieve(string);
+
+show 'Input a number, recieve(num) number = ';
+
+// Under the hood, a whole line is taken input as 
+// a string, then converted to number.
+
+number = recieve(num);
+
+show 'Input a boolean, reiceve(bool) boolean = ';
+
+// Under the hood, a whole string in taken as
+// input, then if the string is equal to 'true'
+// the result becomes true, otherwise false.
+
+boolean = recieve(bool);
+
+showl 'The string : $string, the number : $number and the boolean : $boolean';
