@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "common.h"
 #include "memory.h"
 
 extern ssize_t getdelim(char**, size_t*, int, FILE*);

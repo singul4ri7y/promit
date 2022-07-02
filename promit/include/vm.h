@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "table.h"
 #include "value.h"
 
 #define FRAMES_MAX 64u

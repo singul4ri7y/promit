@@ -4,6 +4,7 @@
 #pragma once
 
 #include "vm.h"
+#include "chunk.h"
 
 ObjFunction* compile(VM*, const char*);
 void markCompilerRoots();

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "memory.h"
-#include "table.h"
+#include "chunk.h"
 
 typedef enum {
 	OBJ_STRING,
