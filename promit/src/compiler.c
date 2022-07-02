@@ -953,12 +953,12 @@ static void dot(bool canAssign) {
 	else if(match(TOKEN_DECREMENT)) {
 		INC_DC(OP_POST_DECREMENT, 6, field);
 	}
-	else if(checkBinaryToken()) {
+	else if(canAssign && checkBinaryToken()) {
 		advance();
 		
 		TokenType type = parser.previous.type;
 		
-		if(canAssign && match(TOKEN_EQUAL)) {
+		if(match(TOKEN_EQUAL)) {
 			SET_N_GET(OP_GET_PROPERTY_INST, field);
 			
 			expression();
@@ -1011,12 +1011,12 @@ static void square(bool canAssign) {
 		emitBytes(OP_POST_INCREMENT, (uint8_t) 8);
 	else if(match(TOKEN_DECREMENT)) 
 		emitBytes(OP_POST_DECREMENT, (uint8_t) 8);
-	else if(checkBinaryToken()) {
+	else if(canAssign && checkBinaryToken()) {
 		advance();
 		
 		TokenType type = parser.previous.type;
 		
-		if(canAssign && match(TOKEN_EQUAL)) {
+		if(match(TOKEN_EQUAL)) {
 			emitByte(OP_DNM_GET_PROPERTY_INST);
 			
 			expression();
@@ -1132,12 +1132,12 @@ static void _static(bool canAssign) {
 	} else if(match(TOKEN_DECREMENT)) {
 		INC_DC(OP_POST_DECREMENT, 9, field);
 	}
-	else if(checkBinaryToken()) {
+	else if(canAssign && checkBinaryToken()) {
 		advance();
 		
 		TokenType type = parser.previous.type;
 		
-		if(canAssign && match(TOKEN_EQUAL)) {
+		if(match(TOKEN_EQUAL)) {
 			SET_N_GET(OP_GET_STATIC_PROPERTY_INST, field);
 			
 			expression();
