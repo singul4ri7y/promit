@@ -39,7 +39,7 @@ take container = a.any_method;
 
 // Address can be different due to your machine, OS.
 
-showl container;    // Output : <fn 'any_method' at 0x00000000864EA1A0 of instance 'A'>
+showl container;    // <fn 'any_method' at 0x5558d968ddf0 of instance 'A'>
 
 showl container("From 'container'.");    // Output : From 'container'.
 

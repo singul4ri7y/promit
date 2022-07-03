@@ -34,6 +34,6 @@ take func = callme();
 
 // Address can be different due to your machine, OS.
 
-showl func;    // Output : <closure '_' at 0x000000001AD35F20 with 1 upvalues>
+showl func;    // Output : <closure '_' at 0x5559afbf7e80 with 1 upvalues>
 
 func();

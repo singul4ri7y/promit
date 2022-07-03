@@ -54,8 +54,8 @@ take derived = Derived();
 // These outputs are presented in Linux.
 // In your OS method address may be different.
 
-showl derived.get_method1();    // Output : <fn 'method1' at 0x000000009C767340 of instance 'Derived'>
-showl derived.get_method2();    // Output : <fn 'method1' at 0x000000009C767480 of instance 'Derived'>
+showl derived.get_method1();    // Output : <fn 'method1' at 0x55ec1021ef70 of instance 'Derived'>
+showl derived.get_method2();    // Output : <fn 'method2' at 0x55a1250b8af0 of instance 'Derived'>
 
 // This will print and trigger an error.
 

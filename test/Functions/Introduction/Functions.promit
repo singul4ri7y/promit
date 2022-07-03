@@ -25,7 +25,7 @@ take container = any_function;
 
 // Address can be different in differnet machines, OS's.
 
-showl container;    // Output : <fn 'any_function' at 0x000000009E922680>
+showl container;    // Output : <fn 'any_function' at 0x561eda4314e0>
 
 showl "Calling 'container' variable...";
 

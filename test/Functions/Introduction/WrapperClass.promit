@@ -32,7 +32,7 @@ take bound = Function::bind(a.any_method, dict);
 
 // Address can be different due to machine or OS.
 
-showl bound;    // Output : <fn 'any_method' at 0x00000000839680C0 of instance 'Dictionary'>
+showl bound;    // Output : <fn 'any_method' at 0x55ec51ee3df0 of instance 'Dictionary'>
 
 bound('Hellow dictionary!!');
 
