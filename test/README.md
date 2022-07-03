@@ -36,5 +36,7 @@ You are requested to follow this read order in order to get the best experience 
  23. Files/all
  24. System/all
  25. Times/all
+ 26. Benchmarks/all (Not certainly necessary, just for benchmarking stuff)
+ 27. Algorithms/all (Important! See how Promit Really holds up against real life algorithms and problems)
 
 <b><i>Good luck. Peace.</i><b>
