@@ -20,7 +20,7 @@ Promit is <b>object oriented</b>, <b>bytecode interpreted</b>, <b>lightweight</b
 - High-Level Language with dynamically typed syntax.
 ```dart
 // Take the name as an input string.
-take name = recieve(string);
+take name = receive(string);
 
 // Now print the name.
 showl 'Your name is : $name!';
