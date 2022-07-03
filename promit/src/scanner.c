@@ -278,7 +278,7 @@ static TokenType identifierType(Scanner* scanner) {
 				TokenType ttype = checkKeyword(scanner, 1, "eturn", 5, TOKEN_RETURN);
 						
 				if(ttype != TOKEN_RETURN) 
-					ttype = checkKeyword(scanner, 1, "ecieve", 6, TOKEN_RECEIVE);
+					ttype = checkKeyword(scanner, 1, "eceive", 6, TOKEN_RECEIVE);
 						
 				return ttype;
 			}
