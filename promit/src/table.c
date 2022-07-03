@@ -52,7 +52,7 @@ static void adjustCapacity(Table* table, size_t capacity) {
 
 	table -> count = 0;
 
-	for(register size_t i = 0u; i < table -> capacity; i++) {
+	for(register int i = 0u; i < table -> capacity; i++) {
 		Entry* entry = table -> entries + i;
 
 		if(entry -> key == NULL) continue;
@@ -110,7 +110,7 @@ bool tableDelete(Table* table, ObjString* key) {
 }
 
 void tableInsertAll(Table* from, Table* to) {
-	for(size_t i = 0; i < from -> capacity; i++) {
+	for(register int i = 0; i < from -> capacity; i++) {
 		Entry* entry = from -> entries + i;
 
 		if(entry -> key != NULL) 
@@ -135,7 +135,7 @@ bool tableGet(Table* table, ObjString* key, ValueContainer* valueContainer) {
 // Fetches a string if it's available as a key in any entry of a certain table.
 // Mostly in this projects case, is used to fetch strings for string interning.
 
-ObjString* tableFindString(Table* table, const char* buffer, size_t length, uint32_t hash) {
+ObjString* tableFindString(Table* table, const char* buffer, int length, uint32_t hash) {
 	if(table -> count == 0u) 
 		return NULL;
 

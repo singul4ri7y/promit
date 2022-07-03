@@ -15,7 +15,7 @@
 
 static void defineNative(VM*, const char*, NativeFn);
 
-static NativePack author(VM* vm, int argCount, Value* args) {
+static NativePack author(VM* vm, int, Value*) {
 	NativePack pack;
 
 	pack.hadError = false;
@@ -349,7 +349,7 @@ bool callValue(VM* vm, Value callee, uint8_t argCount) {
 				
 				// The function can be native or closure or just a funciton.
 				
-				vm -> stack[vm -> stackTop - argCount - 1u] = boundMethod -> reciever;
+				vm -> stack[vm -> stackTop - argCount - 1u] = boundMethod -> receiver;
 				
 				return callValue(vm, OBJECT_VAL(boundMethod -> function), argCount);
 			}
@@ -436,6 +436,8 @@ bool valuesEqual(const Value value1, const Value value2) {
 			tableGet(&VALUE_INSTANCE(value2) -> fields, numberField, &numberContainer);
 
 			b = VALUE_NUMBER(numberContainer.value);
+
+			return a == b;
 		}
 		else if(IS_NUMBER(value2) && IS_INSTANCE(value1) && VALUE_INSTANCE(value1) -> klass == vmNumberClass) {
 			b = VALUE_NUMBER(value2);
@@ -445,9 +447,9 @@ bool valuesEqual(const Value value1, const Value value2) {
 			tableGet(&VALUE_INSTANCE(value1) -> fields, numberField, &numberContainer);
 
 			a = VALUE_NUMBER(numberContainer.value);
-		}
 
-		return a == b;
+			return a == b;
+		}
 	}
 
 	if(value1.type != value2.type) 
@@ -457,33 +459,16 @@ bool valuesEqual(const Value value1, const Value value2) {
 		case VAL_BOOLEAN: return VALUE_BOOL(value1) == VALUE_BOOL(value2);
 		case VAL_NULL:    return true;
 		case VAL_NUMBER:  return VALUE_NUMBER(value1) == VALUE_NUMBER(value2);
-		case VAL_OBJECT: {
-			if(VALUE_OBJECT(value1) == VALUE_OBJECT(value2)) 
-				return true;
-
-			ObjType type = OBJ_TYPE(value1);
-
-			if(type != OBJ_TYPE(value2)) 
-				return false;
-
-			switch(type) {
-				// Won't reach but still to make sure.
-				
-				case OBJ_STRING: {
-					ObjString* string1 = VALUE_STRING(value1);
-					ObjString* string2 = VALUE_STRING(value2);
-
-					return string1 -> length == string2 -> length && string1 -> hash == string1 -> hash && 
-						!memcmp(string1 -> buffer, string2 -> buffer, string1 -> length * sizeof(char));
-				}
-			}
-		}
+		case VAL_OBJECT:  return VALUE_OBJECT(value1) == VALUE_OBJECT(value2);
 	}
 	
 	return false;
 }
 
 #define READ_BYTE() *frame -> ip++
+
+// Ignore hte boolean related compiler warnings.
+// Consider true > null -> 1 > 0 -> true
 
 #define VALUE_COMP(op) {\
 	Value value2 = POP(),\
@@ -641,8 +626,8 @@ BooleanData toBoolean(VM* vm, Value* value) {
 
 					bool found = false;
 
-					if((found = tableGet(&instance -> fields, name, &represent)));
-					else if((found = tableGet(&instance -> klass -> methods, name, &represent)));
+					if((found = tableGet(&instance -> fields, name, &represent))) {}
+					else if((found = tableGet(&instance -> klass -> methods, name, &represent))) {}
 
 					if(found) {
 						Value callable = represent.value;
@@ -750,11 +735,11 @@ static uint32_t readBytes(CallFrame* frame, bool isLong) {
 	
 	size_t constant = READ_BYTE();
 	
-	constant << 0x8;
+	constant <<= 0x8;
 
 	constant |= READ_BYTE();
 
-	constant << 0x8;
+	constant <<= 0x8;
 
 	constant |= READ_BYTE();
 
@@ -857,17 +842,17 @@ static bool bindMethod(VM* vm, ObjClass* klass, ObjString* name, uint8_t state) 
 		}
 	}
 	
-	Value reciever;
+	Value receiver;
 	
 	switch(state) {
 		case 2:
-		case 0: reciever = *peek(vm, 0); break;
+		case 0: receiver = *peek(vm, 0); break;
 		
 		case 3: 
-		case 1: reciever = *peek(vm, 1); break;
+		case 1: receiver = *peek(vm, 1); break;
 	}
 	
-	ObjBoundMethod* boundMethod = newBoundMethod(vm, reciever, method.value.as.obj);
+	ObjBoundMethod* boundMethod = newBoundMethod(vm, receiver, method.value.as.obj);
 	
 	pop_state(vm, state);
 	
@@ -907,20 +892,18 @@ static WrapperStatus wrapperProperty(VM* vm, Value value, ObjString* name, uint8
 
 	ValueContainer valueContainer;
 
-	Value property;
-
 	if(tableGet(&klass -> methods, name, &valueContainer)) {
-		Value reciever;
+		Value receiver;
 	
 		switch(state) {
 			case 2:
-			case 0: reciever = *peek(vm, 0); break;
+			case 0: receiver = *peek(vm, 0); break;
 			
 			case 3: 
-			case 1: reciever = *peek(vm, 1); break;
+			case 1: receiver = *peek(vm, 1); break;
 		}
 		
-		ObjBoundMethod* boundMethod = newBoundMethod(vm, reciever, valueContainer.value.as.obj);
+		ObjBoundMethod* boundMethod = newBoundMethod(vm, receiver, valueContainer.value.as.obj);
 
 		value = OBJECT_VAL(boundMethod);
 	}
@@ -1151,7 +1134,7 @@ static double incdc(Value* value, bool dec, bool pre) {
 							return incdc(&entry -> valueContainer.value, dec, pre);
 					}
 
-					// Expected fallthrough.
+					// No break
 				}
 
 				default: value -> as.number = number = NAN;
@@ -1193,8 +1176,8 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 
 					bool found = false;
 
-					if((found = tableGet(&instance -> fields, name, &represent)));
-					else if((found = tableGet(&instance -> klass -> methods, name, &represent)));
+					if((found = tableGet(&instance -> fields, name, &represent))) {}
+					else if((found = tableGet(&instance -> klass -> methods, name, &represent))) {}
 
 					if(found) {
 						Value callable = represent.value;
@@ -1286,6 +1269,9 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 				}
 				
 				case OBJ_STRING: data.number = pstrtod(VALUE_CSTRING(*value)); break;
+
+				// And for all other object types, they are not representable 
+				// in numbers.
 			}
 		}
 
@@ -2385,6 +2371,8 @@ InterpretResult run(VM* vm) {
 				if(vm -> breaked) 
 					frame -> ip += param;
 				else vm -> breaked = false;
+
+				break;
 			}
 			
 			case OP_NOT: {
@@ -2453,10 +2441,18 @@ InterpretResult run(VM* vm) {
 								case OBJ_BOUND_METHOD:
 								case OBJ_NATIVE:
 									check = vmFunctionClass;
+								
+								case OBJ_UPVALUE: 
+								case OBJ_CLASS: 
+								case OBJ_INSTANCE: 
+								case OBJ_FILE: 
+								case OBJ_BYTELIST: break;
 							}
 
 							break;
 						}
+
+						default: ;
 					}
 				}
 
@@ -2558,6 +2554,8 @@ InterpretResult run(VM* vm) {
 							case OBJ_BYTELIST: 
 								value = OBJECT_VAL(TAKE_STRING("bytelist", 8u, false));
 								break;
+							
+							case OBJ_UPVALUE: abort();
 						}
 						
 						break;
@@ -2635,6 +2633,8 @@ InterpretResult run(VM* vm) {
 								case OBJ_BYTELIST: 
 									__printf("(ByteList) ");
 									break;
+								
+								case OBJ_UPVALUE: break;
 							}
 							
 							break;
@@ -2822,7 +2822,7 @@ InterpretResult run(VM* vm) {
 							if(index < 0) 
 								index += list -> count;
 							
-							if(index + 1u > list -> count || index < 0) {
+							if(index + 1 > list -> count || index < 0) {
 								RUNTIME_ERROR("List index out of bound!");
 							
 								return INTERPRET_RUNTIME_ERROR;
@@ -3149,7 +3149,7 @@ InterpretResult run(VM* vm) {
 							if(index < 0) 
 								index += list -> count;
 							
-							if(index + 1u > list -> count || index < 0) {
+							if(index + 1 > list -> count || index < 0) {
 								RUNTIME_ERROR("List index out of bound!");
 							
 								return INTERPRET_RUNTIME_ERROR;
@@ -3179,7 +3179,7 @@ InterpretResult run(VM* vm) {
 							
 							PUSH(NUMBER_VAL((double) byteList -> bytes[index]));
 							
-							if(byteList -> bytes[index] - 1u >= 0) 
+							if(byteList -> bytes[index] - 1 >= 0) 
 								byteList -> bytes[index]--;
 							
 							break;
@@ -3476,7 +3476,7 @@ InterpretResult run(VM* vm) {
 							if(index < 0) 
 								index += list -> count;
 							
-							if(index + 1u > list -> count || index < 0) {
+							if(index + 1 > list -> count || index < 0) {
 								RUNTIME_ERROR("List index out of bound!");
 							
 								return INTERPRET_RUNTIME_ERROR;
@@ -3803,7 +3803,7 @@ InterpretResult run(VM* vm) {
 							if(index < 0) 
 								index += list -> count;
 							
-							if(index + 1u > list -> count || index < 0) {
+							if(index + 1 > list -> count || index < 0) {
 								RUNTIME_ERROR("List index out of bound!");
 							
 								return INTERPRET_RUNTIME_ERROR;
@@ -3831,7 +3831,7 @@ InterpretResult run(VM* vm) {
 							POP();
 							POP();
 							
-							if(byteList -> bytes[index] - 1u >= 0) 
+							if(byteList -> bytes[index] - 1 >= 0) 
 								byteList -> bytes[index]--;
 							
 							PUSH(NUMBER_VAL((double) byteList -> bytes[index]));
@@ -3963,7 +3963,7 @@ InterpretResult run(VM* vm) {
 				break;
 			}
 			
-			case OP_RECIEVE: {
+			case OP_RECEIVE: {
 				uint8_t type = READ_BYTE();
 
 				Value value;
@@ -4399,7 +4399,7 @@ InterpretResult run(VM* vm) {
 							if(index < 0) 
 								index += list -> count;
 							
-							if(index + 1u > list -> count || index < 0) {
+							if(index + 1 > list -> count || index < 0) {
 								RUNTIME_ERROR("List index out of bound!");
 								
 								return INTERPRET_RUNTIME_ERROR;
@@ -4447,7 +4447,7 @@ InterpretResult run(VM* vm) {
 							if(index < 0) 
 								index += string -> length;
 							
-							if(index + 1u > string -> length || index < 0) {
+							if(index + 1 > string -> length || index < 0) {
 								RUNTIME_ERROR("String index out of bound!");
 								
 								return INTERPRET_RUNTIME_ERROR;
@@ -4729,7 +4729,7 @@ InterpretResult run(VM* vm) {
 							if(index < 0) 
 								index += list -> count;
 							
-							if(index + 1u > list -> count || index < 0) {
+							if(index + 1 > list -> count || index < 0) {
 								RUNTIME_ERROR("List index out of bound!");
 								
 								return INTERPRET_RUNTIME_ERROR;
@@ -5020,16 +5020,16 @@ InterpretResult run(VM* vm) {
 						
 						if(index < 0) {
 							if(-index > list -> count) {
-								size_t newCount = -index;
+								int newCount = -index;
 								
 								if(-index > list -> capacity) {
-									size_t oldCapacity = list -> capacity;
+									int oldCapacity = list -> capacity;
 									
 									list -> capacity = newCount;
 									list -> values   = GROW_ARRAY(Value, list -> values, oldCapacity, list -> capacity);
 								}
 							
-								for(register size_t i = 0; i < newCount - list -> count; i++) {
+								for(register int i = 0; i < newCount - list -> count; i++) {
 									if(i < list -> count) 
 										list -> values[newCount - list -> count + i] = list -> values[i];
 									
@@ -5041,17 +5041,17 @@ InterpretResult run(VM* vm) {
 							
 							index += list -> count;
 						}
-						else if(index + 1u > list -> count) {
-							size_t newCount = index + 1u;
+						else if(index + 1 > list -> count) {
+							int newCount = index + 1u;
 							
-							if(index + 1u > list -> capacity) {
-								size_t oldCapacity = list -> capacity;
+							if(index + 1 > list -> capacity) {
+								int oldCapacity = list -> capacity;
 								
 								list -> capacity = newCount;
 								list -> values   = GROW_ARRAY(Value, list -> values, oldCapacity, list -> capacity);
 							}
 							
-							for(register size_t i = list -> count; i < newCount; i++) 
+							for(register int i = list -> count; i < newCount; i++) 
 								list -> values[i] = NULL_VAL;
 							
 							list -> count = newCount;
@@ -5688,7 +5688,7 @@ InterpretResult run(VM* vm) {
 
 						if(index < 0) index += list -> count;
 						
-						if(index + 1u > list -> count) {
+						if(index + 1 > list -> count) {
 							RUNTIME_ERROR("List index out of bound!");
 							
 							return INTERPRET_RUNTIME_ERROR;
@@ -5809,8 +5809,8 @@ InterpretResult run(VM* vm) {
 			case OP_ADD_LIST: {
 				ObjList* list = VALUE_LIST(*peek(vm, 1));
 				
-				if(list -> count + 1u > list -> capacity) {
-					size_t oldCapacity = list -> capacity;
+				if(list -> count + 1 > list -> capacity) {
+					int oldCapacity = list -> capacity;
 					
 					list -> capacity = GROW_CAPACITY(list -> capacity);
 					list -> values   = GROW_ARRAY(Value, list -> values, oldCapacity, list -> capacity);

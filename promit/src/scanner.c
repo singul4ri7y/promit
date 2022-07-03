@@ -194,7 +194,7 @@ static bool isAlpha(const char c) {
 		   c == '$' || c == '_';
 }
 
-static TokenType checkKeyword(Scanner* scanner, int start, const char* rest, size_t length, TokenType expected) {
+static TokenType checkKeyword(Scanner* scanner, int start, const char* rest, int length, TokenType expected) {
 	if((scanner -> current - scanner -> start == start + length) && !memcmp(scanner -> start + start, rest, length)) 
 		return expected;
 
@@ -204,82 +204,127 @@ static TokenType checkKeyword(Scanner* scanner, int start, const char* rest, siz
 static TokenType identifierType(Scanner* scanner) {
 	switch(*scanner -> start) {
 		case 'b': return checkKeyword(scanner, 1, "reak", 4, TOKEN_BREAK);
-		case 'c': if(scanner -> current - scanner -> start > 1) {
-			switch(scanner -> start[1]) {
-				case 'a': return checkKeyword(scanner, 2, "se", 2, TOKEN_CASE);
-				case 'l': return checkKeyword(scanner, 2, "ass", 3, TOKEN_CLASS);
-				case 'o': if(scanner -> current - scanner -> start - 1 > 1) {
-					TokenType ttype = checkKeyword(scanner, 2, "ntinue", 6, TOKEN_CONTINUE);
-					
-					if(ttype != TOKEN_CONTINUE) 
-						ttype = checkKeyword(scanner, 2, "nst", 3, TOKEN_CONST);
-					
-					return ttype;
+		case 'c': {
+			if(scanner -> current - scanner -> start > 1) {
+				switch(scanner -> start[1]) {
+					case 'a': return checkKeyword(scanner, 2, "se", 2, TOKEN_CASE);
+					case 'l': return checkKeyword(scanner, 2, "ass", 3, TOKEN_CLASS);
+					case 'o': if(scanner -> current - scanner -> start - 1 > 1) {
+						TokenType ttype = checkKeyword(scanner, 2, "ntinue", 6, TOKEN_CONTINUE);
+						
+						if(ttype != TOKEN_CONTINUE) 
+							ttype = checkKeyword(scanner, 2, "nst", 3, TOKEN_CONST);
+						
+						return ttype;
+					}
 				}
 			}
+
+			break;
 		}
-		case 'd': if(scanner -> current - scanner -> start > 1) {
-			switch(scanner -> start[1]) {
-				case 'e': {
-					TokenType ttype = checkKeyword(scanner, 2, "fault", 5, TOKEN_DEFAULT);
-					
-					if(ttype != TOKEN_DEFAULT) 
-						ttype = checkKeyword(scanner, 2, "l", 1, TOKEN_DEL);
-							
-					return ttype;
+
+		case 'd': {
+			if(scanner -> current - scanner -> start > 1) {
+				switch(scanner -> start[1]) {
+					case 'e': {
+						TokenType ttype = checkKeyword(scanner, 2, "fault", 5, TOKEN_DEFAULT);
+						
+						if(ttype != TOKEN_DEFAULT) 
+							ttype = checkKeyword(scanner, 2, "l", 1, TOKEN_DEL);
+								
+						return ttype;
+					}
+					case 'o': return checkKeyword(scanner, 2, "", 0, TOKEN_DO);
 				}
-				case 'o': return checkKeyword(scanner, 2, "", 0, TOKEN_DO);
 			}
+
+			break;
 		}
+
 		case 'e': return checkKeyword(scanner, 1, "lse", 3, TOKEN_ELSE);
-		case 'f': if(scanner -> current - scanner -> start > 1) {
-			switch(scanner -> start[1]) {
-				case 'o': return checkKeyword(scanner, 2, "r", 1, TOKEN_FOR);
-				case 'a': return checkKeyword(scanner, 2, "lse", 3, TOKEN_FALSE);
-				case 'n': return checkKeyword(scanner, 2, "", 0, TOKEN_FUNCTION);
+
+		case 'f': {
+			if(scanner -> current - scanner -> start > 1) {
+				switch(scanner -> start[1]) {
+					case 'o': return checkKeyword(scanner, 2, "r", 1, TOKEN_FOR);
+					case 'a': return checkKeyword(scanner, 2, "lse", 3, TOKEN_FALSE);
+					case 'n': return checkKeyword(scanner, 2, "", 0, TOKEN_FUNCTION);
+				}
 			}
+
+			break;
 		}
-		case 'i': if(scanner -> current - scanner -> start > 1) {
-			switch(scanner -> start[1]) {
-				case 'f': return checkKeyword(scanner, 2, "", 0, TOKEN_IF);
-				case 's': return checkKeyword(scanner, 2, "", 0, TOKEN_IS);
-				case 'n': return checkKeyword(scanner, 2, "stof", 4, TOKEN_INSTOF);
+
+		case 'i': {
+			if(scanner -> current - scanner -> start > 1) {
+				switch(scanner -> start[1]) {
+					case 'f': return checkKeyword(scanner, 2, "", 0, TOKEN_IF);
+					case 's': return checkKeyword(scanner, 2, "", 0, TOKEN_IS);
+					case 'n': return checkKeyword(scanner, 2, "stof", 4, TOKEN_INSTOF);
+				}
+
+				break;
 			}
+
+			break;
 		}
+
 		case 'I': return checkKeyword(scanner, 1, "nfinity", 7, TOKEN_INFINITY);
 		case 'n': return checkKeyword(scanner, 1, "ull", 3, TOKEN_NULL);
 		case 'N': return checkKeyword(scanner, 1, "aN", 2, TOKEN_NAN);
-		case 'r': if(scanner -> current - scanner -> start > 1) {
-			TokenType ttype = checkKeyword(scanner, 1, "eturn", 5, TOKEN_RETURN);
-					
-			if(ttype != TOKEN_RETURN) 
-				ttype = checkKeyword(scanner, 1, "ecieve", 6, TOKEN_RECIEVE);
-					
-			return ttype;
+
+		case 'r': {
+			if(scanner -> current - scanner -> start > 1) {
+				TokenType ttype = checkKeyword(scanner, 1, "eturn", 5, TOKEN_RETURN);
+						
+				if(ttype != TOKEN_RETURN) 
+					ttype = checkKeyword(scanner, 1, "ecieve", 6, TOKEN_RECEIVE);
+						
+				return ttype;
+			}
+
+			break;
 		}
-		case 's': if(scanner -> current - scanner -> start > 1) {
-			switch(scanner -> start[1]) {
-				case 'u': return checkKeyword(scanner, 2, "per", 3, TOKEN_SUPER);
-				case 'h': if(scanner -> current - scanner -> start - 1 > 1) {
-					TokenType ttype = checkKeyword(scanner, 2, "owl", 3, TOKEN_SHOWL);
-					
-					if(ttype != TOKEN_SHOWL) 
-						ttype = checkKeyword(scanner, 2, "ow", 2, TOKEN_SHOW);
-					
-					return ttype;
+
+		case 's': {
+			if(scanner -> current - scanner -> start > 1) {
+				switch(scanner -> start[1]) {
+					case 'u': return checkKeyword(scanner, 2, "per", 3, TOKEN_SUPER);
+
+					case 'h': {
+						if(scanner -> current - scanner -> start - 1 > 1) {
+							TokenType ttype = checkKeyword(scanner, 2, "owl", 3, TOKEN_SHOWL);
+							
+							if(ttype != TOKEN_SHOWL) 
+								ttype = checkKeyword(scanner, 2, "ow", 2, TOKEN_SHOW);
+							
+							return ttype;
+						}
+
+						break;
+					}
+
+					case 'w': return checkKeyword(scanner, 2, "itch", 4, TOKEN_SWITCH);
+					case 't': return checkKeyword(scanner, 2, "atic", 4, TOKEN_STATIC);
 				}
-				case 'w': return checkKeyword(scanner, 2, "itch", 4, TOKEN_SWITCH);
-				case 't': return checkKeyword(scanner, 2, "atic", 4, TOKEN_STATIC);
 			}
+
+			break;
 		}
-		case 't': if(scanner -> current - scanner -> start > 1) {
-			switch(scanner -> start[1]) {
-				case 'r': return checkKeyword(scanner, 2, "ue", 2, TOKEN_TRUE);
-				case 'a': return checkKeyword(scanner, 2, "ke", 2, TOKEN_TAKE);
-				case 'h': return checkKeyword(scanner, 2, "is", 2, TOKEN_THIS);
-				case 'y': return checkKeyword(scanner, 2, "peof", 4, TOKEN_TYPEOF);
+
+		case 't': {
+			if(scanner -> current - scanner -> start > 1) {
+				switch(scanner -> start[1]) {
+					case 'r': return checkKeyword(scanner, 2, "ue", 2, TOKEN_TRUE);
+					case 'a': return checkKeyword(scanner, 2, "ke", 2, TOKEN_TAKE);
+					case 'h': return checkKeyword(scanner, 2, "is", 2, TOKEN_THIS);
+					case 'y': return checkKeyword(scanner, 2, "peof", 4, TOKEN_TYPEOF);
+				}
 			}
+
+			break;
 		}
+
 		case 'w': return checkKeyword(scanner, 1, "hile", 4, TOKEN_WHILE);
 	}
 
@@ -289,7 +334,7 @@ static TokenType identifierType(Scanner* scanner) {
 static bool usableIdentifier(TokenType type) {
 	return type == TOKEN_FALSE ||
 	       type == TOKEN_INFINITY ||
-		   type == TOKEN_RECIEVE ||
+		   type == TOKEN_RECEIVE ||
 		   type == TOKEN_NAN ||
 		   type == TOKEN_TRUE ||
 		   type == TOKEN_NULL ||
@@ -389,12 +434,16 @@ static void string(Scanner* scanner, int recursionDepth, char quotation) {
 						case '>': {
 							if(match(scanner, '>')) enqueue(scanner, makeToken(scanner, TOKEN_RIGHT_SHIFT));
 							else if(match(scanner, '=')) enqueue(scanner, makeToken(scanner, TOKEN_GREATER_EQUAL));
-							else enqueue(scanner, makeToken(scanner, TOKEN_GREATER)); break;
+							else enqueue(scanner, makeToken(scanner, TOKEN_GREATER));
+
+							break;
 						}
 						case '<': {
 							if(match(scanner, '<')) enqueue(scanner, makeToken(scanner, TOKEN_LEFT_SHIFT));
 							else if(match(scanner, '=')) enqueue(scanner, makeToken(scanner, TOKEN_LESS_EQUAL));
-							else enqueue(scanner, makeToken(scanner, TOKEN_LESS)); break;
+							else enqueue(scanner, makeToken(scanner, TOKEN_LESS));
+
+							break;
 						}
 						case '%': enqueue(scanner, makeToken(scanner, TOKEN_MODULUS)); break;
 						case ':': {

@@ -1,10 +1,10 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
 #include <limits.h>
-
-#define _GNU_SOURCE
 #include <time.h>
 
 #include "dtoa.h"
@@ -35,7 +35,7 @@
 static ObjClass* fileClass;
 
 #define fileInstanceFile if(!IS_INSTANCE(values[0]) || VALUE_INSTANCE(values[0]) -> klass != fileClass) {\
-	NATIVE_R_ERR("Provided reciever/instance (this) must be of file instance!");\
+	NATIVE_R_ERR("Provided receiver/instance (this) must be of file instance!");\
 }\
 	ObjInstance* instance = VALUE_INSTANCE(values[0]);\
 	ValueContainer fileContainer;\
@@ -167,7 +167,7 @@ static NativePack fileWriteLine(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileIsOpened(VM* vm, int argCount, Value* values) {
+static NativePack fileIsOpened(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -177,7 +177,7 @@ static NativePack fileIsOpened(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileClose(VM* vm, int argCount, Value* values) {
+static NativePack fileClose(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -211,7 +211,7 @@ static NativePack fileClose(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileFlush(VM* vm, int argCount, Value* values) {
+static NativePack fileFlush(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -416,7 +416,7 @@ static NativePack fileReopen(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileEOF(VM* vm, int argCount, Value* values) {
+static NativePack fileEOF(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -454,7 +454,7 @@ static NativePack fileByteList(VM* vm, int argCount, Value* values) {
 		NATIVE_R_ERR("Could not allocate memory for bytelist!");
 	}
 	
-	for(register size_t i = 0; i < list -> count; i++) {
+	for(register int i = 0; i < list -> count; i++) {
 		if(!IS_NUMBER(list -> values[i])) {
 			NATIVE_R_ERR("List value other than number cannot be converted to bytearray!");
 		}
@@ -473,7 +473,7 @@ static NativePack fileByteList(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileError(VM* vm, int argCount, Value* values) {
+static NativePack fileError(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -483,7 +483,7 @@ static NativePack fileError(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileClearError(VM* vm, int argCount, Value* values) {
+static NativePack fileClearError(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -496,7 +496,7 @@ static NativePack fileClearError(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileReadc(VM* vm, int argCount, Value* values) {
+static NativePack fileReadc(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -567,7 +567,7 @@ static NativePack fileRead(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack _fileOpened(VM* vm, int argCount, Value* values) {
+static NativePack _fileOpened(VM*, int, Value*) {
 	initNativePack;
 	
 	pack.value = NUMBER_VAL((double) fileOpened);
@@ -575,7 +575,7 @@ static NativePack _fileOpened(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileReadRest(VM* vm, int argCount, Value* values) {
+static NativePack fileReadRest(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -633,7 +633,7 @@ static long calcSize(FILE* file, long pos) {
 	return size;
 }
 
-static NativePack fileReadAll(VM* vm, int argCount, Value* values) {
+static NativePack fileReadAll(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -675,7 +675,7 @@ static NativePack fileReadAll(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileRewind(VM* vm, int argCount, Value* values) {
+static NativePack fileRewind(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -686,7 +686,7 @@ static NativePack fileRewind(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileTell(VM* vm, int argCount, Value* values) {
+static NativePack fileTell(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -696,7 +696,7 @@ static NativePack fileTell(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack fileSize(VM* vm, int argCount, Value* values) {
+static NativePack fileSize(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	fileInstanceFile;
@@ -818,7 +818,7 @@ static NativePack _fileReadAll(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack file__represent__(VM* vm, int argCount, Value* values) {
+static NativePack file__represent__(VM* vm, int, Value* values) {
 	initNativePack;
 
 	fileInstanceFile;
@@ -834,7 +834,7 @@ static NativePack file__represent__(VM* vm, int argCount, Value* values) {
 	short midx = (short) VALUE_NUMBER(mode.value);
 
 	if(file -> file != NULL) 
-		sprintf(result, "<File with %s (%s) mode at 0x%.16X>", modes[midx], fileModes[midx], file -> file);
+		sprintf(result, "<File with %s (%s) mode at %p>", modes[midx], fileModes[midx], file -> file);
 	else sprintf(result, "<File closed>");
 
 	size_t length = strlen(result);
@@ -931,7 +931,7 @@ static NativePack systemExit(VM* vm, int argCount, Value* values) {
 	// No need to write rest of the code, as the process will terminate.
 }
 
-static NativePack systemPause(VM* vm, int argCount, Value* values) {
+static NativePack systemPause(VM*, int argCount, Value* values) {
 	initNativePack;
 	
 	if(argCount > 1) {
@@ -995,7 +995,7 @@ static NativePack systemPrintError(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack systemGC(VM* vm, int argCount, Value* values) {
+static NativePack systemGC(VM*, int, Value*) {
 	initNativePack;
 
 	garbageCollector();
@@ -1817,7 +1817,7 @@ static NativePack mathDim(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack mathMin(VM* vm, int argCount, Value* values) {
+static NativePack mathMin(VM*, int argCount, Value* values) {
 	initNativePack;
 	
 	if(argCount < 2) {
@@ -1839,7 +1839,7 @@ static NativePack mathMin(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack mathMax(VM* vm, int argCount, Value* values) {
+static NativePack mathMax(VM*, int argCount, Value* values) {
 	initNativePack;
 	
 	if(argCount < 2) {
@@ -1881,7 +1881,7 @@ static NativePack mathAbs(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack mathRandom(VM* vm, int argCount, Value* values) {
+static NativePack mathRandom(VM*, int, Value*) {
 	initNativePack;
 
 	pack.value = NUMBER_VAL((double) rand() / (double) RAND_MAX);
@@ -1957,12 +1957,11 @@ void initMathLib(VM* vm) {
 
 static ObjString* secField;
 static ObjString* usecField;
-static ObjString* tzoneField;
 
 extern ObjClass* timeClass;
 
 #define timeInstanceTime if(!IS_INSTANCE(values[0]) || VALUE_INSTANCE(values[0]) -> klass != timeClass) {\
-		NATIVE_R_ERR("Provided reciever/instance (this) must be of file instance!");\
+		NATIVE_R_ERR("Provided receiver/instance (this) must be of file instance!");\
 	}\
 	ObjInstance* instance = VALUE_INSTANCE(values[0]);\
 	ValueContainer timeContainer;\
@@ -1984,19 +1983,13 @@ int gettzoffset(void) {
 	time_t rawtime = time(NULL);
 	struct tm* bdt = localtime(&rawtime);
 
-	offset = bdt -> __tm_gmtoff;
+	offset = bdt -> tm_gmtoff;
 #endif // _WIN32
 
 	return offset;
 }
 
 static int tz;
-
-static bool isLeap(int year) {
-	if(!(year % 400) || !(year % 4) && (year % 100)) return true;
-	
-	return false;
-}
 
 static NativePack timeInit(VM* vm, int argCount, Value* values) {
 	initNativePack;
@@ -2171,7 +2164,7 @@ static NativePack timeInit(VM* vm, int argCount, Value* values) {
 
 // Gets the current CPU time.
 
-static NativePack timeSnap(VM* vm, int argCount, Value* values) {
+static NativePack timeSnap(VM*, int, Value*) {
 	NativePack pack;
 	
 	pack.hadError = false;
@@ -2180,7 +2173,7 @@ static NativePack timeSnap(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeElapsed(VM* vm, int argCount, Value* values) {
+static NativePack timeElapsed(VM* vm, int, Value*) {
 	initNativePack;
 	
 	struct timeval tv;
@@ -2197,7 +2190,7 @@ static NativePack timeElapsed(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeStringifyISO(VM* vm, int argCount, Value* values) {
+static NativePack timeStringifyISO(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2214,7 +2207,7 @@ static NativePack timeStringifyISO(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeCount(VM* vm, int argCount, Value* values) {
+static NativePack timeCount(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2229,7 +2222,7 @@ static NativePack timeCount(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetYear(VM* vm, int argCount, Value* values) {
+static NativePack timeGetYear(VM* vm, int, Value* values) {
 	initNativePack;
 	
 	timeInstanceTime;
@@ -2241,7 +2234,7 @@ static NativePack timeGetYear(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCYear(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCYear(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2373,7 +2366,7 @@ static NativePack timeDetails(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetDate(VM* vm, int argCount, Value* values) {
+static NativePack timeGetDate(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2385,7 +2378,7 @@ static NativePack timeGetDate(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCDate(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCDate(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2446,7 +2439,7 @@ static NativePack timeStringify(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack time__represent__(VM* vm, int argCount, Value* values) {
+static NativePack time__represent__(VM* vm, int, Value* values) {
 	Value v[] = { values[0], NUMBER_VAL(1) };
 
 	return timeStringify(vm, 2, (Value*) v);
@@ -2518,7 +2511,7 @@ static NativePack timeSetUTCDate(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetMonth(VM* vm, int argCount, Value* values) {
+static NativePack timeGetMonth(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2530,7 +2523,7 @@ static NativePack timeGetMonth(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCMonth(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCMonth(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2608,7 +2601,7 @@ static NativePack timeSetUTCMonth(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetHours(VM* vm, int argCount, Value* values) {
+static NativePack timeGetHours(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2620,7 +2613,7 @@ static NativePack timeGetHours(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCHours(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCHours(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2744,7 +2737,7 @@ static NativePack timeSet(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetMinutes(VM* vm, int argCount, Value* values) {
+static NativePack timeGetMinutes(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2756,7 +2749,7 @@ static NativePack timeGetMinutes(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCMinutes(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCMinutes(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2834,7 +2827,7 @@ static NativePack timeSetUTCMinutes(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetSeconds(VM* vm, int argCount, Value* values) {
+static NativePack timeGetSeconds(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2846,7 +2839,7 @@ static NativePack timeGetSeconds(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCSeconds(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCSeconds(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2924,7 +2917,7 @@ static NativePack timeSetUTCSeconds(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetMilliseconds(VM* vm, int argCount, Value* values) {
+static NativePack timeGetMilliseconds(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -2996,7 +2989,7 @@ static NativePack timeSetUTCMilliseconds(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetMicroseconds(VM* vm, int argCount, Value* values) {
+static NativePack timeGetMicroseconds(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -3007,7 +3000,7 @@ static NativePack timeGetMicroseconds(VM* vm, int argCount, Value* values) {
 }
 
 static NativePack timeGetUTCMicroseconds(VM* vm, int argCount, Value* values) {
-	return timeGetUTCMicroseconds(vm, argCount, values);
+	return timeGetMicroseconds(vm, argCount, values);
 }
 
 static NativePack timeSetMicroseconds(VM* vm, int argCount, Value* values) {
@@ -3064,7 +3057,7 @@ static NativePack timeSetUTCMicroseconds(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeCurrentTimezoneBias(VM* vm, int argCount, Value* values) {
+static NativePack timeCurrentTimezoneBias(VM*, int, Value*) {
 	initNativePack;
 
 	pack.value = NUMBER_VAL((double) gettzoffset() / 3600);
@@ -3072,7 +3065,7 @@ static NativePack timeCurrentTimezoneBias(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetDay(VM* vm, int argCount, Value* values) {
+static NativePack timeGetDay(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -3084,7 +3077,7 @@ static NativePack timeGetDay(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack timeGetUTCDay(VM* vm, int argCount, Value* values) {
+static NativePack timeGetUTCDay(VM* vm, int, Value* values) {
 	initNativePack;
 
 	timeInstanceTime;
@@ -3141,9 +3134,9 @@ void initTimeLib(VM* vm) {
 	defineMethod(timeClass, TAKE_STRING("set_milliseconds", 16u, false), timeSetMilliseconds);
 	defineMethod(timeClass, TAKE_STRING("set_utc_milliseconds", 20u, false), timeSetUTCMilliseconds);
 	defineMethod(timeClass, TAKE_STRING("get_microseconds", 16u, false), timeGetMicroseconds);
-	defineMethod(timeClass, TAKE_STRING("get_utc_microseconds", 20u, false), timeGetMicroseconds);
+	defineMethod(timeClass, TAKE_STRING("get_utc_microseconds", 20u, false), timeGetUTCMicroseconds);
 	defineMethod(timeClass, TAKE_STRING("set_microseconds", 16u, false), timeSetMicroseconds);
-	defineMethod(timeClass, TAKE_STRING("set_utc_microseconds", 20u, false), timeSetMicroseconds);
+	defineMethod(timeClass, TAKE_STRING("set_utc_microseconds", 20u, false), timeSetUTCMicroseconds);
 	defineMethod(timeClass, TAKE_STRING("count", 5u, false), timeCount);
 	defineMethod(timeClass, TAKE_STRING("set", 3u, false), timeSet);
 	defineMethod(timeClass, TAKE_STRING("details", 7u, false), timeDetails);
@@ -3166,7 +3159,7 @@ ObjString* numberField;
 extern ObjClass* vmNumberClass;
 
 #define numberInstanceNumber if(!IS_NUMBER(values[0]) && (!IS_INSTANCE(values[0]) || VALUE_INSTANCE(values[0]) -> klass != vmNumberClass)) {\
-	NATIVE_R_ERR("Provided reciever/instance (this) must be number or instance of Number(number)!");\
+	NATIVE_R_ERR("Provided receiver/instance (this) must be number or instance of Number(number)!");\
 }\
 	double number;\
 	if(IS_NUMBER(values[0])) number = VALUE_NUMBER(values[0]);\
@@ -3199,8 +3192,8 @@ NumberData toNumber(VM* vm, Value* value) {
 
 					bool found = false;
 
-					if((found = tableGet(&instance -> fields, name, &represent)));
-					else if((found = tableGet(&instance -> klass -> methods, name, &represent)));
+					if((found = tableGet(&instance -> fields, name, &represent))) {}
+					else if((found = tableGet(&instance -> klass -> methods, name, &represent))) {}
 
 					if(found) {
 						Value callable = represent.value;
@@ -3574,7 +3567,7 @@ static NativePack numberToLocaleBD(VM* vm, int argCount, Value* values) {
 #define MAX_VALUE 1.7976931348623157e+308
 #define MIN_VALUE 5e-324
 
-static NativePack numberBlooper(VM* vm, int argCount, Value* vaules) {
+static NativePack numberBlooper(VM* vm, int, Value*) {
 	initNativePack;
 
 	// You probably know who she is.
@@ -3609,7 +3602,7 @@ static char* scientific(double number, short digits) {
 
 	char* result = dtoa(number, DTOA_SHORTEST, 20, &exponent, &sign, NULL);
 
-	size_t length = strlen(result);
+	int length = strlen(result);
 
 	char* buffer = malloc(120u * sizeof(char));
 
@@ -3619,12 +3612,12 @@ static char* scientific(double number, short digits) {
 
 	exponent = abs(exponent - 1);
 
-	if(length > 1u) {
+	if(length > 1) {
 		if(digits != -1) {
-			if(digits <= length - 1u) {
+			if(digits <= length - 1) {
 				if(digits == 0) sprintf(buffer + sign, "%.*sE%c%d", 1u, result, csign, exponent);
 				else sprintf(buffer + sign, "%.*s.%.*sE%c%d", 1u, result, digits, result + 1u, csign, exponent);
-			} else sprintf(buffer + sign, "%.*s.%s%0.*dE%c%d", 1u, result, result + 1u, digits + 1 - length, 0, csign, exponent);
+			} else sprintf(buffer + sign, "%.*s.%s%0.*dE%c%d", 1, result, result + 1, digits + 1 - length, 0, csign, exponent);
 		} else sprintf(buffer + sign, "%.*s.%sE%c%d", 1u, result, result + 1u, csign, exponent);
 	} else {
 		if(digits != -1 && digits != 0) sprintf(buffer + sign, "%s.%.*dE%c%d", result, digits, 0, csign, exponent);
@@ -3741,7 +3734,7 @@ static NativePack numberStringify(VM* vm, int argCount, Value* values) {
 
 	// Special case for base 10.
 
-	if(base == 10 && (number > MAX_SAFE_INTEGER || number < MIN_SAFE_INTEGER) || fabs(number) < 1e-6) {
+	if((base == 10 && number > MAX_SAFE_INTEGER) || number < MIN_SAFE_INTEGER || fabs(number) < 1e-6) {
 		// Then do scientific representation.
 		// Simply call numberScientific.
 
@@ -3888,7 +3881,7 @@ static NativePack numberStringify(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack numberValue(VM* vm, int argCount, Value* values) {
+static NativePack numberValue(VM* vm, int, Value* values) {
 	initNativePack;
 
 	numberInstanceNumber;
@@ -3898,7 +3891,7 @@ static NativePack numberValue(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack numberIsNaN(VM* vm, int argCount, Value* values) {
+static NativePack numberIsNaN(VM*, int argCount, Value* values) {
 	initNativePack;
 
 	if(argCount < 2) {
@@ -3968,7 +3961,7 @@ void initNumberLib(VM* vm) {
 extern ObjClass* vmListClass;
 
 #define listInstanceList if(!IS_LIST(values[0]) && (!IS_INSTANCE(values[0]) || VALUE_INSTANCE(values[0]) -> klass != vmListClass)) {\
-	NATIVE_R_ERR("Provided reciever/instance (this) must be list or instance of List.init(length | list | elems...)!");\
+	NATIVE_R_ERR("Provided receiver/instance (this) must be list or instance of List.init(length | list | elems...)!");\
 }\
 	ObjList* list;\
 	if(IS_LIST(values[0])) list = VALUE_LIST(values[0]);\
@@ -4068,10 +4061,10 @@ static NativePack listForeach(VM* vm, int argCount, Value* values) {
 
 	Value callback = values[1];
 
-	uint32_t arity = getArity(callback);
-	arity = arity <= 3u ? arity : 3u;
+	short arity = getArity(callback);
+	arity = arity <= 3 ? arity : 3;
 
-	for(uint64_t i = 0; i < list -> count; i++) {
+	for(int i = 0; i < list -> count; i++) {
 		stack_push(vm, callback);
 
 		Value args[] = { list -> values[i], NUMBER_VAL(i), OBJECT_VAL(list) };
@@ -4104,7 +4097,7 @@ static NativePack listInsert(VM* vm, int argCount, Value* values) {
 		list -> values   = GROW_ARRAY(Value, list -> values, oldCapacity, list -> capacity);
 	}
 
-	for(register uint64_t i = 1; i < argCount; i++) 
+	for(register int i = 1; i < argCount; i++) 
 		list -> values[list -> count++] = values[i];
 	
 	pack.value = NUMBER_VAL(list -> count);
@@ -4131,13 +4124,13 @@ static NativePack listFold(VM* vm, int argCount, Value* values) {
 		NATIVE_R_ERR("The first argument should be callable in List.fold(folder, initial_value)!");
 	}
 
-	register uint64_t i = 0u;
+	register int i = 0;
 
 	Value folder  = values[1],
 	      initval = argCount > 2 ? values[2] : list -> values[i++];
 	
-	uint64_t arity = getArity(folder);
-	arity = arity <= 4u ? arity : 4u;
+	short arity = getArity(folder);
+	arity = arity <= 4 ? arity : 4;
 	
 	for(; i < list -> count; i++) {
 		stack_push(vm, folder);
@@ -4185,8 +4178,8 @@ static NativePack listFoldRight(VM* vm, int argCount, Value* values) {
 	Value folder  = values[1],
 	      initval = argCount > 2 ? values[2] : list -> values[i--];
 	
-	uint64_t arity = getArity(folder);
-	arity = arity <= 4u ? arity : 4u;
+	short arity = getArity(folder);
+	arity = arity <= 4 ? arity : 4;
 	
 	for(; i >= 0; i--) {
 		stack_push(vm, folder);
@@ -4256,7 +4249,7 @@ static NativePack listAppend(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack listPop(VM* vm, int argCount, Value* values) {
+static NativePack listPop(VM* vm, int, Value* values) {
 	initNativePack;
 
 	listInstanceList;
@@ -4266,7 +4259,7 @@ static NativePack listPop(VM* vm, int argCount, Value* values) {
 
 	pack.value = list -> values[0];
 
-	for(register int i = 0; i < list -> count - 1u; i++) 
+	for(register int i = 0; i < list -> count - 1; i++) 
 		list -> values[i] = list -> values[i + 1];
 	
 	list -> count -= 1u;
@@ -4279,8 +4272,8 @@ static NativePack listInsertFront(VM* vm, int argCount, Value* values) {
 
 	listInstanceList;
 
-	if(list -> count + argCount - 1u >= list -> capacity) {
-		size_t oldCapacity = list -> capacity;
+	if(list -> count + argCount - 1 >= list -> capacity) {
+		int oldCapacity = list -> capacity;
 
 		list -> capacity += argCount - 1;
 		list -> values   = GROW_ARRAY(Value, list -> values, oldCapacity, list -> capacity);
@@ -4317,8 +4310,8 @@ static NativePack listMap(VM* vm, int argCount, Value* values) {
 
 	Value callback = values[1];
 
-	uint32_t arity = getArity(callback);
-	arity = arity <= 3u ? arity : 3u;
+	short arity = getArity(callback);
+	arity = arity <= 3 ? arity : 3;
 
 	ObjList* result = newList(vm);
 
@@ -4329,7 +4322,7 @@ static NativePack listMap(VM* vm, int argCount, Value* values) {
 
 	stack_push(vm, OBJECT_VAL(result));
 
-	for(size_t i = 0u; i < list -> count; i++) {
+	for(int i = 0u; i < list -> count; i++) {
 		stack_push(vm, callback);
 
 		Value args[] = { list -> values[i], NUMBER_VAL(i), OBJECT_VAL(list) };
@@ -4416,7 +4409,7 @@ static NativePack listSlice(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack listShift(VM* vm, int argCount, Value* values) {
+static NativePack listShift(VM* vm, int, Value* values) {
 	initNativePack;
 
 	listInstanceList;
@@ -4462,7 +4455,7 @@ static NativePack listAt(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack listValue(VM* vm, int argCount, Value* values) {
+static NativePack listValue(VM* vm, int, Value* values) {
 	initNativePack;
 
 	listInstanceList;
@@ -4476,7 +4469,7 @@ static NativePack list__represent__(VM* vm, int argCount, Value* values) {
 	return listValue(vm, argCount, values);
 }
 
-static NativePack listReverse(VM* vm, int argCount, Value* values) {
+static NativePack listReverse(VM* vm, int, Value* values) {
 	initNativePack;
 
 	listInstanceList;
@@ -4487,7 +4480,7 @@ static NativePack listReverse(VM* vm, int argCount, Value* values) {
 	result -> count    = list -> count;
 	result -> values   = GROW_ARRAY(Value, result -> values, 0u, result -> count);
 
-	for(uint64_t i = 0, j = list -> count - 1u; i < list -> count; i++, j--) 
+	for(int i = 0, j = list -> count - 1; i < list -> count; i++, j--) 
 		result -> values[j] = list -> values[i];
 	
 	pack.value = OBJECT_VAL(result);
@@ -4522,7 +4515,7 @@ static NativePack listIndex(VM* vm, int argCount, Value* values) {
 	}
 
 	if(occurance == 0) {
-		for(size_t i = 0; i < list -> count; i++) {
+		for(int i = 0; i < list -> count; i++) {
 			if(valuesEqual(values[1], list -> values[i])) {
 				pack.value = NUMBER_VAL(i);
 
@@ -4558,13 +4551,13 @@ static void simpleAppend(ObjList* list1, ObjList* list2) {
 static ObjList* flat(VM* vm, ObjList* list, int currentDepth, int depth) {
 	ObjList* result = newList(vm);
 
-	for(uint64_t i = 0; i < list -> count; i++) {
+	for(int i = 0; i < list -> count; i++) {
 		Value elem = list -> values[i];
 
 		if(IS_LIST(elem) && (depth < 0 || currentDepth < depth)) 
 			simpleAppend(result, flat(vm, VALUE_LIST(elem), currentDepth + 1, depth));
 		else {
-			if(result -> count + 1u >= result -> capacity) {
+			if(result -> count + 1 >= result -> capacity) {
 				size_t oldCapacity = result -> capacity;
 
 				result -> capacity = GROW_CAPACITY(oldCapacity);
@@ -4716,8 +4709,8 @@ static NativePack listSearch(VM* vm, int argCount, Value* values) {
 		occurance = (uint8_t) value;
 	}
 
-	uint64_t arity = getArity(predicate);
-	arity = arity <= 3u ? arity : 3u;
+	short arity = getArity(predicate);
+	arity = arity <= 3 ? arity : 3;
 
 	if(occurance) {
 		for(long i = list -> count - 1; i >= 0; i--) {
@@ -4821,11 +4814,11 @@ static NativePack listSearchIndex(VM* vm, int argCount, Value* values) {
 		occurance = (uint8_t) value;
 	}
 
-	uint64_t arity = getArity(predicate);
-	arity = arity <= 3u ? arity : 3u;
+	short arity = getArity(predicate);
+	arity = arity <= 3 ? arity : 3;
 
 	if(occurance) {
-		for(long i = list -> count - 1; i >= 0; i--) {
+		for(int i = list -> count - 1; i >= 0; i--) {
 			Value value = list -> values[i];
 
 			stack_push(vm, predicate);
@@ -4858,7 +4851,7 @@ static NativePack listSearchIndex(VM* vm, int argCount, Value* values) {
 			}
 		}
 	} else {
-		for(long i = 0; i < list -> count; i++) {
+		for(int i = 0; i < list -> count; i++) {
 			Value value = list -> values[i];
 
 			stack_push(vm, predicate);
@@ -4914,14 +4907,14 @@ static NativePack listFilter(VM* vm, int argCount, Value* values) {
 
 	ObjList* result = newList(vm);
 
-	uint64_t arity = getArity(predicate);
-	arity = arity <= 3u ? arity : 3u;
+	short arity = getArity(predicate);
+	arity = arity <= 3 ? arity : 3;
 
 	// For GC.
 
 	stack_push(vm, OBJECT_VAL(result));
 
-	for(uint64_t i = 0; i < list -> count; i++) {
+	for(int i = 0; i < list -> count; i++) {
 		Value value = list -> values[i];
 
 		stack_push(vm, predicate);
@@ -4943,7 +4936,7 @@ static NativePack listFilter(VM* vm, int argCount, Value* values) {
 			}
 
 			if(data.boolean) {
-				if(result -> count + 1u >= result -> capacity) {
+				if(result -> count + 1 >= result -> capacity) {
 					size_t oldCapacity = result -> capacity;
 
 					result -> capacity = GROW_CAPACITY(oldCapacity);
@@ -5086,10 +5079,10 @@ static NativePack listCheck(VM* vm, int argCount, Value* values) {
 		type = (bool) value;
 	}
 
-	uint64_t arity = getArity(predicate);
-	arity = arity <= 3u ? arity : 3u;
+	short arity = getArity(predicate);
+	arity = arity <= 3 ? arity : 3;
 
-	for(uint64_t i = 0; i < list -> count; i++) {
+	for(int i = 0; i < list -> count; i++) {
 		Value value = list -> values[i];
 
 		stack_push(vm, predicate);
@@ -5151,7 +5144,7 @@ static NativePack listJoin(VM* vm, int argCount, Value* values) {
 		seperator = toString(vm, values + 1u);
 
 		if(seperator == NULL) {
-			pack.hadError;
+			pack.hadError = true;
 
 			return pack;
 		}
@@ -5162,9 +5155,9 @@ static NativePack listJoin(VM* vm, int argCount, Value* values) {
 	size_t bufidx = 0, length = 1100;
 	char* buffer  = ALLOCATE(char, length);
 
-	for(uint64_t i = 0; i < list -> count; i++) {
+	for(int i = 0; i < list -> count; i++) {
 		Value value = list -> values[i];
-		bool atEnd  = i == list -> count - 1u;
+		bool atEnd  = i == list -> count - 1;
 
 		char* result = toString(vm, &value);
 
@@ -5286,7 +5279,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 
 								digit = c > '9' ? (c + 10 - 'a') : (c - '0');
 
-								if(digit + 1 < 10u) {
+								if(digit + 1 < 10) {
 									buffer[decpos++] = chars[digit + 1];
 
 									break;
@@ -5379,7 +5372,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 				case OBJ_FUNCTION: {
 					ObjFunction* function = VALUE_FUNCTION(*value);
 
-					char* buffer = malloc(((function -> name == NULL ? 9u : function -> name -> length) + 30u) * sizeof(char));
+					char* buffer = malloc(((function -> name == NULL ? 9 : function -> name -> length) + 30) * sizeof(char));
 
 					if(buffer == NULL) {
 						RUNTIME_ERROR("Failed to allocate memory while converting function to string!");
@@ -5387,7 +5380,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 						return NULL;
 					}
 
-					sprintf(buffer, "<fn '%s' at 0x%.16X>", function -> name == NULL ? "anonymous" :
+					sprintf(buffer, "<fn '%s' at %p>", function -> name == NULL ? "anonymous" :
 						function -> name -> buffer, function);
 
 					return buffer;
@@ -5396,7 +5389,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 				case OBJ_CLOSURE: {
 					ObjClosure* closure = VALUE_CLOSURE(*value);
 
-					char* buffer = malloc(((closure -> function -> name == NULL ? 9u : closure -> function -> name -> length) + 70u) * sizeof(char));
+					char* buffer = malloc(((closure -> function -> name == NULL ? 9 : closure -> function -> name -> length) + 70) * sizeof(char));
 
 					if(buffer == NULL) {
 						RUNTIME_ERROR("Failed to allocate memory while converting closure to string!");
@@ -5404,7 +5397,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 						return NULL;
 					}
 
-					sprintf(buffer, "<closure '%s' at 0x%.16X with %d upvalues>", closure -> function -> name != NULL ? 
+					sprintf(buffer, "<closure '%s' at %p with %d upvalues>", closure -> function -> name != NULL ? 
 						closure -> function -> name -> buffer : 
 						"anonymous", closure -> function, closure -> upvalueCount);
 
@@ -5420,7 +5413,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 						return NULL;
 					}
 
-					sprintf(buffer, "<fn native at 0x%.16X>", VALUE_NATIVE(*value) -> function);
+					sprintf(buffer, "<fn native at %p>", VALUE_NATIVE(*value) -> function);
 
 					return buffer;
 				}
@@ -5474,14 +5467,16 @@ char* toStringRaw(VM* vm, Value* const value) {
 				case OBJ_BOUND_METHOD: {
 					ObjBoundMethod* method = VALUE_BOUND_METHOD(*value);
 
-					char* buffer;
-					size_t length, index = 0u;
+					char* buffer = NULL;
+					int length, index;
+
+					length = index = 0u;
 					
 					switch(method -> function -> type) {
 						case OBJ_CLOSURE: {
 							ObjClosure* closure = (ObjClosure*) method -> function;
 
-							length = ((closure -> function -> name == NULL ? 9u : closure -> function -> name -> length) + 90u) * sizeof(char);
+							length = ((closure -> function -> name == NULL ? 9 : closure -> function -> name -> length) + 90) * sizeof(char);
 
 							buffer = malloc(length);
 
@@ -5491,7 +5486,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 								return NULL;
 							}
 
-							index = sprintf(buffer, "<closure '%s' at 0x%.16X with %d upvalues", 
+							index = sprintf(buffer, "<closure '%s' at %p with %d upvalues", 
 								closure -> function -> name != NULL ? closure -> function -> name -> buffer : "anonymous", closure -> function, closure -> upvalueCount);
 							
 							break;
@@ -5508,7 +5503,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 								return NULL;
 							}
 
-							index = sprintf(buffer, "<fn native at 0x%.16X", ((ObjNative*) method -> function) -> function);
+							index = sprintf(buffer, "<fn native at %p", ((ObjNative*) method -> function) -> function);
 							
 							break;
 						}
@@ -5516,7 +5511,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 						case OBJ_FUNCTION: {
 							ObjFunction* function = (ObjFunction*) method -> function;
 
-							length = ((function -> name == NULL ? 9u : function -> name -> length) + 50u) * sizeof(char);
+							length = ((function -> name == NULL ? 9 : function -> name -> length) + 50) * sizeof(char);
 
 							buffer = malloc(length * sizeof(char));
 
@@ -5526,19 +5521,21 @@ char* toStringRaw(VM* vm, Value* const value) {
 								return NULL;
 							}
 							
-							index = sprintf(buffer, "<fn '%s' at 0x%.16X", function -> name -> buffer, function);
+							index = sprintf(buffer, "<fn '%s' at %p", function -> name -> buffer, function);
 							
 							break;
 						}
+
+						default: abort();
 					}
-					
+
 					index += sprintf(buffer + index, " of instance ");
 					
-					switch(method -> reciever.type) {
+					switch(method -> receiver.type) {
 						case VAL_OBJECT: {
-							switch(OBJ_TYPE(method -> reciever)) {
+							switch(OBJ_TYPE(method -> receiver)) {
 								case OBJ_INSTANCE: {
-									ObjClass* klass = VALUE_INSTANCE(method -> reciever) -> klass;
+									ObjClass* klass = VALUE_INSTANCE(method -> receiver) -> klass;
 
 									length += klass -> name -> length * sizeof(char);
 
@@ -5639,8 +5636,8 @@ char* toStringRaw(VM* vm, Value* const value) {
 
 					bool found;
 
-					if((found = tableGet(fields, stringify, &valueContainer)));
-					else if((found = tableGet(fields, represent, &valueContainer)));
+					if((found = tableGet(fields, stringify, &valueContainer))) {}
+					else if((found = tableGet(fields, represent, &valueContainer))) {}
 
 					if(found) {
 						Value callable = valueContainer.value;
@@ -5730,6 +5727,8 @@ char* toStringRaw(VM* vm, Value* const value) {
 			break;
 		}
 	}
+
+	return NULL;
 }
 
 char* toString(VM* vm, Value* const value) {
@@ -5743,10 +5742,10 @@ char* toString(VM* vm, Value* const value) {
 
 		bool found = false;
 
-		if((found = tableGet(&instance -> fields, stringify, &valueContainer)));
-		else if((found = tableGet(&instance -> klass -> methods, stringify, &valueContainer)));
-		else if((found = tableGet(&instance -> fields, represent, &valueContainer)));
-		else if((found = tableGet(&instance -> klass -> methods, represent, &valueContainer)));
+		if((found = tableGet(&instance -> fields, stringify, &valueContainer))) {}
+		else if((found = tableGet(&instance -> klass -> methods, stringify, &valueContainer))) {}
+		else if((found = tableGet(&instance -> fields, represent, &valueContainer))) {}
+		else if((found = tableGet(&instance -> klass -> methods, represent, &valueContainer))) {}
 
 		if(found) {
 			Value callable = valueContainer.value;
@@ -5784,7 +5783,7 @@ char* toString(VM* vm, Value* const value) {
 	return toStringRaw(vm, value);
 }
 
-static NativePack listStringify(VM* vm, int argCount, Value* values) {
+static NativePack listStringify(VM* vm, int, Value* values) {
 	return listJoin(vm, 1u, values);
 }
 
@@ -5926,7 +5925,7 @@ ObjString* stringField;
 extern ObjClass* vmStringClass;
 
 #define stringInstanceString if(!IS_STRING(values[0]) && (!IS_INSTANCE(values[0]) || VALUE_INSTANCE(values[0]) -> klass != vmStringClass)) {\
-	NATIVE_R_ERR("Provided reciever/instance (this) must be string or instance of String.init(string)!");\
+	NATIVE_R_ERR("Provided receiver/instance (this) must be string or instance of String.init(string)!");\
 }\
 	ObjString* string;\
 	if(IS_STRING(values[0])) string = VALUE_STRING(values[0]);\
@@ -5963,7 +5962,7 @@ static NativePack stringInit(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack string__represent__(VM* vm, int argCount, Value* values) {
+static NativePack string__represent__(VM* vm, int, Value* values) {
 	NativePack pack;
 
 	stringInstanceString;
@@ -6062,7 +6061,7 @@ static NativePack stringAppend(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack stringValue(VM* vm, int argCount, Value* values) {
+static NativePack stringValue(VM* vm, int, Value* values) {
 	NativePack pack;
 
 	stringInstanceString;
@@ -6077,14 +6076,14 @@ static NativePack stringStringify(VM* vm, int argCount, Value* values) {
 	return stringValue(vm, argCount, values);
 }
 
-static NativePack stringUppercase(VM* vm, int argCount, Value* values) {
+static NativePack stringUppercase(VM* vm, int, Value* values) {
 	initNativePack;
 
 	stringInstanceString;
 
 	char* buffer = ALLOCATE(char, string -> length + 1u);
 
-	for(size_t i = 0; i < string -> length; i++) {
+	for(int i = 0; i < string -> length; i++) {
 		char ch = string -> buffer[i];
 
 		buffer[i] = ch >= 97 && ch <= 123 ? ch & 0xDF : ch;
@@ -6095,14 +6094,14 @@ static NativePack stringUppercase(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack stringLowercase(VM* vm, int argCount, Value* values) {
+static NativePack stringLowercase(VM* vm, int, Value* values) {
 	initNativePack;
 
 	stringInstanceString;
 
 	char* buffer = ALLOCATE(char, string -> length + 1u);
 
-	for(size_t i = 0; i < string -> length; i++) {
+	for(int i = 0; i < string -> length; i++) {
 		char ch = string -> buffer[i];
 
 		buffer[i] = ch >= 65 && ch <= 91 ? ch | 0x20 : ch;
@@ -6166,7 +6165,7 @@ static NativePack stringSplit(VM* vm, int argCount, Value* values) {
 		return pack;
 	}
 
-	register uint64_t i = 0u;
+	register int i = 0u;
 	
 	size_t length = strlen(seperator);
 
@@ -6180,7 +6179,7 @@ static NativePack stringSplit(VM* vm, int argCount, Value* values) {
 
 		char* buffer;
 
-		for(uint64_t i = 0u; i < string -> length; i++) {
+		for(int i = 0; i < string -> length; i++) {
 			buffer = ALLOCATE(char, 2u);
 
 			buffer[0] = string -> buffer[i];
@@ -6211,7 +6210,7 @@ static NativePack stringSplit(VM* vm, int argCount, Value* values) {
 
 			Value value = OBJECT_VAL(TAKE_STRING(buffer, size, true));
 
-			if(result -> count + 1u >= result -> capacity) {
+			if(result -> count + 1 >= result -> capacity) {
 				size_t oldCapacity = result -> capacity;
 
 				result -> capacity = GROW_CAPACITY(oldCapacity);
@@ -6266,7 +6265,7 @@ static bool trimable(char ch) {
 	return false;
 }
 
-static NativePack stringStripRight(VM* vm, int argCount, Value* values) {
+static NativePack stringStripRight(VM* vm, int, Value* values) {
 	initNativePack;
 
 	stringInstanceString;
@@ -6292,7 +6291,7 @@ static NativePack stringStripRight(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack stringStripLeft(VM* vm, int argCount, Value* values) {
+static NativePack stringStripLeft(VM* vm, int, Value* values) {
 	initNativePack;
 
 	stringInstanceString;
@@ -6318,7 +6317,7 @@ static NativePack stringStripLeft(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack stringStrip(VM* vm, int argCount, Value* values) {
+static NativePack stringStrip(VM* vm, int, Value* values) {
 	initNativePack;
 
 	stringInstanceString;
@@ -6327,7 +6326,7 @@ static NativePack stringStrip(VM* vm, int argCount, Value* values) {
 
 	countLeft = countRight = 0u;
 
-	for(uint64_t i = 0u; i < string -> length; i++) {
+	for(int i = 0u; i < string -> length; i++) {
 		if(trimable(string -> buffer[i])) 
 			countLeft++;
 		else break;
@@ -6645,10 +6644,10 @@ static NativePack stringContains(VM* vm, int argCount, Value* values) {
 		return pack;
 	}
 
-	size_t length = strlen(includes);
+	int length = strlen(includes);
 
-	for(register uint64_t i = 0u; i < string -> length; i++) {
-		if(i < (string -> length + 1u - length) && string -> buffer[i] == includes[0] &&
+	for(register int i = 0; i < string -> length; i++) {
+		if(i < (string -> length + 1 - length) && string -> buffer[i] == includes[0] &&
 		!memcmp(string -> buffer + i, includes, length * sizeof(char))) {
 			pack.value = BOOL_VAL(true);
 
@@ -6695,11 +6694,11 @@ static NativePack stringIndex(VM* vm, int argCount, Value* values) {
 		return pack;
 	}
 
-	size_t length = strlen(includes);
+	int length = strlen(includes);
 
 	if(occurance == 0) {
-		for(register uint64_t i = 0u; i < string -> length; i++) {
-			if(i < (string -> length + 1u - length) && string -> buffer[i] == includes[0] &&
+		for(register int i = 0; i < string -> length; i++) {
+			if(i < (string -> length + 1 - length) && string -> buffer[i] == includes[0] &&
 			!memcmp(string -> buffer + i, includes, length * sizeof(char))) {
 				pack.value = NUMBER_VAL(i);
 
@@ -6739,11 +6738,11 @@ static NativePack stringReplace(VM* vm, int argCount, Value* values) {
 		return pack;
 	}
 
-	size_t rsiz = strlen(rep);
+	int rsiz = strlen(rep);
 
 	char* repwith = "null";
 
-	size_t rwsiz = 4u;
+	int rwsiz = 4u;
 
 	if(argCount > 2) {
 		repwith = toString(vm, (Value* const) values + 2u);
@@ -6775,7 +6774,7 @@ static NativePack stringReplace(VM* vm, int argCount, Value* values) {
 
 	char* result = NULL;
 
-	uint64_t length, capacity;
+	int length, capacity;
 
 	capacity = length = 0u;
 
@@ -6828,7 +6827,7 @@ static NativePack stringReplace(VM* vm, int argCount, Value* values) {
 	// Add the remaining string if the string got replaced.
 
 	if(replaced) {
-		size_t remainsiz = string -> length - (i + rsiz);
+		int remainsiz = string -> length - (i + rsiz);
 
 		if(remainsiz + length >= capacity) {
 			size_t oldCapacity = capacity;
@@ -6874,11 +6873,11 @@ static NativePack stringReplaceAll(VM* vm, int argCount, Value* values) {
 		return pack;
 	}
 
-	size_t rsiz = strlen(rep);
+	int rsiz = strlen(rep);
 
 	char* repwith = "null";
 
-	size_t rwsiz = 4u;
+	int rwsiz = 4u;
 
 	if(argCount > 2) {
 		repwith = toString(vm, (Value* const) values + 2u);
@@ -6892,7 +6891,7 @@ static NativePack stringReplaceAll(VM* vm, int argCount, Value* values) {
 		rwsiz = strlen(repwith);
 	}
 
-	size_t prev, i, length, capacity;
+	int prev, i, length, capacity;
 
 	i = prev = capacity = length = 0u;
 
@@ -6901,7 +6900,7 @@ static NativePack stringReplaceAll(VM* vm, int argCount, Value* values) {
 	while(i < string -> length) {
 		if(i <= (string -> length - rsiz) && string -> buffer[i] == rep[0] &&
 		!memcmp(string -> buffer + i, rep, rsiz * sizeof(char))) {
-			size_t size = i - prev;
+			int size = i - prev;
 
 			if(buffer == NULL) {
 				capacity = size + rwsiz + 1u;
@@ -6928,7 +6927,7 @@ static NativePack stringReplaceAll(VM* vm, int argCount, Value* values) {
 	// Add the final portion of the string if at least one part of the string is replaced.
 
 	if(buffer != NULL) {
-		size_t size = i - prev;
+		int size = i - prev;
 
 		if(size + length >= capacity) {
 			size_t oldCapacity = capacity;
@@ -7129,14 +7128,14 @@ static NativePack stringEndsWith(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack stringReverse(VM* vm, int argCount, Value* values) {
+static NativePack stringReverse(VM* vm, int, Value* values) {
 	initNativePack;
 
 	stringInstanceString;
 
 	char* buffer = ALLOCATE(char, string -> length + 1u);
 
-	for(uint64_t i = 0u; i < string -> length; i++) 
+	for(int i = 0u; i < string -> length; i++) 
 		buffer[string -> length - (i + 1u)] = string -> buffer[i];
 	
 	buffer[string -> length] = 0;
@@ -7266,7 +7265,7 @@ ObjString* dictionaryField;
 extern ObjClass* vmDictionaryClass;
 
 #define dictInstanceDict if(!IS_DICTIONARY(values[0]) && (!IS_INSTANCE(values[0]) || VALUE_INSTANCE(values[0]) -> klass != vmDictionaryClass)) {\
-	NATIVE_R_ERR("Provided reciever/instance (this) must be dictionary or instance of Dictionary(dict)!");\
+	NATIVE_R_ERR("Provided receiver/instance (this) must be dictionary or instance of Dictionary(dict)!");\
 }\
 	ObjDictionary* dict;\
 	if(IS_DICTIONARY(values[0])) dict = VALUE_DICTIONARY(values[0]);\
@@ -7305,7 +7304,7 @@ static NativePack dictInit(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack dictKeys(VM* vm, int argCount, Value* values) {
+static NativePack dictKeys(VM* vm, int, Value* values) {
 	initNativePack;
 
 	dictInstanceDict;
@@ -7315,7 +7314,7 @@ static NativePack dictKeys(VM* vm, int argCount, Value* values) {
 	result -> capacity = dict -> fields.count;
 	result -> values   = GROW_ARRAY(Value, result -> values, 0u, result -> capacity);
 
-	for(uint64_t i = 0u; i < dict -> fields.capacity; i++) {
+	for(int i = 0u; i < dict -> fields.capacity; i++) {
 		ObjString* key = dict -> fields.entries[i].key;
 
 		if(key != NULL) 
@@ -7351,7 +7350,7 @@ static NativePack dictHasKey(VM* vm, int argCount, Value* values) {
 
 	ObjString* property = TAKE_STRING(result, size, true);
 
-	for(register uint64_t i = 0u; i < dict -> fields.capacity; i++) {
+	for(register int i = 0u; i < dict -> fields.capacity; i++) {
 		if(property == dict -> fields.entries[i].key) {
 			pack.value = BOOL_VAL(true);
 
@@ -7362,7 +7361,7 @@ static NativePack dictHasKey(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack dictValues(VM* vm, int argCount, Value* values) {
+static NativePack dictValues(VM* vm, int, Value* values) {
 	initNativePack;
 
 	dictInstanceDict;
@@ -7372,7 +7371,7 @@ static NativePack dictValues(VM* vm, int argCount, Value* values) {
 	result -> capacity = dict -> fields.count;
 	result -> values   = GROW_ARRAY(Value, result -> values, 0u, result -> capacity);
 
-	for(register uint64_t i = 0u; i < dict -> fields.capacity; i++) {
+	for(register int i = 0; i < dict -> fields.capacity; i++) {
 		Entry* entry = dict -> fields.entries + i;
 
 		if(entry -> key != NULL) 
@@ -7384,7 +7383,7 @@ static NativePack dictValues(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack dictValue(VM* vm, int argCount, Value* values) {
+static NativePack dictValue(VM* vm, int, Value* values) {
 	NativePack pack;
 
 	dictInstanceDict;
@@ -7395,7 +7394,7 @@ static NativePack dictValue(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
-static NativePack dictStringify(VM* vm, int argCount, Value* values) {
+static NativePack dictStringify(VM* vm, int, Value*) {
 	initNativePack;
 
 	pack.value = OBJECT_VAL(TAKE_STRING("{ Dictionary }", 14u, false));
@@ -7434,21 +7433,21 @@ static NativePack funcBind(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	if(argCount < 2) {
-		NATIVE_R_ERR("Too few arguments to call Function::bind(method, reciever)!");
+		NATIVE_R_ERR("Too few arguments to call Function::bind(method, receiver)!");
 	}
 
 	if(!IS_BOUND_MEHTOD(values[1])) {
-		NATIVE_R_ERR("The provided value must be a method/bound-method in Function::bind(method, reciever)!");
+		NATIVE_R_ERR("The provided value must be a method/bound-method in Function::bind(method, receiver)!");
 	}
 
 	ObjBoundMethod* method = VALUE_BOUND_METHOD(values[1]);
 
-	Value reciever = method -> reciever;
+	Value receiver = method -> receiver;
 
 	if(argCount > 2) 
-		reciever = values[2];
+		receiver = values[2];
 
-	pack.value = OBJECT_VAL(newBoundMethod(vm, reciever, method -> function));
+	pack.value = OBJECT_VAL(newBoundMethod(vm, receiver, method -> function));
 
 	return pack;
 }
@@ -7457,21 +7456,21 @@ static NativePack funcCall(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	if(argCount < 2) {
-		NATIVE_R_ERR("Too few arguments to call Function::call(method, reciever, args...)!");
+		NATIVE_R_ERR("Too few arguments to call Function::call(method, receiver, args...)!");
 	}
 
 	if(!IS_BOUND_MEHTOD(values[1])) {
-		NATIVE_R_ERR("The provided value must be a method/bound-method in Function::call(method, reciever, args...)!");
+		NATIVE_R_ERR("The provided value must be a method/bound-method in Function::call(method, receiver, args...)!");
 	}
 
 	ObjBoundMethod* method = VALUE_BOUND_METHOD(values[1]);
 
-	Value reciever = method -> reciever;
+	Value receiver = method -> receiver;
 
 	if(argCount > 2) 
-		reciever = values[2];
+		receiver = values[2];
 
-	stack_push(vm, reciever);
+	stack_push(vm, receiver);
 
 	for(int i = 3; i < argCount; i++) 
 		stack_push(vm, values[i]);
@@ -7487,31 +7486,31 @@ static NativePack funcPass(VM* vm, int argCount, Value* values) {
 	initNativePack;
 
 	if(argCount < 2) {
-		NATIVE_R_ERR("Too few arguments to call Function::pass(method, reciever, args_list)!");
+		NATIVE_R_ERR("Too few arguments to call Function::pass(method, receiver, args_list)!");
 	}
 
 	if(!IS_BOUND_MEHTOD(values[1])) {
-		NATIVE_R_ERR("The provided value must be a method/bound-method in Function::pass(method, reciever, args_list)!");
+		NATIVE_R_ERR("The provided value must be a method/bound-method in Function::pass(method, receiver, args_list)!");
 	}
 
 	ObjBoundMethod* method = VALUE_BOUND_METHOD(values[1]);
 
-	Value reciever = method -> reciever;
+	Value receiver = method -> receiver;
 
 	if(argCount > 2) 
-		reciever = values[2];
+		receiver = values[2];
 
-	stack_push(vm, reciever);
+	stack_push(vm, receiver);
 
 	if(argCount > 3) {
 		if(!IS_LIST(values[3])) {
-			NATIVE_R_ERR("Expected the third argument to be a list in Function::pass(method, reciever, args_list)!");
+			NATIVE_R_ERR("Expected the third argument to be a list in Function::pass(method, receiver, args_list)!");
 		}
 	}
 
 	ObjList* args = VALUE_LIST(values[3]);
 
-	for(uint64_t i = 0u; i < args -> count; i++) 
+	for(int i = 0; i < args -> count; i++) 
 		stack_push(vm, args -> values[i]);
 	
 	if(callValue(vm, OBJECT_VAL(method -> function), args -> count) && 

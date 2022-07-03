@@ -10,8 +10,8 @@ void initValueArray(ValueArray* valueArray) {
 	valueArray -> values   = NULL;
 }
 
-size_t writeValueArray(ValueArray* valueArray, Value value) {
-	if(valueArray -> count + 1u > valueArray -> capacity) {
+int writeValueArray(ValueArray* valueArray, Value value) {
+	if(valueArray -> count + 1 > valueArray -> capacity) {
 		size_t oldCapacity = valueArray -> capacity;
 
 		valueArray -> capacity = GROW_CAPACITY(oldCapacity);

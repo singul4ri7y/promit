@@ -3,7 +3,7 @@
 #include "utilities.h"
 #include "object.h"
 
-ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp) {
+ptrdiff_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp) {
 	char *ptr, *eptr;
 
 	if (*buf == NULL || *bufsiz == 0) {
@@ -27,7 +27,7 @@ ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp) {
 		if (ptr + 2 >= eptr) {
 			char *nbuf;
 			size_t nbufsiz = *bufsiz * 2;
-			ssize_t d = ptr - *buf;
+			ptrdiff_t d = ptr - *buf;
 			if ((nbuf = (char*) reallocate(*buf, *bufsiz, nbufsiz * sizeof(char))) == NULL)
 				return -1;
 			*buf = nbuf;
@@ -38,7 +38,7 @@ ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp) {
 	}
 }
 
-ssize_t getline(char **buf, size_t *bufsiz, FILE *fp) {
+ptrdiff_t getline(char **buf, size_t *bufsiz, FILE *fp) {
 	return getdelim(buf, bufsiz, '\n', fp);
 }
 

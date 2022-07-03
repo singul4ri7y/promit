@@ -23,7 +23,7 @@ static Obj* allocateObject(VM* vm, size_t size, ObjType type) {
 	return object;
 }
 
-static uint32_t hashString(const char* buffer, size_t length) {
+static uint32_t hashString(const char* buffer, int length) {
 	register uint32_t hash = 2166136261u;
 
 	for (register int i = 0; i < length; i++) {
@@ -188,11 +188,11 @@ void printObjectRaw(const Value* value) {
 			
 			__printf(" of instance ");
 			
-			switch(method -> reciever.type) {
+			switch(method -> receiver.type) {
 				case VAL_OBJECT: {
-					switch(OBJ_TYPE(method -> reciever)) {
+					switch(OBJ_TYPE(method -> receiver)) {
 						case OBJ_INSTANCE: {
-							__printf("'%s'>", VALUE_INSTANCE(method -> reciever) -> klass -> name -> buffer);
+							__printf("'%s'>", VALUE_INSTANCE(method -> receiver) -> klass -> name -> buffer);
 						
 							break;
 						}
@@ -238,9 +238,9 @@ void printObjectRaw(const Value* value) {
 				__printf(" ");
 				
 				Value elem;
-				uint32_t count = 0;
+				int count = 0;
 				
-				for(register uint32_t i = 0; i < dictionary -> fields.capacity; i++) {
+				for(register int i = 0; i < dictionary -> fields.capacity; i++) {
 					Entry* entry = dictionary -> fields.entries + i;
 					
 					if(entry -> key != NULL) {
@@ -283,7 +283,7 @@ void printObjectRaw(const Value* value) {
 				
 				Value elem;
 				
-				for(register uint32_t i = 0; i < list -> count; i++) {
+				for(register int i = 0; i < list -> count; i++) {
 					elem = list -> values[i];
 					
 					if(IS_STRING(elem)) {
@@ -338,7 +338,7 @@ bool printObject(const Value* value) {
 		bool found = false;
 
 		if((found = tableGet(&instance -> fields, name, &represent)));
-		else if((found = tableGet(&instance -> klass -> methods, name, &represent)));
+		else if((found = tableGet(&instance -> klass -> methods, name, &represent))) {}
 
 		if(found) {
 			Value callable = represent.value;
@@ -495,10 +495,10 @@ ObjInstance* newInstance(VM* vm, ObjClass* klass) {
 	return instance;
 }
 
-ObjBoundMethod* newBoundMethod(VM* vm, Value reciever, Obj* obj) {
+ObjBoundMethod* newBoundMethod(VM* vm, Value receiver, Obj* obj) {
 	ObjBoundMethod* boundMethod = ALLOCATE_OBJECT(vm, ObjBoundMethod, OBJ_BOUND_METHOD);
 	
-	boundMethod -> reciever = reciever;
+	boundMethod -> receiver = receiver;
 	boundMethod -> function = obj;
 	
 	return boundMethod;
@@ -535,4 +535,6 @@ ObjByteList* newByteList(VM* vm) {
 	
 	byteList -> bytes = NULL;
 	byteList -> size  = 0u;
+
+	return byteList;
 }

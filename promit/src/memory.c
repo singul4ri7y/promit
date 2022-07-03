@@ -260,7 +260,7 @@ static void blackenObject(Obj* object) {
 			
 			markObject((Obj*) closure -> function);
 			
-			for(register size_t i = 0u; i < closure -> upvalueCount; i++) 
+			for(register int i = 0u; i < closure -> upvalueCount; i++) 
 				markObject((Obj*) closure -> upvalues[i]);
 			
 			break;
@@ -269,7 +269,7 @@ static void blackenObject(Obj* object) {
 		case OBJ_LIST: {
 			ObjList* list = (ObjList*) object;
 
-			for(register size_t i = 0u; i < list -> count; i++) 
+			for(register int i = 0u; i < list -> count; i++) 
 				markValue(list -> values[i]);
 
 			break;

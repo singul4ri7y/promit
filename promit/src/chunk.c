@@ -82,7 +82,7 @@ void freeChunk(Chunk* chunk) {
 
 // At least a genuine line number will come out of it, that's ensured.
 
-int getLine(Chunk* chunk, size_t offset) {
+int getLine(Chunk* chunk, int offset) {
 	offset++;
 
 	int left = 0, right = chunk -> lineSize - 1;

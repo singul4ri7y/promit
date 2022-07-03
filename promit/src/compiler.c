@@ -76,9 +76,6 @@ static Parser parser;
 static Compiler* current = NULL;
 static ClassCompiler* currentClass = NULL;
 
-static char* relativePath = NULL;
-static size_t relativePathSize = 0u;
-
 typedef enum {
 	PREC_NONE, 
 	PREC_ASSIGNMENT,    // =
@@ -308,13 +305,13 @@ static void emitConstant(Value value) {
 	writeConstant(currentChunk(), value, parser.previous.line);
 }
 
-static void number(bool canAssign) {
+static void number(bool) {
 	double value = strtod(parser.previous.start, NULL);
 
 	emitConstant(NUMBER_VAL(value));
 }
 
-static void string(bool canAssign) {
+static void string(bool) {
 	emitConstant(OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
 }
 
@@ -328,7 +325,6 @@ static void statement(bool);
 static void takeDeclaration(bool);
 static void declaration(bool);
 static void fnExpr(bool);
-static void constFnExpr(bool);
 static void globalInterpolation(bool);
 static void ternary();
 
@@ -382,7 +378,7 @@ static void semicolon(const char* message, bool multiple) {
 	}
 }
 
-static void literal(bool canAssign) {
+static void literal(bool) {
 	switch(parser.previous.type) {
 		case TOKEN_FALSE:    emitByte(OP_FALSE); break;
 		case TOKEN_TRUE:     emitByte(OP_TRUE); break;
@@ -393,7 +389,7 @@ static void literal(bool canAssign) {
 	}
 }
 
-static void unary(bool canAssign) {
+static void unary(bool) {
 	TokenType operatorType = parser.previous.type;
 
 	parsePrecedence(PREC_UNARY);
@@ -406,7 +402,7 @@ static void unary(bool canAssign) {
 	}
 }
 
-static void grouping(bool canAssign) {
+static void grouping(bool) {
 	expression();
 
 	consume(TOKEN_RIGHT_PAREN, "Expeced a ')' after end of expression!");
@@ -424,14 +420,14 @@ static void grouping(bool canAssign) {
 	emitByte(c);\
 
 #define SET_N_GET(code, global) \
-	if(global > 255u) {\
+	if(global > 255) {\
 		emitByte(code##_LONG);\
 		NEEDLE_BYTES(global)\
 	}\
 	emitBytes(code, (uint8_t) global);
 
 #define DEFINE(code, global, cnst) \
-	if(global > 255u) {\
+	if(global > 255) {\
 		emitByte(code##_LONG);\
 		emitByte((uint8_t) cnst);\
 		NEEDLE_BYTES(global)\
@@ -531,7 +527,7 @@ static int resolveLocal(Compiler* compiler, Token* token) {
 
 #define INC_DC(code, type, arg) \
 	emitByte(code);\
-	if(arg > 255u) {\
+	if(arg > 255) {\
 		emitByte((uint8_t) (type + 1));\
 		NEEDLE_BYTES(arg);\
 	} else emitBytes(type, (uint8_t) arg);
@@ -618,7 +614,7 @@ static int resolveUpvalue(Compiler* compiler, Token* name) {
 	return -1;
 }
 
-static size_t identifierConstant(Token* token) {
+static int identifierConstant(Token* token) {
 	return writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), token -> start, token -> length)));
 }
 
@@ -630,8 +626,6 @@ static size_t identifierConstant(Token* token) {
 	}
 
 static void namedVariable(Token* name, bool canAssign, bool globalOnly) {
-	Chunk* chunk = currentChunk();
-
 	checkConstantPoolOverflow("Constant pool overflow while getting/setting variable!");
 	
 	uint8_t state = 0u;
@@ -790,7 +784,7 @@ static void stringContinue(bool canAssign) {
 	emitByte(OP_ADD);
 }
 
-static void interpolation(bool canAssign) {
+static void interpolation(bool) {
 	expression();
 	
 	consume(TOKEN_RIGHT_BRACE, "Expected an end of string interpolation!");
@@ -799,7 +793,7 @@ static void interpolation(bool canAssign) {
 }
 
 
-static void inc(bool canAssign) {
+static void inc(bool) {
 	Chunk* chunk = currentChunk();
 
 	checkConstantPoolOverflow("Constant pool overflow while setting variable!");
@@ -900,7 +894,7 @@ static void inc(bool canAssign) {
 	}
 }
 
-static void _typeof(bool canAssign) {
+static void _typeof(bool) {
 	parsePrecedence(PREC_COMPARISON);
 	
 	emitByte(OP_TYPEOF);
@@ -924,7 +918,7 @@ static uint8_t argumentList() {
 	return arg;
 }
 
-static void call(bool canAssign) {
+static void call(bool) {
 	uint8_t argCount = argumentList();
 	
 	if(argCount <= 20) {
@@ -938,8 +932,6 @@ static void dot(bool canAssign) {
 	consume(TOKEN_IDENTIFIER, "Expected a property name after '.'!");
 
 	size_t field = writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
-
-	OpCode code;
 
 	if(canAssign && match(TOKEN_EQUAL)) {
 		expression();
@@ -1052,7 +1044,7 @@ static void square(bool canAssign) {
 	} else emitByte(OP_DNM_GET_PROPERTY);
 }
 
-static void _this(bool canAssign) {
+static void _this(bool) {
 	if(currentClass == NULL) {
 		error("Cannot use 'this' outside of a class!");
 		
@@ -1065,7 +1057,7 @@ static void _this(bool canAssign) {
 	variable(false, false);
 }
 
-static void dictionary(bool canAssign) {
+static void dictionary(bool) {
 	emitByte(OP_DICTIONARY);
 	
 	size_t key;
@@ -1118,8 +1110,6 @@ static void _static(bool canAssign) {
 	consume(TOKEN_IDENTIFIER, "Expected a property name after '::'!");
 
 	size_t field = writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
-
-	OpCode code;
 
 	if(canAssign && match(TOKEN_EQUAL)) {
 		expression();
@@ -1176,7 +1166,7 @@ static void _static(bool canAssign) {
 	}
 }
 
-static void list(bool canAssign) {
+static void list(bool) {
 	emitByte(OP_LIST);
 	
 	do {
@@ -1191,11 +1181,11 @@ static void list(bool canAssign) {
 	consume(TOKEN_RIGHT_SQUARE, "Expected a ']' at the end of list!");
 }
 
-static void recieve(bool canAssign) {
+static void receive(bool) {
 	uint8_t type = 0u;
 
 	if(match(TOKEN_LEFT_PAREN)) {
-		consume(TOKEN_IDENTIFIER, "Expected a reciever type!");
+		consume(TOKEN_IDENTIFIER, "Expected a receiver type!");
 
 		if(parser.previous.length == 6u && !memcmp("string", parser.previous.start, 6u)) 
 			type = 0u;
@@ -1203,15 +1193,15 @@ static void recieve(bool canAssign) {
 			type = 1u;
 		else if(parser.previous.length == 4u && !memcmp("bool", parser.previous.start, 4u)) 
 			type = 2u;
-		else error("Unrecognized reciever type!");
+		else error("Unrecognized receiver type!");
 
-		consume(TOKEN_RIGHT_PAREN, "Expected a ')' after reciever type!");
+		consume(TOKEN_RIGHT_PAREN, "Expected a ')' after receiver type!");
 	}
 
-	emitBytes(OP_RECIEVE, type);
+	emitBytes(OP_RECEIVE, type);
 }
 
-static void _super(bool canAssign) {
+static void _super(bool) {
 	if(currentClass == NULL) {
 		error("Cannot use 'super' outside of class!");
 		return;
@@ -1331,7 +1321,7 @@ ParseRule parseRules[] = {
 	[TOKEN_NULL]                     = { literal, NULL, NULL, PREC_NONE },
 	[TOKEN_FUNCTION]                 = { fnExpr, NULL, NULL, PREC_NONE },
 	[TOKEN_SHOW]                     = { NULL, NULL, NULL, PREC_NONE },
-	[TOKEN_RECIEVE]                  = { recieve, NULL, NULL, PREC_NONE },
+	[TOKEN_RECEIVE]                  = { receive, NULL, NULL, PREC_NONE },
 	[TOKEN_FOR]                      = { NULL, NULL, NULL, PREC_NONE },
 	[TOKEN_WHILE]                    = { NULL, NULL, NULL, PREC_NONE },
 	[TOKEN_SUPER]                    = { _super, NULL, NULL, PREC_NONE },
@@ -1346,7 +1336,7 @@ static ParseRule* getRule(const TokenType tokenType) {
 	return &parseRules[tokenType];
 }
 
-static void binary(bool canAssign) {
+static void binary(bool) {
 	TokenType operatorType = parser.previous.type;
 	
 	ParseRule* rule = getRule(operatorType);
@@ -1374,7 +1364,7 @@ static void block(bool inLoop) {
 	consume(TOKEN_RIGHT_BRACE, "Expeced a '}' at end of block!");
 }
 
-static uint32_t emitJump(uint8_t jumpInstruction) {
+static int emitJump(uint8_t jumpInstruction) {
 	emitByte(jumpInstruction);
 	
 	emitByte(0xFF);
@@ -1383,15 +1373,15 @@ static uint32_t emitJump(uint8_t jumpInstruction) {
 	return currentChunk() -> count - 3u;
 }
 
-static void patchJump(uint32_t stride) {
-	uint32_t jump = currentChunk() -> count - stride - 3u;
+static void patchJump(int stride) {
+	uint32_t jump = currentChunk() -> count - stride - 3;
 	
 	if(jump > UINT24_MAX) 
 		error("Too many intructions to jump over!");
 	
 	currentChunk() -> code[stride]      = (jump >> 16) & 0xFF;
-	currentChunk() -> code[stride + 1u] = (jump >> 8) & 0XFF;
-	currentChunk() -> code[stride + 2u] = jump & 0xFF;
+	currentChunk() -> code[stride + 1] = (jump >> 8) & 0XFF;
+	currentChunk() -> code[stride + 2] = jump & 0xFF;
 }
 
 static void patchRequestJump(uint32_t distance, uint32_t localStride) {
@@ -1465,11 +1455,11 @@ static void ifStatement(bool inLoop) {
 	
 	consume(TOKEN_RIGHT_PAREN, "Expected ')' after condition!");
 	
-	uint32_t thenJump = emitJump(OP_JUMP_IF_FALSE);
+	int thenJump = emitJump(OP_JUMP_IF_FALSE);
 	
 	statement(inLoop);
 	
-	uint32_t elseJump = -1;
+	int elseJump = -1;
 	
 	if(match(TOKEN_ELSE)) {
 		elseJump = emitJump(OP_JUMP);
@@ -1757,9 +1747,9 @@ static void forStatement() {
 		takeDeclaration(true);
 	else expressionStatement(true);
 	
-	uint32_t loopStart = currentChunk() -> count;
+	int loopStart = currentChunk() -> count;
 	
-	uint32_t exitJump = -1;
+	int exitJump = -1;
 	
 	if(!match(TOKEN_SEMICOLON)) {
 		expression();
@@ -1927,33 +1917,6 @@ static void statement(bool inLoop) {
 	} else expressionStatement(inLoop);    // It's an expression acting as a statement or the source code is starting with an expression.
 }
 
-static void synchronize() {
-	parser.panicMode = false;
-
-	while(parser.current.type != TOKEN_EOF) {
-		if(parser.current.type == TOKEN_SEMICOLON) 
-			return;
-
-		switch(parser.previous.type) {
-			case TOKEN_CLASS:
-			case TOKEN_SHOWL:
-			case TOKEN_SHOW: 
-			case TOKEN_TAKE: 
-			case TOKEN_FOR: 
-			case TOKEN_WHILE: 
-			case TOKEN_IF: 
-			case TOKEN_RETURN: 
-			case TOKEN_FUNCTION: 
-				return;
-
-			default: 
-				;    // Do nothing.
-		}
-
-		advance();
-	}
-}
-
 static void markInitialized() {
 	if(current -> scopeDepth == 0) 
 		return;
@@ -1987,8 +1950,8 @@ static void takeDeclaration(bool inLoop) {		// In loop specially for 'for'.
 	VARIABLE(false, inLoop);
 }
 
-static void and(bool canAssign) {
-	uint32_t endJump = emitJump(OP_JUMP_OPR);
+static void and(bool) {
+	int endJump = emitJump(OP_JUMP_OPR);
 	
 	emitByte(OP_SILENT_POP);
 	
@@ -1997,9 +1960,9 @@ static void and(bool canAssign) {
 	patchJump(endJump);
 }
 
-static void or(bool canAssign) {
-	uint32_t elseJump = emitJump(OP_JUMP_OPR);
-	uint32_t endJump  = emitJump(OP_JUMP);
+static void or(bool) {
+	int elseJump = emitJump(OP_JUMP_OPR);
+	int endJump  = emitJump(OP_JUMP);
 
 	patchJump(elseJump);
 	emitByte(OP_SILENT_POP);
@@ -2046,7 +2009,7 @@ static void function(FunctionType type, bool inExpr) {
 	
 	size_t ticket = writeValueArray(&currentChunk() -> constants, OBJECT_VAL(function));
 	
-	if(function -> upvalueCount > 0u) {
+	if(function -> upvalueCount > 0) {
 		if(ticket > 255u) {
 			emitByte(OP_CLOSURE_LONG);
 
@@ -2080,7 +2043,7 @@ static void functionDeclaration(bool isConst) {
 	defineVariable(global, isConst);\
 }
 
-static void fnExpr(bool canAssign) {
+static void fnExpr(bool) {
 	function(TYPE_FUNCTION, true);
 }
 
@@ -2258,7 +2221,6 @@ ObjFunction* compile(VM* vm, const char* source) {
 
 	advance();
 
-	__compile: 
 	while(!match(TOKEN_EOF)) {
 		declaration(false);
 	}
