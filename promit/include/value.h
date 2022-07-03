@@ -53,8 +53,8 @@ typedef struct {
 #define IS_NAN(value) isnan((value).as.number)
 
 typedef struct {
-	size_t capacity;
-	size_t count;
+	int capacity;
+	int count;
 	Value* values;
 } ValueArray;
 
@@ -64,7 +64,7 @@ typedef struct {
 } ValueContainer;
 
 void   initValueArray(ValueArray*);
-size_t writeValueArray(ValueArray*, Value);
+int    writeValueArray(ValueArray*, Value);
 void   freeValueArray(ValueArray*);
 bool   printValue(const Value*);
 void   printValueRaw(const Value*);

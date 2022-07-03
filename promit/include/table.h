@@ -11,9 +11,9 @@ typedef struct {
 } Entry;
 
 typedef struct {
-	size_t count;
-	size_t capacity;
-	size_t tombstones;
+	int count;
+	int capacity;
+	int tombstones;
 	Entry* entries;
 } Table;
 
@@ -23,7 +23,7 @@ bool tableInsert(Table*, ObjString*, ValueContainer);
 bool tableGet(Table*, ObjString*, ValueContainer*);
 void tableInsertAll(Table*, Table*);
 bool tableDelete(Table*, ObjString*);
-ObjString* tableFindString(Table*, const char*, size_t length, uint32_t);
+ObjString* tableFindString(Table*, const char*, int, uint32_t);
 void markTable(Table*);
 void tableRemoveWhite(Table*);
 void freeTable(Table*);

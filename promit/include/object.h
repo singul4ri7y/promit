@@ -30,7 +30,7 @@ struct Obj {
 struct ObjString {
 	Obj obj;
 	bool heapAllocated;
-	size_t length;
+	int length;
 	char* buffer;
 	uint32_t hash;
 };
@@ -86,7 +86,7 @@ struct ObjInstance {
 
 struct ObjBoundMethod {
 	Obj obj;
-	Value reciever;
+	Value receiver;
 	
 	// Can be a function. Can be a closure if atleast one upvalue is defined.
 	
@@ -100,8 +100,8 @@ struct ObjDictionary {
 
 struct ObjList {
 	Obj obj;
-	size_t count;
-	size_t capacity;
+	int count;
+	int capacity;
 	Value* values;
 };
 

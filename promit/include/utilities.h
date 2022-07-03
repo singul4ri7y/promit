@@ -15,12 +15,11 @@
 #define _promit_utilites_
 
 #include <stdlib.h>
-#include <unistd.h>
 
 #include "memory.h"
 
-extern ssize_t getdelim(char**, size_t*, int, FILE*);
-extern ssize_t getline(char**, size_t*, FILE*);
+extern ptrdiff_t getdelim(char**, size_t*, int, FILE*);
+extern ptrdiff_t getline(char**, size_t*, FILE*);
 
 // This function is highly edited version of CS50's get_string function.
 // Takes a string as input from Promit standard stdin.

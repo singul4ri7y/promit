@@ -90,7 +90,7 @@ typedef enum {
 	OP_SHOW,
 	OP_SHOWL,
 	OP_RAW_SHOW,
-	OP_RECIEVE,
+	OP_RECEIVE,
 	OP_POP,
 	OP_SILENT_POP,
 	
@@ -268,6 +268,6 @@ void   writeConstant(Chunk*, Value, int);
 
 size_t addConstant(Chunk*, Value);
 void   freeChunk(Chunk*);
-int    getLine(Chunk*, size_t);
+int    getLine(Chunk*, int);
 
 #endif

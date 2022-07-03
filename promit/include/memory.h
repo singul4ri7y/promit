@@ -7,7 +7,7 @@
 
 #include "vm.h"
 
-#define GROW_CAPACITY(x) (x < 64u ? 64u : x * 2u)
+#define GROW_CAPACITY(x) (x < 64 ? 64 : x * 2)
 
 #define FREE_ARRAY(type, pointer, oldSize) \
 	reallocate((void*) pointer, sizeof(type) * (oldSize), 0u)
