@@ -1,3 +1,4 @@
+
 <h1 align= "center">Project Promit</h1>
 <p align= "center">A programming language inspired by JavaScript and Python!</p>
 <div align= "center">
@@ -6,6 +7,8 @@
 	<a href= "#contribution">Contribution</a>
 	.
 	<a href= "#why">Why</a>
+	.
+	<a href= "#install">Install</a>
 	.
 	<a href= "#build">Build</a>
 </div>
@@ -143,6 +146,22 @@ switch(bird) {
  - Try leaving comments, as that helps (Like I'm the one to talk).
 
 <b><i>Happy contribution.</i></b>
+
+## Install
+<p>Promit comes with compiled interpreter binary with each release, which you can use to run your programs from the command line. With some tweaking with IDE's like **NetBeans**, **VS Code**, **Atom** etc. you can integrate the ``promit`` interpreter binary to run programs directly from the IDE.
+**Supported Platforms:** Currently Promit only supports **Linux**, **Windows** and in some point <b>*BSD's</b>*. As I do not have a Mac, I could not test the code in MacOS 😅. So, for that reason, Promit does not support MacOS and current release won't be having a MacOS binary (Mac users don't hate me).
+
+**Download binary the releases at:** https://github.com/singul4ri7y/promit/releases
+
+**How to install:**
+ 1. Download your specific platform binary. For example, if I am a Windows users, my preference would be ``promit-<version>-windows-64bit.zip`` or ``promit-<version>-windows-32bit.zip`` zip file.
+ 2. Extract the archive ``.tar.gz`` for Linux users and ``.zip`` for Windows users.
+ 3. Under the ``bin/`` folder the the Promit Interpreter binary resides. Move it to any location which is in the **system path** variable.
+     - For Windows users, my recommendation is create a folder named ``MyBIN`` on the disk your Windows is installed on and add the folder location to system path variable (How to add folder location to system path variable? Well it's 21'st century. Google it).
+     - For Linux users, you probably already know what to do. My preference is to move the binary to ``/usr/local/bin`` where every user can use it. Or create a new folder to store the binary and add it to system path (Make changes to ``$PATH`` adding your folder location. To make it permanent in do it in the  ``/etc/environment`` file).
+ 4. Now run any Promit program in the terminal or command prompt using ``promit MyProgram.promit``.
+
+<b><i>Done.</i></b>
 
 ## Why
 <img src= "logos/logo.jpg" type= "image/jpg" align= "right" width= "350" />
