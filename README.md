@@ -155,7 +155,7 @@ switch(bird) {
 **Download binary the releases at:** https://github.com/singul4ri7y/promit/releases
 
 **How to install:**
- 1. Download your specific platform binary. For example, if I am a Windows users, my preference would be ``promit-<version>-windows-64bit.zip`` or ``promit-<version>-windows-32bit.zip`` zip file.
+ 1. Download your specific platform binary. For example, if I am a Windows user, my preference would be ``promit-<version>-windows-64bit.zip`` or ``promit-<version>-windows-32bit.zip`` zip file.
  2. Extract the archive ``.tar.gz`` for Linux users and ``.zip`` for Windows users.
  3. Under the ``bin/`` folder the the Promit Interpreter binary resides. Move it to any location which is in the **system path** variable.
      - For Windows users, my recommendation is create a folder named ``MyBIN`` on the disk your Windows is installed on and add the folder location to system path variable (How to add folder location to system path variable? Well it's 21'st century. Google it).
