@@ -4352,36 +4352,24 @@ InterpretResult run(VM* vm) {
 			}
 			
 			case OP_DNM_GET_PROPERTY: {
-				Value value = *peek(vm, 1);
-				
+				Value value  = *peek(vm, 1);
 				Value string = *peek(vm, 0);
 				
 				do {
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) ||
 					IS_BYTELIST(value) ||
 					IS_STRING(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmStringClass)) {
-						double idxval;
+						NumberData data = toNumber(vm, &string);
 						
-						if(IS_NUMBER(string)) 
-							idxval = VALUE_NUMBER(string);
-						else if(IS_STRING(string)) 
-							idxval = pstrtod(VALUE_CSTRING(string));
-						else if(IS_NULL(string)) 
-							idxval = 0;
-						else if(IS_BOOL(string)) 
-							idxval = VALUE_BOOL(string) ? 1u : 0u;
-						else {
-							RUNTIME_ERROR("Index is not convertable to number!");
-							
+						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
-						}
-
-						int index;
+						
+						double idxval = data.number;
 
 						if(isnan(idxval)) 
 							break;
-						
-						index = (int) idxval;
+
+						int index = (int) idxval;
 						
 						if(IS_LIST(value) || (IS_INSTANCE(value) &&
 						VALUE_INSTANCE(value) -> klass == vmListClass)) {
@@ -4696,21 +4684,20 @@ InterpretResult run(VM* vm) {
 				do {
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						int index;
+						NumberData data = toNumber(vm, &string);
 						
-						if(IS_NUMBER(string)) 
-							index = (int) VALUE_NUMBER(string);
-						else if(IS_STRING(string)) 
-							index = (int) pstrtod(VALUE_CSTRING(string));
-						else if(IS_NULL(string)) 
-							index = 0;
-						else if(IS_BOOL(string)) 
-							index = (int) VALUE_BOOL(string) ? 1u : 0u;
-						else {
+						if(data.hadError) 
+							return INTERPRET_RUNTIME_ERROR;
+						
+						double idxval = data.number;
+
+						if(isnan(idxval)) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
 						}
+
+						int index = (int) idxval;
 						
 						if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass)) {
 							ObjList* list = NULL;
@@ -4987,21 +4974,20 @@ InterpretResult run(VM* vm) {
 				
 				if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 				IS_BYTELIST(value)) {
-					int index;
+					NumberData data = toNumber(vm, &string);
+						
+					if(data.hadError) 
+						return INTERPRET_RUNTIME_ERROR;
 					
-					if(IS_NUMBER(string)) 
-						index = (int) VALUE_NUMBER(string);
-					else if(IS_STRING(string)) 
-						index = (int) pstrtod(VALUE_CSTRING(string));
-					else if(IS_NULL(string)) 
-						index = 0;
-					else if(IS_BOOL(string)) 
-						index = (int) VALUE_BOOL(string) ? 1u : 0u;
-					else {
+					double idxval = data.number;
+
+					if(isnan(idxval)) {
 						RUNTIME_ERROR("Index is not convertable to number!");
 						
 						return INTERPRET_RUNTIME_ERROR;
 					}
+
+					int index = (int) idxval;
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) &&
 					VALUE_INSTANCE(value) -> klass == vmListClass)) {
@@ -5654,25 +5640,16 @@ InterpretResult run(VM* vm) {
 				do {
 					if(IS_LIST(value) || (IS_INSTANCE(value) &&
 					!strcmp(VALUE_INSTANCE(value) -> klass -> name -> buffer, "List"))) {
-						double idxval;
+						NumberData data = toNumber(vm, &string);
 						
-						if(IS_NUMBER(string)) 
-							idxval = VALUE_NUMBER(string);
-						else if(IS_STRING(string)) 
-							idxval = pstrtod(VALUE_CSTRING(string));
-						else if(IS_NULL(string)) 
-							idxval = 0u;
-						else if(IS_BOOL(string)) 
-							idxval = VALUE_BOOL(string) ? 1u : 0u;
-						else {
-							RUNTIME_ERROR("Index is not convertable to number!");
-							
+						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
-						}
+						
+						double idxval = data.number;
 
 						if(isnan(idxval)) 
 							break;
-						
+
 						int index = (int) idxval;
 						
 						ObjList* list;
