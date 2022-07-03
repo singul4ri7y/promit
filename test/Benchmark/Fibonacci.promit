@@ -8,7 +8,7 @@
 
 show 'Enter the number of fibonacci : ';
 
-take n = recieve(num);
+take n = receive(num);
 
 // Main unoptimized nth fibonacci identifier function.
 // Ideal for benchmarking.

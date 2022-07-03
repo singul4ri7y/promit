@@ -33,6 +33,6 @@ fn position(n) {
 
 show 'Enter the number of fibonacci : ';
 
-take n = recieve(num);
+take n = receive(num);
 
 showl "The $n'${position(n)} fibonacci number is : ${ fib(n, [ 0, 1, 1 ]) }";

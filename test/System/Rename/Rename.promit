@@ -13,12 +13,12 @@
 showl "Use 'rename_me' as filename for example...";
 show 'Input a file to be renamed : ';
 
-take filename = recieve(string);    // Equilavent to just 'recieve;'
+take filename = receive(string);    // Equilavent to just 'receive;'
 
 show 'Input a new filename : ';
 
 // Now renaming the file.
 
-if(System::rename(filename, recieve)) 
+if(System::rename(filename, receive)) 
 	showl 'File renaming successful!';
 else System::stderr.write_line('File renaming failed!');

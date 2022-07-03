@@ -14,8 +14,8 @@
 showl 'System::stdin is ${System::stdin}';
 show 'Try to to input your name : ';
 
-// take name = recieve(string); or 
-// take name = recieve; is equivalent to,
+// take name = receive(string); or 
+// take name = receive; is equivalent to,
 
 take name = System::stdin.read_line(true);    // Pass true to ingnore the newline character.
 
@@ -28,7 +28,7 @@ System::stdin.close();
 
 // This will not work, stdin is closed now.
 
-name = recieve(string);
+name = receive(string);
 
 // Nor will this...
 
@@ -42,6 +42,6 @@ show 'Try to input your age : ';
 
 // Reusing the 'name' variable for age... ha ha..
 
-name = recieve(num);
+name = receive(num);
 
 showl 'Your age is $name!';

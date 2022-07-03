@@ -12,18 +12,18 @@
 
 show 'Enter where to start : ';
 
-take start = recieve(num);
+take start = receive(num);
 
 show 'Enter the range : ';
 
-take range = recieve(num);
+take range = receive(num);
 
 show 'Enter the number of step : ';
 
 // Use List::range(stop, start, step) to construct the list. Much like
 // Python's range() function.
 
-take step = recieve(num),
+take step = receive(num),
   numbers = List::range(range, start, step);
  
 showl 'Created list is : ${numbers.join(', ')}';
@@ -32,7 +32,7 @@ showl 'Created list is : ${numbers.join(', ')}';
 
 show 'Enter the target number : ';
 
-take target = recieve(num);
+take target = receive(num);
 
 // Binary Search.
 

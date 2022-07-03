@@ -11,7 +11,7 @@ show 'Enter the range of number : ';
 
 // Recieving a number of the command line.
 
-take range = recieve(num);
+take range = receive(num);
 
 showl 'Identifing all the prime numbers within the range...';
 
