@@ -31,10 +31,10 @@ const fn to_string(number, base) {
 
 show 'Enter any integer number to be converted to string : ';
 
-take number = recieve(num);
+take number = receive(num);
 
 show 'Enter the base : ';
 
-take base = recieve(num);
+take base = receive(num);
 
 showl 'The string representation of $number with $base is : ${to_string(number, base)}';

@@ -6,28 +6,28 @@
  * Created by SD Asif Hossein in 03 July, 2022 (Sunday) at 12:53 AM (UTC +06).
  */
 
-// To take inputs from console/stdin, use the 'recieve' keyword.
+// To take inputs from console/stdin, use the 'receive' keyword.
 
-// 'recieve' or 'recieve(string)' -> To take input a whole string as a line.
-// 'recieve(num)' -> To take the input as a number.
-// 'recieve(bool)' -> To take the input as a boolean. This basically takes
+// 'receive' or 'receive(string)' -> To take input a whole string as a line.
+// 'receive(num)' -> To take the input as a number.
+// 'receive(bool)' -> To take the input as a boolean. This basically takes
 // input a string and if the string is equal to 'true', the input value
 // will be true, otherwise false.
 
 take string, number, boolean;
 
-show 'Input a string, recieve(string) string = ';
+show 'Input a string, receive(string) string = ';
 
 // String input the whole line.
 
-string = recieve(string);
+string = receive(string);
 
-show 'Input a number, recieve(num) number = ';
+show 'Input a number, receive(num) number = ';
 
 // Under the hood, a whole line is taken input as 
 // a string, then converted to number.
 
-number = recieve(num);
+number = receive(num);
 
 show 'Input a boolean, reiceve(bool) boolean = ';
 
@@ -35,6 +35,6 @@ show 'Input a boolean, reiceve(bool) boolean = ';
 // input, then if the string is equal to 'true'
 // the result becomes true, otherwise false.
 
-boolean = recieve(bool);
+boolean = receive(bool);
 
 showl 'The string : $string, the number : $number and the boolean : $boolean';

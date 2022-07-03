@@ -8,9 +8,9 @@
 
 // The 'Function' wrapper class has only 3 static wrapper class functions.
 
-// Function::bind(bound_method, reciever);
-// Function::call(bound_method, reciever, args...);
-// Function::pass(bound_method, reciever, [ args...]);
+// Function::bind(bound_method, receiver);
+// Function::call(bound_method, receiver, args...);
+// Function::pass(bound_method, receiver, [ args...]);
 
 const class A {
 	any_method(prop) {
@@ -24,7 +24,7 @@ const class A {
 
 take a = A();
 
-// Create a empty dictionary pass it as a reciever.
+// Create a empty dictionary pass it as a receiver.
 
 take dict = {};
 
@@ -48,6 +48,6 @@ Function::call(a.any_method, dummy, 'Very dummy!');
 
 showl dummy.prop;    // Output : Very dummy!
 
-// Function::pass(bound_method, reciever, [args...]) has similar manner as Function::call(...).
+// Function::pass(bound_method, receiver, [args...]) has similar manner as Function::call(...).
 // Only difference is you pass the arguments as an array in Function::pas rather
 // than parameters.
