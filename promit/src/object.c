@@ -123,7 +123,7 @@ ObjString* copyString(VM* vm, const char* start, size_t length) {
 }
 
 void printFunction(ObjFunction* function) {
-	__printf("<fn '%s' at 0x%.16X>", function -> name == NULL ? "anonymous" : function -> name -> buffer, function);
+	__printf("<fn '%s' at %p>", function -> name == NULL ? "anonymous" : function -> name -> buffer, function);
 }
 
 void printObjectRaw(const Value* value) {
@@ -139,13 +139,13 @@ void printObjectRaw(const Value* value) {
 		case OBJ_CLOSURE: {
 			ObjClosure* closure = VALUE_CLOSURE(*value);
 			
-			__printf("<closure '%s' at 0x%.16X with %d upvalues>", closure -> function -> name != NULL ? closure -> function -> name -> buffer : "anonymous", closure -> function, closure -> upvalueCount);
+			__printf("<closure '%s' at %p with %d upvalues>", closure -> function -> name != NULL ? closure -> function -> name -> buffer : "anonymous", closure -> function, closure -> upvalueCount);
 			
 			break;
 		}
 		
 		case OBJ_NATIVE: 
-			__printf("<fn native at 0x%.16X>", VALUE_NATIVE(*value) -> function);
+			__printf("<fn native at %p>", VALUE_NATIVE(*value) -> function);
 			break;
 		
 		case OBJ_UPVALUE: {
@@ -167,20 +167,20 @@ void printObjectRaw(const Value* value) {
 				case OBJ_CLOSURE: {
 					ObjClosure* closure = (ObjClosure*) method -> function;
 					
-					__printf("<closure '%s' at 0x%.16X with %d upvalues", 
+					__printf("<closure '%s' at %p with %d upvalues", 
 						closure -> function -> name != NULL ? closure -> function -> name -> buffer : "anonymous", closure -> function, closure -> upvalueCount);
 					
 					break;
 				}
 				
 				case OBJ_NATIVE: 
-					__printf("<fn native at 0x%.16X", ((ObjNative*) method -> function) -> function);
+					__printf("<fn native at %p", ((ObjNative*) method -> function) -> function);
 					break;
 				
 				case OBJ_FUNCTION: {
 					ObjFunction* function = (ObjFunction*) method -> function;
 					
-					__printf("<fn '%s' at 0x%.16X", function -> name -> buffer, function);
+					__printf("<fn '%s' at %p", function -> name -> buffer, function);
 					
 					break;
 				}
