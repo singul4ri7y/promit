@@ -2790,14 +2790,14 @@ InterpretResult run(VM* vm) {
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						NumberData data = toNumber(vm, &string);
+						vmNumberData data = vmToNumber(vm, &string);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
 						
 						double idxval = data.number;
 
-						if(isnan(idxval)) {
+						if(!data.isRepresentable) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
@@ -3117,14 +3117,14 @@ InterpretResult run(VM* vm) {
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						NumberData data = toNumber(vm, &string);
+						vmNumberData data = vmToNumber(vm, &string);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
-							
+						
 						double idxval = data.number;
 
-						if(isnan(idxval)) {
+						if(!data.isRepresentable) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
@@ -3444,14 +3444,14 @@ InterpretResult run(VM* vm) {
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						NumberData data = toNumber(vm, &string);
+						vmNumberData data = vmToNumber(vm, &string);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
-							
+						
 						double idxval = data.number;
 
-						if(isnan(idxval)) {
+						if(!data.isRepresentable) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
@@ -3771,14 +3771,14 @@ InterpretResult run(VM* vm) {
 					
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						NumberData data = toNumber(vm, &string);
+						vmNumberData data = vmToNumber(vm, &string);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
-							
+						
 						double idxval = data.number;
 
-						if(isnan(idxval)) {
+						if(!data.isRepresentable) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
@@ -4359,14 +4359,14 @@ InterpretResult run(VM* vm) {
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) ||
 					IS_BYTELIST(value) ||
 					IS_STRING(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmStringClass)) {
-						NumberData data = toNumber(vm, &string);
+						vmNumberData data = vmToNumber(vm, &string);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
 						
 						double idxval = data.number;
 
-						if(isnan(idxval)) 
+						if(!data.isRepresentable) 
 							break;
 
 						int index = (int) idxval;
@@ -4684,14 +4684,14 @@ InterpretResult run(VM* vm) {
 				do {
 					if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 					IS_BYTELIST(value)) {
-						NumberData data = toNumber(vm, &string);
+						vmNumberData data = vmToNumber(vm, &string);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
 						
 						double idxval = data.number;
 
-						if(isnan(idxval)) {
+						if(!data.isRepresentable) {
 							RUNTIME_ERROR("Index is not convertable to number!");
 							
 							return INTERPRET_RUNTIME_ERROR;
@@ -4974,14 +4974,14 @@ InterpretResult run(VM* vm) {
 				
 				if(IS_LIST(value) || (IS_INSTANCE(value) && VALUE_INSTANCE(value) -> klass == vmListClass) || 
 				IS_BYTELIST(value)) {
-					NumberData data = toNumber(vm, &string);
+					vmNumberData data = vmToNumber(vm, &string);
 						
 					if(data.hadError) 
 						return INTERPRET_RUNTIME_ERROR;
 					
 					double idxval = data.number;
 
-					if(isnan(idxval)) {
+					if(!data.isRepresentable) {
 						RUNTIME_ERROR("Index is not convertable to number!");
 						
 						return INTERPRET_RUNTIME_ERROR;
@@ -5640,14 +5640,14 @@ InterpretResult run(VM* vm) {
 				do {
 					if(IS_LIST(value) || (IS_INSTANCE(value) &&
 					!strcmp(VALUE_INSTANCE(value) -> klass -> name -> buffer, "List"))) {
-						NumberData data = toNumber(vm, &string);
+						vmNumberData data = vmToNumber(vm, &string);
 						
 						if(data.hadError) 
 							return INTERPRET_RUNTIME_ERROR;
 						
 						double idxval = data.number;
 
-						if(isnan(idxval)) 
+						if(!data.isRepresentable) 
 							break;
 
 						int index = (int) idxval;
