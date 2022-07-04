@@ -25,7 +25,7 @@ DEPENDENCY_DIR   := $(PRE_OBJ_DIR)deps/
 
 # Default variable delclaration for default target 'build_debug_x64'.
 
-LFLAGS       = -DDEBUG -g $(PRE_LFLAGS)
+LFLAGS       = -DDEBUG -g -Wall -Wextra $(PRE_LFLAGS)
 OUTPUT_DIR   = $(PRE_OUTPUT_DIR)Debug-x64/
 OBJ_DIR      = $(PRE_OBJ_DIR)Debug-x64/
 CONFIG      := Debug-x64
@@ -37,7 +37,7 @@ ifneq ($(findstring build_debug_x86, $(MAKECMDGOALS)), )
 	.DEFAULT_GOAL = build_debug_x86
 	ARCH         := -m32
 	
-	LFLAGS        = -DDEBUG -DM32 -g $(ARCH) $(PRE_LFLAGS)
+	LFLAGS        = -DDEBUG -DM32 -Wall -Wextra -g $(ARCH) $(PRE_LFLAGS)
 	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Debug-x86/
 	OBJ_DIR       = $(PRE_OBJ_DIR)Debug-x86/
 	CONFIG        = Debug-x86

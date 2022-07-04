@@ -305,27 +305,27 @@ static void emitConstant(Value value) {
 	writeConstant(currentChunk(), value, parser.previous.line);
 }
 
-static void number(bool) {
+static void number(bool canAssign) {
 	double value = strtod(parser.previous.start, NULL);
 
 	emitConstant(NUMBER_VAL(value));
 }
 
-static void string(bool) {
+static void string(bool canAssign) {
 	emitConstant(OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
 }
 
 // Forward declarations.
 
 static ParseRule* getRule(const TokenType);
-static void binary(bool);
-static void and(bool);
-static void or(bool);
-static void statement(bool);
-static void takeDeclaration(bool);
-static void declaration(bool);
-static void fnExpr(bool);
-static void globalInterpolation(bool);
+static void binary(bool canAssign);
+static void and(bool canAssign);
+static void or(bool canAssign);
+static void statement(bool canAssign);
+static void takeDeclaration(bool canAssign);
+static void declaration(bool canAssign);
+static void fnExpr(bool canAssign);
+static void globalInterpolation(bool canAssign);
 static void ternary();
 
 static void parseInfix(bool canAssign, Precedence precedence) {
@@ -378,7 +378,7 @@ static void semicolon(const char* message, bool multiple) {
 	}
 }
 
-static void literal(bool) {
+static void literal(bool canAssign) {
 	switch(parser.previous.type) {
 		case TOKEN_FALSE:    emitByte(OP_FALSE); break;
 		case TOKEN_TRUE:     emitByte(OP_TRUE); break;
@@ -389,7 +389,7 @@ static void literal(bool) {
 	}
 }
 
-static void unary(bool) {
+static void unary(bool canAssign) {
 	TokenType operatorType = parser.previous.type;
 
 	parsePrecedence(PREC_UNARY);
@@ -402,7 +402,7 @@ static void unary(bool) {
 	}
 }
 
-static void grouping(bool) {
+static void grouping(bool canAssign) {
 	expression();
 
 	consume(TOKEN_RIGHT_PAREN, "Expeced a ')' after end of expression!");
@@ -784,7 +784,7 @@ static void stringContinue(bool canAssign) {
 	emitByte(OP_ADD);
 }
 
-static void interpolation(bool) {
+static void interpolation(bool canAssign) {
 	expression();
 	
 	consume(TOKEN_RIGHT_BRACE, "Expected an end of string interpolation!");
@@ -793,7 +793,7 @@ static void interpolation(bool) {
 }
 
 
-static void inc(bool) {
+static void inc(bool canAssign) {
 	Chunk* chunk = currentChunk();
 
 	checkConstantPoolOverflow("Constant pool overflow while setting variable!");
@@ -894,7 +894,7 @@ static void inc(bool) {
 	}
 }
 
-static void _typeof(bool) {
+static void _typeof(bool canAssign) {
 	parsePrecedence(PREC_COMPARISON);
 	
 	emitByte(OP_TYPEOF);
@@ -918,7 +918,7 @@ static uint8_t argumentList() {
 	return arg;
 }
 
-static void call(bool) {
+static void call(bool canAssign) {
 	uint8_t argCount = argumentList();
 	
 	if(argCount <= 20) {
@@ -926,7 +926,7 @@ static void call(bool) {
 	} else emitBytes(OP_CALL, argCount);
 }
 
-static void square(bool);
+static void square(bool canAssign);
 
 static void dot(bool canAssign) {
 	consume(TOKEN_IDENTIFIER, "Expected a property name after '.'!");
@@ -1044,7 +1044,7 @@ static void square(bool canAssign) {
 	} else emitByte(OP_DNM_GET_PROPERTY);
 }
 
-static void _this(bool) {
+static void _this(bool canAssign) {
 	if(currentClass == NULL) {
 		error("Cannot use 'this' outside of a class!");
 		
@@ -1057,7 +1057,7 @@ static void _this(bool) {
 	variable(false, false);
 }
 
-static void dictionary(bool) {
+static void dictionary(bool canAssign) {
 	emitByte(OP_DICTIONARY);
 	
 	size_t key;
@@ -1166,7 +1166,7 @@ static void _static(bool canAssign) {
 	}
 }
 
-static void list(bool) {
+static void list(bool canAssign) {
 	emitByte(OP_LIST);
 	
 	do {
@@ -1181,7 +1181,7 @@ static void list(bool) {
 	consume(TOKEN_RIGHT_SQUARE, "Expected a ']' at the end of list!");
 }
 
-static void receive(bool) {
+static void receive(bool canAssign) {
 	uint8_t type = 0u;
 
 	if(match(TOKEN_LEFT_PAREN)) {
@@ -1201,7 +1201,7 @@ static void receive(bool) {
 	emitBytes(OP_RECEIVE, type);
 }
 
-static void _super(bool) {
+static void _super(bool canAssign) {
 	if(currentClass == NULL) {
 		error("Cannot use 'super' outside of class!");
 		return;
@@ -1336,7 +1336,7 @@ static ParseRule* getRule(const TokenType tokenType) {
 	return &parseRules[tokenType];
 }
 
-static void binary(bool) {
+static void binary(bool canAssign) {
 	TokenType operatorType = parser.previous.type;
 	
 	ParseRule* rule = getRule(operatorType);
@@ -1950,7 +1950,7 @@ static void takeDeclaration(bool inLoop) {		// In loop specially for 'for'.
 	VARIABLE(false, inLoop);
 }
 
-static void and(bool) {
+static void and(bool canAssign) {
 	int endJump = emitJump(OP_JUMP_OPR);
 	
 	emitByte(OP_SILENT_POP);
@@ -1960,7 +1960,7 @@ static void and(bool) {
 	patchJump(endJump);
 }
 
-static void or(bool) {
+static void or(bool canAssign) {
 	int elseJump = emitJump(OP_JUMP_OPR);
 	int endJump  = emitJump(OP_JUMP);
 
@@ -2043,7 +2043,7 @@ static void functionDeclaration(bool isConst) {
 	defineVariable(global, isConst);\
 }
 
-static void fnExpr(bool) {
+static void fnExpr(bool canAssign) {
 	function(TYPE_FUNCTION, true);
 }
 
