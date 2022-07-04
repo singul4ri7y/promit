@@ -74,7 +74,7 @@ take string = "This is a string! Rest easy!";
 ```dart
 show "Enter two numbers : ";
 
-take a = recieve(num), b = recieve(num);
+take a = receive(num), b = receive(num);
 
 showl 'Summation of those two numbers is : ${a + b}!';
 ```
