@@ -15,7 +15,7 @@
 
 static void defineNative(VM*, const char*, NativeFn);
 
-static NativePack author(VM* vm, int, Value*) {
+static NativePack author(VM* vm, int argCount, Value* values) {
 	NativePack pack;
 
 	pack.hadError = false;
