@@ -89,9 +89,9 @@ take dictionary = {
 showl 'key-value pair is : ';
 
 dictionary.keys()    // Returns a list.
-	.foreach( fn(key) {
+	.foreach(fn(key) {
 		showl "$key : ${dictionary[key]}"
-} );
+});
 ```
 - Has functions and closures (Yeah, I know you've already guessed).
 ```dart
