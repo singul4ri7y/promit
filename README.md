@@ -147,7 +147,7 @@ Current **Promit Test Suit** (Located under ``/test`` relative to current direct
 
 **Follow the below rules of contribution:**
  - All the codes contributed in this repository must be of MIT license.
- - If you are a contributor, leave your fullname, email and current age (Yes, ``age``. I want person of any age to contribute to this project and I want to show it to the people, even if you are 8 or 70 year old) in such manners ``(index) fullname <email> age``. If you do not want to put your age, Use ``<restricted>`` in the age portion like ``fullname <email> <restricted>``. In the next line, please denote your contribution or designation in one line starting with a tab.
+ - If you are a contributor, leave your fullname, email and your contributed GitHub account username in such manner ``(index) fullname <email> username``. In the next line, please denote your contribution or designation in one line starting with a tab.
  - Leave full details of your contribution in the commit changes log and in the pull request as well.
  - Try leaving comments, as that helps (Like I'm the one to talk).
 
