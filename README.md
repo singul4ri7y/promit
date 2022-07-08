@@ -4,6 +4,8 @@
 <div align= "center">
 	<a href= "#introduction">Introduction</a>
 	.
+	<a href= "#learn">Learn</a>
+	.
 	<a href= "#contribution">Contribution</a>
 	.
 	<a href= "#why">Why</a>
@@ -90,7 +92,7 @@ showl 'key-value pair is : ';
 
 dictionary.keys()    // Returns a list.
 	.foreach(fn(key) {
-		showl "$key : ${dictionary[key]}"
+		showl "$key : ${dictionary[key]}";
 });
 ```
 - Has functions and closures (Yeah, I know you've already guessed).
@@ -135,6 +137,10 @@ switch(bird) {
 }
 ```
  - Has loops (``while``, ``for``, ```do ... while```), control flow (``if``, ``else`` and ternary operator ```condition ? expr : else_expr```) and many more!
+
+## Learn
+
+Current **Promit Test Suit** (Located under ``/test`` relative to current directory) has comprehensive test programs to test against **Promit**. Which also can serve as a tutorial to Promit Programming Language, as those files are commented in **Teaching** style. Code more than talk, you know it.
 
 ## Contribution
 <p>First of all it's a community project. <b>So, feel free to contribute 😀.</b> I will try to merge all the pull request I will get related to bug fixes, feature updates and improvements.</p>
