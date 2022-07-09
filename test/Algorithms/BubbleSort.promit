@@ -1,0 +1,40 @@
+/**
+ * Exmaple of Bubble Sort in Promit.
+ *
+ * Part of Promit Test Suit, locaiton /test/Algorithms/BubbleSort.promit
+ *
+ * Created by SD Asif Hossein in 9th July, 2022 (Saturday) at 11:23 PM (UTC +06).
+ */
+
+// The default sorting function.
+
+fn sort(list, predicate) {
+	for(take i = 1; i < len(list); i++) {
+		for(take j = 0; j < len(list) - i; j++) {
+			if(predicate(list[j], list[j + 1])) {
+				take temp = list[j];
+				list[j] = list[j + 1];
+				list[j + 1] = temp;
+			}
+		}
+	}
+}
+
+// The list to be sorted.
+
+take list = [2, 9, 1, 7, 3, 8, 4, 5, 0, 6];
+
+showl 'The list to be sorted : ${list.join(', ')}';
+
+// Sorting in ascending order.
+
+sort(list, fn(a, b) { return a > b });
+
+showl 'After sorting in ascending order : ${list.join(', ')}';
+
+// Sorting in descending order.
+
+sort(list, fn(a, b) { return a < b });
+
+showl 'After sorting in descending order : ${list.join(', ')}';
+
