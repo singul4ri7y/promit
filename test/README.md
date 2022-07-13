@@ -1,6 +1,6 @@
 <h1 align= "center">Welcome to Promit Test Suit</h1>
 
-<p>This test suit serves as group of test files to run against Promit Programming Language. <b>This test suit also will serve as a Tutorial to Promit Programming Language.</b> I tried to make it as beginner friendly as possible, so advanced users may get a little bored while reading through all the files. But, I made them quite detailed and delicate about the language features you are gonna face.</p>
+<p>This test suit serves as group of test files to run against Promit Programming Language. <b>This test suit also will serve as a tutorial to Promit Programming Language.</b> I tried to make it as beginner friendly as possible, so advanced users may get a little bored while reading through all the files. But, I made them quite detailed and delicate about the language features you are gonna face.</p>
 
 <p><b>Note : If you are a beginner who do not know how to code, you are earnestly requested to learn at least any programming language before you proceed. It's Promit Programming Language tutorial, not a programming tutorial. Learning Java, JavaScript or C/C++ is recommended.</b></p>
 
@@ -37,6 +37,6 @@ You are requested to follow this read order in order to get the best experience 
  24. System/all
  25. Times/all
  26. Benchmarks/all (Not certainly necessary, just for benchmarking stuff)
- 27. Algorithms/all (Important! See how Promit Really holds up against real life algorithms and problems)
+ 27. Algorithms/all (Important! See how Promit really holds up against real life algorithms and problems)
 
 <b><i>Good luck. Peace.</i><b>
