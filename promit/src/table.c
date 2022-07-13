@@ -31,19 +31,14 @@ Entry* findEntry(Entry* entries, size_t capacity, ObjString* key) {
 		else if(entry -> key == key) 
 			return entry;
 
-        // For reasearch purposes. Will be removed in near future.
-        //
-		// if(entry -> key == key || entry -> key == NULL)
-		// 	return entry;
-
 		index = (index + 1) & (capacity - 1);
 	}
 }
 
-static void adjustCapacity(Table* table, size_t capacity) {
+static void adjustCapacity(Table* table, int capacity) {
 	Entry* entries = GROW_ARRAY(Entry, NULL, 0u, capacity);
 
-	for(register size_t i = 0u; i < capacity; i++) {
+	for(register int i = 0u; i < capacity; i++) {
 		entries[i].key = NULL;
 		
 		entries[i].valueContainer.isConst = false;
@@ -71,7 +66,7 @@ static void adjustCapacity(Table* table, size_t capacity) {
 }
 
 bool tableInsert(Table* table, ObjString* key, ValueContainer value) {
-	if(table -> count + 1u > table -> capacity * TABLE_LOAD_FACTOR) {
+	if(table -> count + 1 > table -> capacity * TABLE_LOAD_FACTOR) {
 		size_t capacity = GROW_CAPACITY(table -> capacity);
 		adjustCapacity(table, capacity);
 	}
@@ -139,7 +134,7 @@ ObjString* tableFindString(Table* table, const char* buffer, int length, uint32_
 	if(table -> count == 0u) 
 		return NULL;
 
-	register size_t index = hash & (table -> capacity - 1);
+	register uint32_t index = hash & (table -> capacity - 1);
 
 	while(true) {
 		Entry* entry = table -> entries + index;
@@ -154,7 +149,7 @@ ObjString* tableFindString(Table* table, const char* buffer, int length, uint32_
 				entry -> key -> hash == hash &&
 				!memcmp(entry -> key -> buffer, buffer, length)) {
 
-            // Bingo.
+          	// Bingo.
 			return entry -> key;
 		}
 
@@ -180,8 +175,15 @@ void markTable(Table* table) {
 	for(register int i = 0; i < table -> capacity; i++) {
 		Entry* entry = table -> entries + i;
 
-		markObject((Obj*) entry -> key);
-		markValue(entry -> valueContainer.value);
+		// Unecessary to check whether entry -> key is NULL
+		// It's checked automatically in markObject(Obj*)
+		// function. But, checking in loop it is faster than
+		// checking it in a function call. For optimization.
+		
+		if(entry -> key != NULL) {
+			markObject((Obj*) entry -> key);
+			markValue(entry -> valueContainer.value);
+		}
 	}
 }
 
