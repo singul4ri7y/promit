@@ -88,7 +88,7 @@ take dictionary = {
 	'passion'(const) :  'Programming'
 };
 
-showl 'key-value pair is : ';
+showl 'key-value pairs are : ';
 
 dictionary.keys()    // Returns a list.
 	.foreach(fn(key) {
