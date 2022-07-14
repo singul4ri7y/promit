@@ -154,7 +154,7 @@ Current **Promit Test Suit** (Located under ``/test`` relative to current direct
 <b><i>Happy contribution.</i></b>
 
 ## Install
-<p>Promit comes with compiled interpreter binary with each release, which you can use to run your programs from the command line. With some tweaking with IDE's like <b>NetBeans</b>, <b>VS Code</b>, <b>Atom</b> etc. you can integrate the <b>promit</b> interpreter binary to run programs directly from the IDE.</p>
+<p>Promit comes with compiled interpreter binary with each release, which you can use to run your programs from the command line. With some tweaking with IDE's like <b>NetBeans</b>, <b>VS Code</b>, <b>Atom</b> etc. you can integrate the <b>promit</b> interpreter binary to run programs directly from the IDE. Tested in <b>Windows 7/10/11</b> and <b>Debian 10 (Buster)/ 11 (Bullseye)</b>, <b>Arch Linux</b>, <b>Ubuntu 22.04 LTS</b> and other <b>GNU/Linux<</b>.</p>
 
 **Supported Platforms:** Currently Promit only supports **Linux**, **Windows** and in some point <b>*BSD's</b>. As I do not have a Mac, I could not test the code in MacOS 😅. So, for that reason, **Promit does not support MacOS and current release won't be having any MacOS binary** (Mac users don't hate me).</p>
 
@@ -173,7 +173,7 @@ Current **Promit Test Suit** (Located under ``/test`` relative to current direct
 ## Why
 <img src= "logos/logo.jpg" type= "image/jpg" align= "right" width= "350" />
 
-<p align= "justify">Well the idea is very simple. I started my programming journey as a Web Developer. As I got deeper inside the computer science stuff and programming languages, I reinvented my interests in Low-Level things such as kernel development, memory managements, operating systems, compiler design, etc. At the same time, I got into high school (At the time of writing, I'm 19 BTW). I met a very fascinating person, who is one of my dearest friends named <b>Meraj Hossain Promit</b>. He was a real inspiration. A lot of thing went through. Long story short, when I was a first year at high school, I promised him that I would make a full-fledged programming language with the honor of his name under age of 20. You can see the rest.</p>
+<p align= "justify">Well the idea is very simple. I started my programming journey as a Web Developer. As I got deeper inside the computer science stuff and programming languages, I reinvented my interests in Low-Level things such as kernel development, memory managements, operating systems, compiler design, etc. At the same time, I got into high school (At the time of writing, I'm 19 BTW). I met a very fascinating person, who is one of my dearest friends named <b>Meraj Hossain Promit</b>. He was a real inspiration. A lot of thing went through. Long story short, when I was a first year at high school, I promised him that I would make a full-fledged programming language with the honor of his name under the age of 20. You can see the rest.</p>
 
 ## Build
 ### Prerequisites :
