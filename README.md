@@ -1,4 +1,3 @@
-
 <h1 align= "center">Project Promit</h1>
 <p align= "center">A programming language inspired by JavaScript and Python!</p>
 <div align= "center">
@@ -154,9 +153,9 @@ Current **Promit Test Suit** (Located under ``/test`` relative to current direct
 <b><i>Happy contribution.</i></b>
 
 ## Install
-<p>Promit comes with compiled interpreter binary with each release, which you can use to run your programs from the command line. With some tweaking with IDE's like <b>NetBeans</b>, <b>VS Code</b>, <b>Atom</b> etc. you can integrate the <b>promit</b> interpreter binary to run programs directly from the IDE. Tested in <b>Windows 7/10/11</b> and <b>Debian 10 (Buster)/ 11 (Bullseye)</b>, <b>Arch Linux</b>, <b>Ubuntu 22.04 LTS</b> and other <b>GNU/Linux</b>.</p>
+<p>Promit comes with compiled interpreter binary with each release, which you can use to run your programs from the command line. With some tweaking with IDE's like <b>NetBeans</b>, <b>VS Code</b>, <b>Atom</b> etc. you can integrate the <b>promit</b> interpreter binary to run programs directly from the IDE.</p>
 
-**Supported Platforms:** Currently Promit only supports **Linux**, **Windows** and in some point <b>*BSD's</b>. As I do not have a Mac, I could not test the code in MacOS 😅. So, for that reason, **Promit does not support MacOS and current release won't be having any MacOS binary** (Mac users don't hate me).</p>
+**Supported Platforms:** Currently Promit only supports **Linux**, **Windows** and in some point <b>*BSD's</b>. As I do not have a Mac, I could not test the code in MacOS 😅. So, for that reason, **Promit does not support MacOS and current release won't be having any MacOS binary** (Mac users don't hate me). Tested in <b>Windows 7/10/11</b> and <b>Debian 10 (Buster)/ 11 (Bullseye)</b>, <b>Arch Linux</b>, <b>Ubuntu 22.04 LTS</b> and other <b>GNU/Linux</b>.</p>
 
 **Download binary the releases at:** https://github.com/singul4ri7y/promit/releases
 
