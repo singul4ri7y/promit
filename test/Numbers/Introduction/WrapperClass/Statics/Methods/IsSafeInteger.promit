@@ -1,5 +1,5 @@
 /**
- * Explaination of safe integer and use of 'Number::is_safe_integer'
+ * Explanation of safe integer and use of 'Number::is_safe_integer'
  * method.
  *
  * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Static/Method/IsSafeInteger.promit
