@@ -18,7 +18,11 @@ void repl(VM* vm) {
 		}
 
 		if(!strcmp(line, ".help\n")) {
-			puts("\nPromit: Try to input statements/expressions in a single line. For multiline input, type '.editor' to go editor mode.\nType '.why' to know about the project.\n");
+			puts("\nHow to use the REPL:\n\n"
+			     "Try to input statements/expressions in a single line.\n"
+			     "For multiline input, type '.editor' to go editor mode.\n"
+			     "Type '.why' to know about the project.\n"
+			     "Type '.clear' to clear the REPL console.\n");
 		}
 		else if(!strcmp(line, ".why\n")) {
 			puts("\nAsif: The Project Promit is developed by SD Asif Hossein, in order to keep his promise once he made to his friend 'Meraj Hossain Promit'.\n"
@@ -31,12 +35,12 @@ void repl(VM* vm) {
 			
 			vm -> inREPL = false;
 
-			puts("\nPromit: Entering editor mode (Type '.end' in a separate line at the end to finish, '.del' to cancel)\n");
+			puts("\nYou are now in editor mode! Type '.end' in a separate line at the end to finish, '.del' to cancel.\n");
 
 			int top = 0, capacity = 2048;
 			char* buffer = (char*) malloc(capacity);
 			
-			buffer[0] = 0;
+			buffer[0] = 0;    // Termination character '\0'.
 
 			int l = 1, len;
 
@@ -85,6 +89,9 @@ void repl(VM* vm) {
 			
 			free(buffer);
 		}
+		else if(!strcmp(line, ".clear\n")) {
+			system("clear");
+		}
 		else if(!strcmp(line, ".exit\n")) {
 			freeVM(vm);
 			
@@ -98,7 +105,7 @@ void runFile(VM* vm, const char* path) {
 	FILE* file = fopen(path, "rb");
 
 	if(file == NULL) {
-		fprintf(stderr, "[Error][VM]: Could not open file '%s'!", path);
+		fprintf(stderr, "[Error][VM]: Could not open file '%s'!\n", path);
 		freeVM(vm);
 		exit(EXIT_FAILURE);
 	}
@@ -112,7 +119,7 @@ void runFile(VM* vm, const char* path) {
 	char* buffer = (char*) malloc((fileSize + 1u) * sizeof(char));
 
 	if(buffer == NULL) {
-		fprintf(stderr, "[Error][VM]: Not enough memory to load file '%s'!", path);
+		fprintf(stderr, "[Error][VM]: Not enough memory to load file '%s'!\n", path);
 		freeVM(vm);
 		exit(EXIT_FAILURE);
 	}

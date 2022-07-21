@@ -467,62 +467,16 @@ bool valuesEqual(const Value value1, const Value value2) {
 
 #define READ_BYTE() *frame -> ip++
 
-// Ignore hte boolean related compiler warnings.
-// Consider true > null -> 1 > 0 -> true
-
 #define VALUE_COMP(op) {\
 	Value value2 = POP(),\
 	      value1 = POP();\
-	\
-	if(IS_NUMBER(value1)) {\
-		double a = VALUE_NUMBER(value1);\
-		\
-		if(IS_NUMBER(value2)) {\
-			PUSH(BOOL_VAL(a op VALUE_NUMBER(value2)));\
-		}\
-		else if(IS_BOOL(value2)) \
-			PUSH(BOOL_VAL(a op VALUE_BOOL(value2)));\
-		else if(IS_NULL(value2)) PUSH(BOOL_VAL(a op 0));\
-		else {\
-			RUNTIME_ERROR("Operand must me comparable!");\
-			return INTERPRET_RUNTIME_ERROR;\
-		}\
-	}\
-	else if(IS_BOOL(value1)) {\
-		bool a = VALUE_BOOL(value1);\
-		\
-		if(IS_NUMBER(value2)) {\
-			if(!IS_NAN(value2)) \
-				PUSH(BOOL_VAL(a op VALUE_NUMBER(value2)));\
-			else PUSH(BOOL_VAL(false));\
-		}\
-		else if(IS_BOOL(value2)) \
-			PUSH(BOOL_VAL(a op VALUE_BOOL(value2)));\
-		else if(IS_NULL(value2)) PUSH(BOOL_VAL(a op 0));\
-		else {\
-			RUNTIME_ERROR("Operand must me comparable!");\
-			return INTERPRET_RUNTIME_ERROR;\
-		}\
-	}\
-	else if(IS_NULL(value1)) {\
-		if(IS_NUMBER(value2)) {\
-			if(!IS_NAN(value2)) \
-				PUSH(BOOL_VAL(0 op VALUE_NUMBER(value2)));\
-			else PUSH(BOOL_VAL(false));\
-		}\
-		else if(IS_BOOL(value2)) \
-			PUSH(BOOL_VAL(0 op VALUE_BOOL(value2)));\
-		else if(IS_NULL(value2)) PUSH(BOOL_VAL(0 op 0));\
-		else {\
-			RUNTIME_ERROR("Operand must me comparable!");\
-			return INTERPRET_RUNTIME_ERROR;\
-		}\
-	}\
-	else {\
-		RUNTIME_ERROR("Operand must me comparable!");\
+	vmNumberData data1 = vmToNumber(vm, &value1);\
+	vmNumberData data2 = vmToNumber(vm, &value2);\
+	if(!data1.isRepresentable || !data2.isRepresentable) {\
+		RUNTIME_ERROR("Operand must be comparable!");\
 		return INTERPRET_RUNTIME_ERROR;\
 	}\
-	\
+	PUSH(BOOL_VAL(data1.number op data2.number));\
 	break;\
 }
 
