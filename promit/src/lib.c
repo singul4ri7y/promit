@@ -3827,7 +3827,7 @@ static NativePack numberStringify(VM* vm, int argCount, Value* values) {
 
 						char c = buffer[decpos];
 
-						digit = c > '9' ? (c + 10 - 'a') : (c - '0');
+						digit = c > '9' ? (c + 10 - 'A') : (c - '0');
 
 						// If it's within the range of base, increase it by 1.
 
