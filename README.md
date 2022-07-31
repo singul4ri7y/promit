@@ -157,7 +157,7 @@ Current **Promit Test Suit** (Located under ``/test`` relative to current direct
 
 **Supported Platforms:** Currently Promit only supports **Linux**, **Windows** and in some point <b>*BSD's</b>. As I do not have a Mac, I could not test the code in MacOS 😅. So, for that reason, **Promit does not support MacOS and current release won't be having any MacOS binary** (Mac users don't hate me). Tested on <b>Windows 7/10/11</b> and <b>Debian 10 (Buster)/ 11 (Bullseye)</b>, <b>Arch Linux</b>, <b>Ubuntu 22.04 LTS</b> and other <b>GNU/Linux</b>.</p>
 
-**Download binary the releases at:** https://github.com/singul4ri7y/promit/releases
+**Download the binary releases at:** https://github.com/singul4ri7y/promit/releases
 
 **How to install:**
  1. Download your specific platform binary. For example, if I am a Windows user, my preference would be ``promit-<version>-windows-64bit.zip`` file for 64 Bit Windows or ``promit-<version>-windows-32bit.zip`` file for 32 Bit Windows (Isn't 32 bit obsolete?).
