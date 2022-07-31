@@ -149,8 +149,10 @@ int main(int argc, char** argv) {
 
 		repl(&vm);
 	}
-	else if(argc == 2) {		// Else open the provided file from the file path and execute it.
-		runFile(&vm, argv[1]);
+	else if(argc == 2) {
+		if(!strcmp(argv[1], "--version")) 
+			printf("Promit v0.5.0 (beta 3)\n");
+		else runFile(&vm, argv[1]);
 	} else {
 		fprintf(stderr, "Usage: promit or promit [file]\n");
 
