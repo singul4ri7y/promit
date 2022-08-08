@@ -29,7 +29,7 @@ LFLAGS       = -DDEBUG -g -Wall -Wextra $(PRE_LFLAGS)
 OUTPUT_DIR   = $(PRE_OUTPUT_DIR)Debug-x64/
 OBJ_DIR      = $(PRE_OBJ_DIR)Debug-x64/
 CONFIG      := Debug-x64
-ARCH        := 
+ARCH        := -m64
 
 # Variable declaration for different targets.
 
