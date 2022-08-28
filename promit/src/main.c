@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
 
 		repl(&vm);
 	}
-	else if(argc >= 2 && argc < 4) {
+	else if(argc > 1) {
 		if(!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v")) 
 			printf("Promit v0.5.0 (beta 3)\n");
 		else if(!strcmp(argv[1], "-c") || !strcmp(argv[1], "--command")) {
@@ -199,12 +199,6 @@ int main(int argc, char** argv) {
 
 			runFile(&vm, argv[1]);
 		}
-	} else {
-		usage();
-
-		freeVM(&vm);
-
-		return EXIT_FAILURE;
 	}
 
 	freeVM(&vm);
