@@ -141,7 +141,7 @@ void runFile(VM* vm, const char* path) {
 // Set environment variables.
 
 void setArguments(int argc, char** argv, VM* vm) {
-	argc++;
+	argc--;
 
 	ObjList* list = newList(vm);
 
@@ -149,7 +149,7 @@ void setArguments(int argc, char** argv, VM* vm) {
 	list -> count    = argc;
 	list -> values   = GROW_ARRAY(Value, list -> values, 0u, argc);
 
-	for(int i = 0; i < argc; i++) 
+	for(int i = 1; i <= argc; i++) 
 		list -> values[i] = OBJECT_VAL(TAKE_STRING(argv[i], strlen(argv[i]), false));
 	
 	tableInsert(&vm -> globals, TAKE_STRING("$_ARGS", 6u, false), (ValueContainer) { OBJECT_VAL(list), true });
