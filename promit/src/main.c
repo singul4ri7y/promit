@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "vm.h"
+#include "object.h"
 
 void repl(VM* vm) {
 	char line[2048];
@@ -137,6 +138,28 @@ void runFile(VM* vm, const char* path) {
 	else if(result == INTERPRET_COMPILATION_ERROR) { freeVM(vm); exit(65); }
 }
 
+// Set environment variables.
+
+void setArguments(int argc, char** argv, VM* vm) {
+	ObjList* list = newList(vm);
+
+	list -> capacity = argc;
+	list -> count    = argc;
+	list -> values   = GROW_ARRAY(Value, list -> values, 0u, argc);
+
+	for(int i = 0; i < argc; i++) 
+		list -> values[i] = OBJECT_VAL(TAKE_STRING(argv[i], strlen(argv[i]), false));
+	
+	tableInsert(&vm -> globals, TAKE_STRING("$_ARGS", 6u, false), (ValueContainer) { OBJECT_VAL(list), true });
+}
+
+void usage() {
+	printf("promit [options] ... [arg] | [file]\n"
+	       "\t-v    --version     Get version data\n"
+	       "\t-c    --command     Run a promit statement/expression\n"
+	       "\t-h    --help        Show help (this message)\n");
+}
+
 int main(int argc, char** argv) {
 	VM vm;
 
@@ -145,16 +168,41 @@ int main(int argc, char** argv) {
 	// If number of arguments is 1, then start read-eval-print loop.
 	
 	if(argc == 1) {
+		setArguments(argc, argv, &vm);
+
 		vm.inREPL = true;
 
 		repl(&vm);
 	}
-	else if(argc == 2) {
-		if(!strcmp(argv[1], "--version")) 
+	else if(argc >= 2 && argc < 4) {
+		if(!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v")) 
 			printf("Promit v0.5.0 (beta 3)\n");
-		else runFile(&vm, argv[1]);
+		else if(!strcmp(argv[1], "-c") || !strcmp(argv[1], "--command")) {
+			if(argc < 3) {
+				fprintf(stderr, "Promit : No command string specified");
+
+				freeVM(&vm);
+
+				return EXIT_FAILURE;
+			}
+
+			setArguments(argc, argv, &vm);
+
+			InterpretResult result = interpret(&vm, argv[2]);
+
+			if(result == INTERPRET_COMPILATION_ERROR) { freeVM(&vm); exit(65); }
+			else if(result == INTERPRET_RUNTIME_ERROR) { freeVM(&vm); exit(70); }
+		}
+		else if(!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) usage();
+		else {
+			setArguments(argc, argv, &vm);
+
+			runFile(&vm, argv[1]);
+		}
 	} else {
-		fprintf(stderr, "Usage: promit or promit [file]\n");
+		usage();
+
+		freeVM(&vm);
 
 		return EXIT_FAILURE;
 	}

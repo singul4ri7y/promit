@@ -7,7 +7,6 @@
 #include "compiler.h"
 #include "utilities.h"
 
-#define TAKE_STRING(buffer, length, heapAllocated) takeString(vm, buffer, length, heapAllocated)
 #define RUNTIME_ERROR(format, ...) runtimeError(vm, format, ##__VA_ARGS__)
 
 void initSystemLib(VM*);

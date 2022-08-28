@@ -12,6 +12,8 @@
 #define MAX_SAFE_INTEGER 9007199254740991
 #define MIN_SAFE_INTEGER -9007199254740992
 
+#define TAKE_STRING(buffer, length, heapAllocated) takeString(vm, buffer, length, heapAllocated)
+
 typedef struct {
 	Obj* function;
 	uint8_t* ip;
@@ -27,7 +29,7 @@ typedef struct {
 	
 	Table globals;
 	Table strings;
-	
+
 	Obj* objects;
 
 	int grayCount;
