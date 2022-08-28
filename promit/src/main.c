@@ -141,6 +141,8 @@ void runFile(VM* vm, const char* path) {
 // Set environment variables.
 
 void setArguments(int argc, char** argv, VM* vm) {
+	argc--;
+
 	ObjList* list = newList(vm);
 
 	list -> capacity = argc;
