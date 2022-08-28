@@ -1003,6 +1003,24 @@ static NativePack systemGC(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
+static NativePack systemGetEnv(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	if(argCount < 2) return pack;
+
+	if(!IS_STRING(values[1])) {
+		NATIVE_R_ERR("Expected the first argument to be a string in System::get_env(name)!");
+	}
+
+	char* result = getenv(VALUE_CSTRING(values[1]));
+
+	if(result == NULL) return pack;
+
+	pack.value = OBJECT_VAL(TAKE_STRING(result, strlen(result), false));
+
+	return pack;
+}
+
 extern ObjFile* vm_stdin;
 extern ObjFile* vm_stdout;
 
@@ -1019,6 +1037,7 @@ void initSystemLib(VM* vm) {
 	defineStaticMethod(systemClass, TAKE_STRING("print_error", 11u, false), systemPrintError);
 	defineStaticMethod(systemClass, TAKE_STRING("gc", 2u, false), systemGC);
 	defineStaticMethod(systemClass, TAKE_STRING("pause", 5u, false), systemPause);
+	defineStaticMethod(systemClass, TAKE_STRING("get_env", 7u, false), systemGetEnv);
 	
 	ObjInstance* systemStdin  = newInstance(vm, fileClass);
 	ObjFile* fileStdin = newFile(vm);
