@@ -8,7 +8,7 @@
 
 You are requested to follow this read order in order to get the best experience and learning out of it. All the files and folder are relative to current ``/test``  directory.
 
-<b>If you face ``Examples`` and ``Introduction`` inside of a directory, try reading all the files in ``Introduction`` sub directory. Then proceed to ``Examples``.</b>
+<b>If you face ``Examples`` and ``Introduction`` inside of a directory, try reading all the files in ``Introduction`` sub directory first. Then proceed to ``Examples``.</b>
 
 **Go through the ascending order :**
  1. FirstProgram.promit
