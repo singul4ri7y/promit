@@ -34,9 +34,10 @@ You are requested to follow this read order in order to get the best experience 
  21. Numbers/all
  22. Functions/all
  23. Files/all
- 24. System/all
- 25. Times/all
- 26. Benchmarks/all (Not certainly necessary, just for benchmarking stuff)
- 27. Algorithms/all (Important! See how Promit really holds up against real life algorithms and problems)
+ 24. SuperGlobals/all
+ 25. System/all
+ 26. Times/all
+ 27. Benchmarks/all (Not certainly necessary, just for benchmarking stuff)
+ 28. Algorithms/all (Important! See how Promit really holds up against real life algorithms and problems)
 
 <b><i>Good luck. Peace.</i><b>
