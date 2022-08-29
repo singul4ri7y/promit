@@ -1,0 +1,20 @@
+/**
+ * Demostration of using command line arguments passed to a promit program.
+ *
+ * Part of Promit Test Suit, location /test/SuperGlobals/CommandLineArguments.promit
+ *
+ * Created by SD Asif Hossein in 29th August, 2022 (Monday) at 04:23 PM (UTC +06).
+ */
+
+// Inspired from PHP, Promit has super-global variables which starts with
+// a '$'. Use '$_ARGS' global to fetch all the command line arguments passed
+// to run a promit program.
+
+showl 'Fetching all the command line arguments passed to this program...';
+
+for(take i = 0; i < len($_ARGS); i++) 
+	showl 'Command line argument at index $i is : ${$_ARGS[i]}';
+
+
+showl "If you only see one argument, try passing several arguments by 'promit CommandLineArguments.promit arg1 arg2 arg3...'.";
+

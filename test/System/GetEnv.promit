@@ -1,0 +1,14 @@
+/**
+ * Demonstration of getting a environment variable using 'System::get_env'
+ * static function.
+ *
+ * Part of Promit Test Suit, location /test/System/GetEnv.promit
+ *
+ * Created by SD Asif Hossein in 29th August, 2022 (Monday) at 04:30 PM (UTC +06).
+ */
+
+// Use 'System::get_env(var_name)' to get the environment variable string.
+
+showl 'The PATH environment variable in this system is : ${System::get_env('PATH')}';
+showl 'The home directory is : ${System::get_env('HOME')}';
+
