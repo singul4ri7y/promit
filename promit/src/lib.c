@@ -4015,7 +4015,7 @@ static NativePack listInit(VM* vm, int argCount, Value* values) {
 		else if(IS_NUMBER(values[1])) {
 			double number = VALUE_NUMBER(values[1]);
 
-			if(number < 0) {
+			if(number < 0 || isnan(number) || isinf(number)) {
 				NATIVE_R_ERR("Invalid number passed as an argument in List.init(length | list | elems...)!");
 			}
 
