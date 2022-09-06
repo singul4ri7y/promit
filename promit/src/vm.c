@@ -120,7 +120,15 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
 	buffer[size] = 0;
 
+	// Turn off REPL mode if enabled.
+
+	bool repl = vm -> inREPL;
+
+	vm -> inREPL = false;
+
 	InterpretResult result = interpret(vm, buffer, true);
+
+	vm -> inREPL = repl;
 
 	if(result == INTERPRET_COMPILATION_ERROR) {
 		free(filepath);
