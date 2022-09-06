@@ -45,6 +45,8 @@ typedef struct {
 
 typedef struct Compiler {
 	struct Compiler* enclosing;
+
+	bool included;
 	
 	ObjFunction* function;
 	FunctionType type;
@@ -1717,8 +1719,8 @@ static void showStatement(bool nl) {
 }
 
 static void returnStatement() {
-	if(current -> type == TYPE_PROGRAM) 
-		error("Cannot return from top level program!");
+	if(current -> type == TYPE_PROGRAM && !current -> included) 
+		error("Cannot return from top level program unless it's included!");
 	
 	if (match(TOKEN_SEMICOLON)) 
 		emitReturn();
@@ -2205,7 +2207,7 @@ static void declaration(bool inLoop) {
 	// if(parser.panicMode) synchronize();
 }
 
-ObjFunction* compile(VM* vm, const char* source) {
+ObjFunction* compile(VM* vm, const char* source, bool included) {
 	Scanner scanner;
 
 	initScanner(&scanner, source);
@@ -2216,6 +2218,8 @@ ObjFunction* compile(VM* vm, const char* source) {
 	globalVM      = vm;
 
 	Compiler compiler;
+
+	compiler.included = included;
 
 	initCompiler(&compiler, TYPE_PROGRAM, false);
 

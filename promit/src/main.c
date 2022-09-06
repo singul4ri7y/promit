@@ -63,7 +63,7 @@ void repl(VM* vm) {
 
 						editorMode = false;
 
-						interpret(vm, buffer);
+						interpret(vm, buffer, false);
 						
 						puts("");
 						
@@ -85,7 +85,7 @@ void repl(VM* vm) {
 					strcpy(buffer + top, line);
 
 					top += len;
-				} else interpret(vm, buffer);
+				} else interpret(vm, buffer, false);
 			}
 			
 			free(buffer);
@@ -98,12 +98,12 @@ void repl(VM* vm) {
 			
 			exit(EXIT_SUCCESS);
 		}
-		else if(strlen(line) > 1) interpret(vm, line);
+		else if(strlen(line) > 1) interpret(vm, line, false);
 	}
 }
 
 void runFile(VM* vm, const char* path) {
-	FILE* file = fopen(path, "rb");
+	FILE* file = fopen(path, "r");
 
 	if(file == NULL) {
 		fprintf(stderr, "[Error][VM]: Could not open file '%s'!\n", path);
@@ -129,7 +129,7 @@ void runFile(VM* vm, const char* path) {
 
 	buffer[fileSize] = 0;
 
-	InterpretResult result = interpret(vm, buffer);
+	InterpretResult result = interpret(vm, buffer, false);
 
 	free(buffer);
 	fclose(file);
@@ -190,7 +190,7 @@ int main(int argc, char** argv) {
 
 			setArguments(argc, argv, &vm);
 
-			InterpretResult result = interpret(&vm, argv[2]);
+			InterpretResult result = interpret(&vm, argv[2], false);
 
 			if(result == INTERPRET_COMPILATION_ERROR) { freeVM(&vm); exit(65); }
 			else if(result == INTERPRET_RUNTIME_ERROR) { freeVM(&vm); exit(70); }

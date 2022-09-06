@@ -24,6 +24,140 @@ static NativePack author(VM* vm, int argCount, Value* values) {
 	return pack;
 }
 
+static NativePack include(VM* vm, int argCount, Value* args) {
+	NativePack pack;
+
+	pack.hadError = false;
+	pack.value    = NULL_VAL;
+
+	if(argCount < 2) 
+		return pack;
+
+	if(!IS_STRING(args[1])) {
+		NATIVE_R_ERR("Expected the first argument to be a string in include(promit_file)!");
+	}
+
+	ObjString* string = VALUE_STRING(args[1]);
+
+	if(string -> length == 0) {
+		NATIVE_R_ERR("Expected a full file name/path in include(promit_file)!");
+	}
+
+	if(string -> buffer[0] == '.') {
+		NATIVE_R_ERR("Including files directly from parent directory is forbidden! Try using absolute path.");
+	}
+
+	char* filepath = malloc((string -> length + 1) * sizeof(char));
+
+	strcpy(filepath, string -> buffer);
+
+	char* alternate_path = NULL;
+
+	if(string -> length < 7 || strcmp(string -> buffer + string -> length - 7, ".promit")) {
+		for(int i = 0; i < string -> length; i++) {
+			if(filepath[i] == '.') 
+				filepath[i] = '/';
+		}
+
+		alternate_path = malloc((string -> length + 13) * sizeof(char));
+
+		strcpy(alternate_path, filepath);
+
+		free(filepath);
+
+		filepath = malloc((string -> length + 8) * sizeof(char));
+
+		strcpy(filepath, alternate_path);
+
+		strcpy(alternate_path + string -> length, "/main.promit");
+		strcpy(filepath + string -> length, ".promit");
+	} else {
+		for(int i = string -> length - 8; i >= 0; i--) {
+			if(filepath[i] == '.') 
+				filepath[i] = '/';
+		}
+	}
+
+	FILE* file = fopen(filepath, "r");
+
+	// Try alternate_path if filepath does not exist.
+
+	if(file == NULL) {
+		file = fopen(alternate_path, "r");
+
+		if(file == NULL) {
+			free(filepath);
+
+			if(alternate_path != NULL) 
+				free(alternate_path);
+
+			NATIVE_R_ERR("Failed to include file '%s'!", string -> buffer);
+		}
+	}
+
+	fseek(file, 0, SEEK_END);
+
+	long size = ftell(file);
+
+	rewind(file);
+
+	char* buffer = malloc((size + 1) * sizeof(char));
+
+	if(buffer == NULL) {
+		free(filepath);
+
+		if(alternate_path != NULL) 
+			free(alternate_path);
+		
+		fclose(file);
+
+		NATIVE_R_ERR("Could not allocate memory for file buffer!", filepath);
+
+		fprintf(stderr, "\nFailed to inlcude file '%s'!", filepath);
+	}
+
+	fread(buffer, size, sizeof(char), file);
+
+	buffer[size] = 0;
+
+	InterpretResult result = interpret(vm, buffer, true);
+
+	if(result == INTERPRET_COMPILATION_ERROR) {
+		free(filepath);
+
+		if(alternate_path != NULL) 
+			free(alternate_path);
+		
+		free(buffer);
+		fclose(file);
+
+		NATIVE_R_ERR("\nCompilation error on includable file '%s'!", filepath);
+	}
+	else if(result == INTERPRET_RUNTIME_ERROR) {
+		free(filepath);
+
+		if(alternate_path != NULL) 
+			free(alternate_path);
+
+		free(buffer);
+		fclose(file);
+
+		NATIVE_R_ERR("\nRuntime error on includable file '%s'!", filepath);
+	}
+
+	pack.value = POP();
+
+	free(filepath);
+
+	if(alternate_path != NULL) 
+		free(alternate_path);
+
+	free(buffer);
+	fclose(file);
+
+	return pack;
+}
+
 // Wrapper classes.
 
 ObjClass* vmNumberClass;
@@ -49,11 +183,7 @@ static NativePack len(VM* vm, int argCount, Value* args) {
 	pack.hadError = false;
 	
 	if(argCount < 2) {
-		RUNTIME_ERROR("Expected an argument in function 'len(string | dictionary | list)'!");
-		
-		pack.hadError = true;
-
-		return pack;
+		NATIVE_R_ERR("Expected an argument in function 'len(string | dictionary | list)'!");
 	}
 	
 	double size = 0;
@@ -86,14 +216,10 @@ static NativePack len(VM* vm, int argCount, Value* args) {
 
 			size = VALUE_DICTIONARY(container.value) -> fields.count;
 		} else {
-			RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | wrapper-instance)'!");
-			
-			pack.hadError = true;
+			NATIVE_R_ERR("Invalid argument in function 'len(string | dictionary | list | wrapper-instance)'!");
 		}
 	} else {
-		RUNTIME_ERROR("Invalid argument in function 'len(string | dictionary | list | wrapper-instance)'!");
-		
-		pack.hadError = true;
+		NATIVE_R_ERR("Invalid argument in function 'len(string | dictionary | list | wrapper-instance)'!");
 	}
 	
 	pack.value = NUMBER_VAL(size);
@@ -108,19 +234,11 @@ static NativePack isConstProp(VM* vm, int argCount, Value* values) {
 	pack.value    = NULL_VAL;
 
 	if(argCount < 2) {
-		RUNTIME_ERROR("Too few arguments to call is_const_prop(value, prop_name)!");
-
-		pack.hadError = true;
-
-		return pack;
+		NATIVE_R_ERR("Too few arguments to call is_const_prop(value, prop_name)!");
 	}
 
 	if(!IS_INSTANCE(values[1]) && !IS_DICTIONARY(values[1]) && !IS_CLASS(values[1])) {
-		RUNTIME_ERROR("Provided value is not instance/dictionary or class (static)!");
-
-		pack.hadError = true;
-
-		return pack;
+		NATIVE_R_ERR("Provided value is not instance/dictionary or class (static)!");
 	}
 
 	if(argCount < 3) {
@@ -194,6 +312,7 @@ void initVM(VM* vm) {
 	defineNative(vm, "author", author);
 	defineNative(vm, "len", len);
 	defineNative(vm, "is_const_prop", isConstProp);
+	defineNative(vm, "include", include);
 	
 	// Standard libraries.
 	
@@ -303,8 +422,6 @@ static bool call(VM* vm, Obj* callee, uint8_t argCount) {
 			PUSH(NULL_VAL);
 	}
 	
-	argCount = function -> arity;
-	
 	if(vm -> frameCount == FRAMES_MAX) {
 		RUNTIME_ERROR("Stack overflow! Maximum call frames exceeded!");
 		return false;
@@ -314,7 +431,7 @@ static bool call(VM* vm, Obj* callee, uint8_t argCount) {
 	
 	frame -> function = (Obj*) callee;
 	frame -> ip       = function -> chunk.code;
-	frame -> slots    = vm -> stackTop - argCount - 1u;
+	frame -> slots    = vm -> stackTop - function -> arity - 1u;
 	
 	return true;
 }
@@ -6002,8 +6119,8 @@ InterpretResult run(VM* vm) {
 
 #undef READ_BYTE
 
-InterpretResult interpret(VM* vm, const char* source) {
-	ObjFunction* function = compile(vm, source);
+InterpretResult interpret(VM* vm, const char* source, bool included) {
+	ObjFunction* function = compile(vm, source, included);
 	
 	if(function == NULL) 
 		return INTERPRET_COMPILATION_ERROR;

@@ -16,10 +16,6 @@
 
 #define getField(instance, name, value) tableGet(&instance -> fields, name, &value)
 
-#define NATIVE_R_ERR(format, ...) RUNTIME_ERROR(format, ##__VA_ARGS__);\
-	pack.hadError = true;\
-	return pack;
-
 #define initNativePack NativePack pack;\
 	pack.hadError = false;\
 	pack.value = NULL_VAL;
@@ -5874,7 +5870,10 @@ static NativePack listRange(VM* vm, int argCount, Value* values) {
 		step = (int) value;
 	}
 
-	result -> capacity = (stop - start) / step;
+	if(start > stop) 
+		return pack;
+
+	result -> capacity = ((stop - start) / step) + 1;
 	result -> values   = GROW_ARRAY(Value, result -> values, 0u, result -> capacity);
 
 	for(; start < stop; start += step) 

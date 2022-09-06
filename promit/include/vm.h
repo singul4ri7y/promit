@@ -14,6 +14,10 @@
 
 #define TAKE_STRING(buffer, length, heapAllocated) takeString(vm, buffer, length, heapAllocated)
 
+#define NATIVE_R_ERR(format, ...) RUNTIME_ERROR(format, ##__VA_ARGS__);\
+	pack.hadError = true;\
+	return pack;
+
 typedef struct {
 	Obj* function;
 	uint8_t* ip;
@@ -68,7 +72,7 @@ bool callValue(VM*, Value, uint8_t);
 void initVM(VM*); 
 void freeVM(VM*);
 InterpretResult run(VM*);
-InterpretResult interpret(VM*, const char*);
+InterpretResult interpret(VM*, const char*, bool);
 void runtimeError(VM*, const char*, ...);
 
 void resetStack(VM*);
