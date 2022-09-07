@@ -27,6 +27,8 @@ typedef struct {
 typedef struct {
 	CallFrame frames[FRAMES_MAX];
 	short frameCount;
+
+	short includeDepth;
 	
 	Value stack[STACK_MAX];
 	int stackTop;

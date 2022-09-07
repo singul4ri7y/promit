@@ -111,14 +111,18 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 		
 		fclose(file);
 
-		NATIVE_R_ERR("Could not allocate memory for file buffer!", filepath);
+		NATIVE_R_ERR("Could not allocate memory for file buffer!", string -> buffer);
 
-		fprintf(stderr, "\nFailed to inlcude file '%s'!", filepath);
+		fprintf(stderr, "\nFailed to inlcude file '%s'!\n", string -> buffer);
 	}
 
 	fread(buffer, size, sizeof(char), file);
 
 	buffer[size] = 0;
+
+	// Update include depth.
+
+	vm -> includeDepth++;
 
 	// Turn off REPL mode if enabled.
 
@@ -130,18 +134,12 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
 	vm -> inREPL = repl;
 
-	if(result == INTERPRET_COMPILATION_ERROR) {
-		free(filepath);
+	vm -> includeDepth--;
 
-		if(alternate_path != NULL) 
-			free(alternate_path);
-		
-		free(buffer);
-		fclose(file);
+	if(result != INTERPRET_OK) {
+		if(vm -> includeDepth == 0) 
+			fprintf(stderr, "\nFailed to include file '%s' due to error!\n", string -> buffer);
 
-		NATIVE_R_ERR("\nCompilation error on includable file '%s'!", filepath);
-	}
-	else if(result == INTERPRET_RUNTIME_ERROR) {
 		free(filepath);
 
 		if(alternate_path != NULL) 
@@ -150,7 +148,9 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 		free(buffer);
 		fclose(file);
 
-		NATIVE_R_ERR("\nRuntime error on includable file '%s'!", filepath);
+		pack.hadError = true;
+
+		return pack;
 	}
 
 	pack.value = POP();
@@ -301,6 +301,8 @@ void initVM(VM* vm) {
 	vm -> objects      = NULL;
 	vm -> openUpvalues = NULL;
 
+	vm -> includeDepth = 0;
+
 	vm -> grayCount    = 0;
 	vm -> grayCapacity = 0;
 	vm -> grayStack    = NULL;
@@ -396,19 +398,27 @@ void runtimeError(VM* vm, const char* format, ...) {
 	va_end(args);
 
 	fputs("\n", stderr);
+
+	short count = 0;
 	
 	for(short i = vm -> frameCount - 1; i >= 0; i--) {
 		CallFrame* frame = vm -> frames + i;
-		
-		ObjFunction* function = getFunction(frame -> function);
-		
-		size_t instruction = frame -> ip - function -> chunk.code - 1;
-		
-		fprintf(stderr, "  [line %d] in ", getLine(&function -> chunk, instruction));
-		
-		if(function -> name == NULL) 
-			fprintf(stderr, "function anonymous()\n");
-		else fprintf(stderr, "function %s()\n", function -> name -> buffer);
+
+		if(count++ < 3) {
+			ObjFunction* function = getFunction(frame -> function);
+			
+			size_t instruction = frame -> ip - function -> chunk.code - 1;
+			
+			fprintf(stderr, "  [line %d] in ", getLine(&function -> chunk, instruction));
+			
+			if(function -> name == NULL) 
+				fprintf(stderr, "function anonymous()\n");
+			else fprintf(stderr, "function %s()\n", function -> name -> buffer);
+		} else {
+			fprintf(stderr, "\n  ... %hd frames more ...\n\n", vm -> frameCount - count);
+
+			count = 0; i = 1;
+		}
 	}
 
 	resetStack(vm);
@@ -6135,7 +6145,8 @@ InterpretResult interpret(VM* vm, const char* source, bool included) {
 	
 	PUSH(OBJECT_VAL(function));
 	
-	call(vm, (Obj*) function, 0);
+	if(!call(vm, (Obj*) function, 0)) 
+		return INTERPRET_RUNTIME_ERROR;
 
 	return run(vm);
 }
