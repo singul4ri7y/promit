@@ -178,7 +178,9 @@ static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
 	if(!inExpr) {
 		if(type != TYPE_PROGRAM) 
 			compiler -> function -> name = copyString(getVM(), parser.previous.start, parser.previous.length);
-		else compiler -> function -> name = takeString(getVM(), "main", 4, false);
+		else if(compiler -> included) 
+			compiler -> function -> name = takeString(getVM(), "__include_wrapper__", 19u, false);
+		else compiler -> function -> name = takeString(getVM(), "main", 4u, false);
 	}
 	else if(parser.current.type == TOKEN_IDENTIFIER) {
 		advance();
@@ -2218,6 +2220,9 @@ ObjFunction* compile(VM* vm, const char* source, bool included) {
 	globalVM      = vm;
 
 	Compiler compiler;
+
+	// It is important to set 'included' property
+	// before calling initCompiler().
 
 	compiler.included = included;
 
