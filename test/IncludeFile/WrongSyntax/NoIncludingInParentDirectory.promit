@@ -1,0 +1,16 @@
+/**
+ * Demonstration of forbidden use of global function 'include'.
+ *
+ * Part of Promit Test Suit, location /test/IncludeFile/WrongSyntax/NoIncludingInParentDirectory.promit
+ *
+ * Created by SD Asif Hossein in 7th September, 2022 (Wednesday) at 01:55 PM (UTC +06).
+ */
+
+// Including files from parent directory such as : 
+//     include('../file.promit')
+// is forbidden.
+
+// Remember '.'(s) are replaced with '/'(s).
+
+showl include('../SomeFileInParentDirectory');    // Error : [Error][Runtime]: Including files directly from parent directory is forbidden! Try using absolute path.
+                                                               [line 15] in function main()

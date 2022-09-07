@@ -1,0 +1,10 @@
+/** This file will be included. */
+
+// Note : You cannot return from a top level program
+//        unless it's included.
+
+// This will be the return value of the
+// 'include' function used to include
+// this file.
+
+return 'Returned value of a included file!';

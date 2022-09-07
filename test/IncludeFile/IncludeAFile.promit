@@ -1,0 +1,40 @@
+/**
+ * Demonstration of file including in Promit.
+ *
+ * Part of Promit Test Suit, location /test/IncludeFile/InlcudeAFile.promit
+ *
+ * Created by SD Asif Hossein in 7th September, 2022 (Wednesday) at 01:14 PM (UTC +06).
+ */
+
+// Use the 'include(path)' global function to include
+// a file.
+
+take return_val = include('ThisFileWillBeIncluded');
+
+// Also we could've wrote : include('ThisFileWillBeIncluded.promit')
+
+showl return_val;
+
+// '.' are replaced with '/' :).
+
+// Below code is same as : include('directory.AnotherInclude.promit')
+// Which is going to be evaluated as : inlcude('directory/AnotherInclude.promit')
+
+showl include('directory.AnotherInclude');
+
+// Same as : include('directory/YetAnotherInclude/main.promit')
+
+showl include('directory.YetAnotherInclude');
+
+// How 'include(path)' works?
+// Let's consider this example.
+//     include('themes.default')
+// First it will search for 'theme/default.promit' 
+// relative to current working directory. If the file
+// does not exist, then it will search for an alternate
+// path 'theme/default/main.promit'.
+
+// Note : If we had used include('theme.default.promit')
+//        or include('theme/default.promit') then it
+//        would have just searched for 'theme/default.promit'
+//        without any alternate path or whatsoever.
