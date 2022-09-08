@@ -7,7 +7,8 @@
 void repl(VM* vm) {
 	char line[2048];
 
-	puts("Welcome to Promit v0.5.0 (beta)\nType '.help' for more information.\n");
+	puts("Welcome to Promit v0.5.0 (beta)\n"
+	     "Type '.help' for more information.\n");
 
 	while(true) {
 		printf("[promit] => ");
@@ -18,87 +19,91 @@ void repl(VM* vm) {
 			break;
 		}
 
-		if(!strcmp(line, ".help\n")) {
-			puts("\nHow to use the REPL:\n\n"
-			     "Try to input statements/expressions in a single line.\n"
-			     "For multiline input, type '.editor' to go editor mode.\n"
-			     "Type '.why' to know about the project.\n"
-			     "Type '.clear' to clear the REPL console.\n");
-		}
-		else if(!strcmp(line, ".why\n")) {
-			puts("\nAsif: The Project Promit is developed by SD Asif Hossein, in order to keep his promise once he made to his friend 'Meraj Hossain Promit'.\n"
-				 "If you like it, be sure to use it ;).\n");
-		}
-		else if(!strcmp(line, ".editor\n")) {
-			bool editorMode = true;
-			
-			// No inREPL while in editor mode.
-			
-			vm -> inREPL = false;
+		size_t len = strlen(line);
 
-			puts("\nYou are now in editor mode! Type '.end' in a separate line at the end to finish, '.del' to cancel.\n");
-
-			int top = 0, capacity = 2048;
-			char* buffer = (char*) malloc(capacity);
-			
-			buffer[0] = 0;    // Termination character '\0'.
-
-			int l = 1, len;
-
-			while(editorMode) {
-				printf("[editor] %d => ", l++);
-
-				if(fgets(line, sizeof(line), stdin)) {
-					if(!strcmp(line, ".del\n")) {
-						editorMode = false;
-
-						puts("");
-						
-						vm -> inREPL = true;
-
-						continue;
-					}
-					else if(!strcmp(line, ".end\n")) {
-						puts("\nResults:\n");
-
-						editorMode = false;
-
-						interpret(vm, buffer, false);
-						
-						puts("");
-						
-						// Back to REPL.
-						
-						vm -> inREPL = true;
-
-						continue;
-					}
-
-					len = strlen(line);
-
-					if(top + len >= capacity) {
-						capacity *= 2;
-
-						buffer = (char*) realloc(buffer, capacity);
-					}
-
-					strcpy(buffer + top, line);
-
-					top += len;
-				} else interpret(vm, buffer, false);
+		if(len > 0 && line[0] == '.') {
+			if(!strcmp(line, ".help\n")) {
+				puts("\nHow to use the REPL:\n\n"
+					"Try to input statements/expressions in a single line.\n"
+					"For multiline input, type '.editor' to go editor mode.\n"
+					"Type '.why' to know about the project.\n"
+					"Type '.clear' to clear the REPL console.\n");
 			}
-			
-			free(buffer);
+			else if(!strcmp(line, ".why\n")) {
+				puts("\nAsif: The Project Promit is developed by SD Asif Hossein, in order to keep his promise once he made to his friend 'Meraj Hossain Promit'.\n"
+					"If you like it, be sure to use it ;).\n");
+			}
+			else if(!strcmp(line, ".editor\n")) {
+				bool editorMode = true;
+				
+				// No inREPL while in editor mode.
+				
+				vm -> inREPL = false;
+
+				puts("\nYou are now in editor mode! Type '.end' in a separate line at the end to finish, '.del' to cancel.\n");
+
+				int top = 0, capacity = 2048;
+				char* buffer = (char*) malloc(capacity);
+				
+				buffer[0] = 0;    // Termination character '\0'.
+
+				int l = 1, len;
+
+				while(editorMode) {
+					printf("[editor] %d => ", l++);
+
+					if(fgets(line, sizeof(line), stdin)) {
+						if(!strcmp(line, ".del\n")) {
+							editorMode = false;
+
+							puts("");
+							
+							vm -> inREPL = true;
+
+							continue;
+						}
+						else if(!strcmp(line, ".end\n")) {
+							puts("\nResults:\n");
+
+							editorMode = false;
+
+							interpret(vm, buffer, false);
+							
+							puts("");
+							
+							// Back to REPL.
+							
+							vm -> inREPL = true;
+
+							continue;
+						}
+
+						len = strlen(line);
+
+						if(top + len >= capacity) {
+							capacity *= 2;
+
+							buffer = (char*) realloc(buffer, capacity);
+						}
+
+						strcpy(buffer + top, line);
+
+						top += len;
+					} else interpret(vm, buffer, false);
+				}
+				
+				free(buffer);
+			}
+			else if(!strcmp(line, ".clear\n")) {
+				system("clear");
+			}
+			else if(!strcmp(line, ".exit\n")) {
+				freeVM(vm);
+				
+				exit(EXIT_SUCCESS);
+			} else puts("\nInvalid REPL command.\n");
 		}
-		else if(!strcmp(line, ".clear\n")) {
-			system("clear");
-		}
-		else if(!strcmp(line, ".exit\n")) {
-			freeVM(vm);
-			
-			exit(EXIT_SUCCESS);
-		}
-		else if(strlen(line) > 1) interpret(vm, line, false);
+		else if(len > 1) interpret(vm, line, false);
 	}
 }
 
