@@ -1,0 +1,25 @@
+/**
+ * Demonstration of assertion in Promit.
+ *
+ * Part of Promit Test Suit, location /test/Assert.promit
+ *
+ * Created by SD Asif Hossein in 14th September, 2022 (Wednesday) at 07:03 PM (UTC +06).
+ */
+
+// Use the 'assert' function to do assertion.
+// Provided value will be converted to boolean,
+// if the value type is not boolean. If the converted 
+// boolean is true, 'assert' function will return true.
+// Else will throw an assertion runtime error.
+
+showl "If assertion is true, 'assert' function will return : ${assert(true)}";
+
+const class A {
+	__represent__() {
+		return false;
+	}
+};
+
+showl 'This is an assertion error : ';
+
+assert(A());

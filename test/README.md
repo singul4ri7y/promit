@@ -34,11 +34,12 @@ You are requested to follow this read order in order to get the best experience 
  21. Numbers/all
  22. Functions/all
  23. Files/all
- 24. SuperGlobals/all
- 25. IncludeFile/all
- 26. System/all
- 27. Times/all
- 28. Benchmarks/all (Not certainly necessary, just for benchmarking stuff)
- 29. Algorithms/all (Important! See how Promit really holds up against real life algorithms and problems)
+ 24. Assert.promit
+ 25. SuperGlobals/all
+ 26. IncludeFile/all
+ 27. System/all
+ 28. Times/all
+ 29. Benchmarks/all (Not certainly necessary, just for benchmarking stuff)
+ 30. Algorithms/all (Important! See how Promit really holds up against real life algorithms and problems)
 
 <b><i>Good luck. Peace.</i><b>
