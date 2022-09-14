@@ -166,6 +166,35 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 	return pack;
 }
 
+// Specific assert function for Promit.
+
+static NativePack promitAssert(VM* vm, int argCount, Value* values) {
+	NativePack pack;
+
+	pack.hadError = false;
+	pack.value    = NULL_VAL;
+
+	if(argCount < 2) {
+		NATIVE_R_ERR("Too few arguments to call assert(bool)!");
+	}
+
+	BooleanData data = toBoolean(vm, values + 1u);
+
+	if(data.hadError == true) {
+		pack.hadError = true;
+
+		return pack;
+	}
+
+	if(data.boolean == false) {
+		NATIVE_R_ERR("Promit assertion failed!");
+	}
+
+	pack.value = BOOL_VAL(true);
+
+	return pack;
+}
+
 // Wrapper classes.
 
 ObjClass* vmNumberClass;
@@ -323,6 +352,7 @@ void initVM(VM* vm) {
 	defineNative(vm, "len", len);
 	defineNative(vm, "is_const_prop", isConstProp);
 	defineNative(vm, "include", include);
+	defineNative(vm, "assert", promitAssert);
 	
 	// Standard libraries.
 	
