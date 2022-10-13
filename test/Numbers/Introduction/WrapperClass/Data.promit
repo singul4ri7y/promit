@@ -1,0 +1,26 @@
+/**
+ * Demostration of wrapper class method 'Number.data'.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Data.promit
+ *
+ * Created by SD Asif Hossein in 14th October, 2022 (Friday) at 12:30 PM (UTC +06).
+ */
+
+// The wrapper class method 'Number.data()' to get
+// segmented data about a number such as exponent,
+// number buffer and sign.
+
+// For example, we have a number as such:
+
+take number = 91.5563;
+
+// Now if we want to get all the data available
+// about that number, like how many numeric caracters
+// are there in number, Number.data() method will
+// be useful.
+
+take data = number.data();
+
+showl data;    // Output : { 'exponent'(c) : 2, 'sign'(c) : 0, 'buffer'(c) : '915563' }
+
+showl 'The number of numeric characters in number $number is: ${len(data.buffer)}';    // Output : The number of numeric characters in number 91.5563 is: 6

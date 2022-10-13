@@ -1,0 +1,34 @@
+/**
+ * Demostration of wrapper class method 'Number.data'.
+ *
+ * Part of Promit Test Suit, location /test/Numbers/Introduction/WrapperClass/Data.promit
+ *
+ * Created by SD Asif Hossein in 14th October, 2022 (Friday) at 12:40 PM (UTC +06).
+ */
+
+// The 'Number.format(lead, trail, fill)' method formats 
+// a number to a string in suitable way.
+
+// Note : If you just want to convert a number to string
+//        as accurately as possible, use the 'stringify()'
+//        method.
+
+// Say, we have a number as such:
+
+take number = 8.883;
+
+// And we want to convert it and print it
+// in this way: 888.88 and 008.883000
+
+// That's where the format() method comes into play.
+
+// Note : If the 'fill' parameter is absent, default fill number will be 0.
+
+showl 'The crappy version of $number are ${number.format(3, 2, 8)}, ${number.format(3, 6)}';    // Output : The crappy version of 8.883 are 888.88, 008.883000
+
+showl 'The PI has very big trailing numbers: ${Math::PI}';    // Output : The PI has very big trailing numbers: 3.141592653589793
+showl 'We can shorten it to: ${Math::PI.format(1, 4)}';       // Output : We can shorten it to: 3.1415
+
+// Note : If the number is an integer, the 'trail' argument will be ignored.
+//        If the number is a floating point number, then the 'lead' argument
+//        may be ignored depending on the situation.
