@@ -3940,6 +3940,178 @@ static NativePack number__represent__(VM* vm, int argCount, Value* values) {
 	return numberValue(vm, argCount, values);
 }
 
+static NativePack numberFormat(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	numberInstanceNumber;
+
+	short lead = 1, trail = 5;
+
+	char fill = '0';
+
+	if(argCount > 1) {
+		if(!IS_NUMBER(values[1])) {
+			NATIVE_R_ERR("Expected the first argument to be a number in Number.format(lead, trail, fill)!");
+		}
+
+		double value = VALUE_NUMBER(values[1]);
+
+		if(value < 1 || value > 20) {
+			NATIVE_R_ERR("Invalid leading character number provided in Number.format(lead, trail, fill)!");
+		}
+
+		lead = (short) value;
+	}
+
+	if(argCount > 2) {
+		if(!IS_NUMBER(values[2])) {
+			NATIVE_R_ERR("Expected the second argument to be a number in Number.format(lead, trail, fill)!");
+		}
+
+		double value = VALUE_NUMBER(values[2]);
+
+		if(value < 1 || value > 20) {
+			NATIVE_R_ERR("Invalid trailing number provided in Number.format(lead, trail, fill)!");
+		}
+
+		trail = (short) value;
+	}
+
+	if(argCount > 3) {
+		if(!IS_NUMBER(values[3])) {
+			NATIVE_R_ERR("Expected the third argument to be a number in Number.format(lead, trail, fill)!");
+		}
+
+		double value = VALUE_NUMBER(values[3]);
+
+		if(value < 0 || value > 9) {
+			NATIVE_R_ERR("Invalid filling number provided in Number.format(lead, trail, fill)!");
+		}
+
+		fill = ((int) value) + '0';
+	}
+
+	int exponent, sign;
+
+	char* result = dtoa(number, DTOA_SHORTEST, 20, &exponent, &sign, NULL);
+	int reslen   = strlen(result);
+
+	char* buffer = ALLOCATE(char, 120u * sizeof(char));
+
+	int length = 0;
+
+	if(sign) 
+		buffer[length++] = '-';
+
+	// If 'exponent' is equal to the lenght of the generated
+	// dtoa string, then we are dealing with an integer.
+
+	if(exponent == reslen) {
+		lead -= exponent;
+
+		if(lead > 0) {
+			while(lead--) 
+				buffer[length++] = fill;
+		}
+
+		for(int i = 0; i < reslen; i++) 
+			buffer[length++] = result[i];
+	} else {
+		if(exponent > 0) {
+			lead -= exponent;
+
+			if(lead > 0) {
+				while(lead--) 
+					buffer[length++] = fill;
+			}
+
+			for(int i = 0; i < exponent; i++) 
+				buffer[length++] = result[i];
+
+			buffer[length++] = '.';
+
+			int rest = reslen - exponent;
+
+			while(rest--) {
+				buffer[length++] = result[exponent++];
+
+				if(--trail == 0) break;
+			}
+
+			while(trail--) 
+				buffer[length++] = '0';
+		} else {
+			// Ignore the leading numbers.
+
+			buffer[length++] = '0';
+			buffer[length++] = '.';
+
+			if(exponent > trail) 
+				exponent = trail;
+
+			for(int i = 0; i < exponent; i++) 
+				buffer[length++] = '0';
+			
+			trail -= exponent;
+
+			if(trail > reslen) {
+				trail -= reslen;
+
+				for(int i = 0; i < reslen; i++) 
+					buffer[length++] = result[i];
+
+				while(trail--) 
+					buffer[length++] = '0';
+			} else {
+				short i = 0;
+				
+				while(trail--) 
+					buffer[length++] = result[i++];
+			}
+		}
+	}
+
+	// Termination character.
+
+	buffer[length] = 0;
+
+	freedtoa(result);
+
+	// buffer = GROW_ARRAY(char, buffer, length + 1, 120u);
+
+	pack.value = OBJECT_VAL(TAKE_STRING(buffer, length, true));
+
+	return pack;
+}
+
+static NativePack numberData(VM* vm, int argCount, Value* values) {
+	initNativePack;
+
+	numberInstanceNumber;
+
+	ObjDictionary* dictionary = newDictionary(vm);
+
+	int exponent, sign;
+
+	char* result = dtoa(number, DTOA_SHORTEST, 20, &exponent, &sign, NULL);
+
+	size_t length = strlen(result);
+
+	char* buffer = ALLOCATE(char, length + 1u);
+
+	strcpy(buffer, result);
+
+	tableInsert(&dictionary -> fields, TAKE_STRING("buffer", 6u, false), (ValueContainer) { OBJECT_VAL(TAKE_STRING(buffer, length, true)), true });
+	tableInsert(&dictionary -> fields, TAKE_STRING("exponent", 8u, false), (ValueContainer) { NUMBER_VAL((double) exponent), true });
+	tableInsert(&dictionary -> fields, TAKE_STRING("sign", 4u, false), (ValueContainer) { NUMBER_VAL((double) sign), true });
+
+	freedtoa(result);
+
+	pack.value = OBJECT_VAL(dictionary);
+	
+	return pack;
+}
+
 void initNumberLib(VM* vm) {
 	numberField = TAKE_STRING("_p_number__", 11u, false);
 
@@ -3958,6 +4130,8 @@ void initNumberLib(VM* vm) {
 	defineMethod(numberClass, TAKE_STRING("scientific", 10u, false), numberScientific);
 	defineMethod(numberClass, TAKE_STRING("stringify", 9u, false), numberStringify);
 	defineMethod(numberClass, TAKE_STRING("value", 5u, false), numberValue);
+	defineMethod(numberClass, TAKE_STRING("data", 4u, false), numberData);
+	defineMethod(numberClass, TAKE_STRING("format", 6u, false), numberFormat);
 	defineMethod(numberClass, TAKE_STRING("__represent__", 13u, false), number__represent__);
 	
 	defineStaticMethod(numberClass, TAKE_STRING("is_nan", 6u, false), numberIsNaN);
