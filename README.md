@@ -174,7 +174,7 @@ Current **Promit Test Suit** (Located under ``/test`` relative to current direct
 
 <p align= "justify">Now question arises, "Why the heck would I use this language? Or prefer it over my current used language?". The answer is you don't have a particular reason! It's fast but neither due to be a bytecode interpreter it's as fast as JS nor has a huge modular library like Python. But hey, I just started out the project. If you find the project interesting or like how the language works, use the language as much as you can and support the project. Who knows, we may reach the level of JavaScript or Python one day 🙂.</p>
 <p align= "justify">And why did I bother to do this project at all? Well the idea is very simple really. I started my programming journey as a Web Developer. As I got deeper inside the computer science stuff and programming languages, I reinvented my interests in Low-Level things such as kernel development, memory managements, operating systems, compiler design, etc. At the same time, I got into high school (At the time of writing, I'm 19 BTW). I met a very fascinating person, who is one of my dearest friends named <b>Meraj Hossain Promit</b>. He was a real inspiration. A lot of thing went through. Long story short, when I was a first year at high school, I promised him that I would make a full-fledged programming language with the honor of his name under the age of 20. You can see the rest.</p>
-<b>Despite being cringy as hell, that's what really happened 😁.</b>
+<b>Despite being cringy as hell, that's what really happened 🙂.</b>
 
 ## Build
 ### Prerequisites :
@@ -202,7 +202,7 @@ Install ``MinGW-w64``, ``Cygwin`` or ``TDM GCC`` which has ``make`` baked within
 Install git from : <a href= "https://git-scm.com/downloads">https://git-scm.com/downloads</a>.
 
 ### The easy stuff :
-Go to any folder, clone the repo and hit ``make``.
+Go to any folder, clone the repo and hit ``make`` in the terminal.
 ```
 git clone https://github.com/singul4ri7y/promit
 cd promit/promit
