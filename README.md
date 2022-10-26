@@ -110,7 +110,7 @@ const fn call() {
 	}
 }
 
-take result = call();   // Result is actually the returned closure.
+take result = call();   // The returned closure.
 
 showl typeof result;    // Expected 'closure'.
 
