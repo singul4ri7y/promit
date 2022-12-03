@@ -12,4 +12,4 @@
 
 showl (10) 'The Promit Programming Language!';
 
-// Will print 'The Promit Programming Language' for 10 times.
+// Which will print 'The Promit Programming Language' 10 times.
