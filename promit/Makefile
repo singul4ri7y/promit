@@ -76,6 +76,10 @@ ifneq ($(findstring Linux, $(shell uname -s)),)
 	EXE_NAME    := promit
 	OS_NAME     := Linux
 	DESCRIPTION := "ELF Binary"
+else ifneq ($(findstring Darwin, $(shell uname -s)),) 
+	EXE_NAME    := promit
+	OS_NAME     := MacOS/Darwin
+	DESCRIPTION := "Mach-O Binary"
 endif
 
 .PHONY : 

@@ -12,7 +12,7 @@
 // #define DEBUG_TRACE_EXECUTION
 
 #ifdef __MACH__
-    #error "MacOS and it's derivatives are not yet supported."
+    #error "MacOS support is still unstable."
 #endif  // __MACH__
 
 #endif
