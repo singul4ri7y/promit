@@ -3,8 +3,6 @@
 #include "utilities.h"
 #include "object.h"
 
-#ifndef __MACH__
-
 ptrdiff_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp) {
 	char *ptr, *eptr;
 
@@ -43,8 +41,6 @@ ptrdiff_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp) {
 ptrdiff_t getline(char **buf, size_t *bufsiz, FILE *fp) {
 	return getdelim(buf, bufsiz, '\n', fp);
 }
-
-#endif    // __MACH__
 
 extern ObjFile* vm_stdin;
 

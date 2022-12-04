@@ -18,12 +18,8 @@
 
 #include "memory.h"
 
-#ifndef __MACH__
-
 extern ptrdiff_t getdelim(char**, size_t*, int, FILE*);
 extern ptrdiff_t getline(char**, size_t*, FILE*);
-
-#endif    // __MACH__
 
 // This function is highly edited version of CS50's get_string function.
 // Takes a string as input from Promit standard stdin.
