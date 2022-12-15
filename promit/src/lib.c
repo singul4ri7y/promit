@@ -5849,7 +5849,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 
 								callable = stack_pop(vm);
 
-								return toStringRaw(vm, &callable);
+								return toString(vm, &callable);
 							} else return NULL;
 						}
 						else if(IS_NATIVE(callable)) {
@@ -5858,7 +5858,7 @@ char* toStringRaw(VM* vm, Value* const value) {
 							NativePack pack = native(vm, 1, (Value*) value);
 
 							if(!pack.hadError) 
-								return toStringRaw(vm, &pack.value);
+								return toString(vm, &pack.value);
 							
 							return NULL;
 						}

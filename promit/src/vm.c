@@ -1272,7 +1272,9 @@ typedef struct {
 	double number;
 } vmNumberData;
 
-static vmNumberData vmToNumber(VM* vm, Value* value) {
+static vmNumberData vmToNumber(VM*, Value*);
+
+static vmNumberData vmToNumberRaw(VM* vm, Value* value) {
 	vmNumberData data;
 	
 	data.hadError        = false;
@@ -1286,57 +1288,6 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 		
 		case VAL_OBJECT: {
 			switch(OBJ_TYPE(*value)) {
-				case OBJ_INSTANCE: {
-					ObjInstance* instance = VALUE_INSTANCE(*value);
-
-					ValueContainer represent;
-
-					ObjString* name = takeString(vm, "__represent__", 13u, false);
-
-					bool found = false;
-
-					if((found = tableGet(&instance -> fields, name, &represent))) {}
-					else if((found = tableGet(&instance -> klass -> methods, name, &represent))) {}
-
-					if(found) {
-						Value callable = represent.value;
-
-						if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
-							stack_push(vm, callable);
-
-							if(callValue(vm, callable, 0u)) {
-								vm -> stack[vm -> stackTop - 1u] = *value;
-
-								if(run(vm) != INTERPRET_RUNTIME_ERROR) {
-									// Reuse variable.
-
-									callable = stack_pop(vm);
-
-									return vmToNumber(vm, &callable);
-								}
-							}
-
-							data.hadError = true;
-							
-							return data;
-						}
-						else if(IS_NATIVE(callable)) {
-							NativeFn native = VALUE_NATIVE(callable) -> function;
-
-							NativePack pack = native(vm, 1, (Value*) value);
-
-							if(!pack.hadError) 
-								return vmToNumber(vm, &pack.value);
-							
-							data.hadError = pack.hadError;
-							
-							return data;
-						}
-					}
-					
-					break;
-				}
-				
 				case OBJ_DICTIONARY: {
 					Table* fields = &VALUE_DICTIONARY(*value) -> fields;
 
@@ -1398,6 +1349,70 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 	}
 	
 	return data;
+}
+
+static vmNumberData vmToNumber(VM* vm, Value* value) {
+	vmNumberData data;
+
+	data.number          = NAN;
+	data.hadError        = false;
+	data.isRepresentable = true;
+
+	if(IS_INSTANCE(*value)) {
+		ObjInstance* instance = VALUE_INSTANCE(*value);
+
+		ValueContainer valueContainer;
+
+		ObjString* stringify = TAKE_STRING("stringify", 9u, false);
+		ObjString* represent = TAKE_STRING("__represent__", 13u, false);
+
+		bool found = false;
+
+		if((found = tableGet(&instance -> fields, stringify, &valueContainer))) {}
+		else if((found = tableGet(&instance -> klass -> methods, stringify, &valueContainer))) {}
+		else if((found = tableGet(&instance -> fields, represent, &valueContainer))) {}
+		else if((found = tableGet(&instance -> klass -> methods, represent, &valueContainer))) {}
+
+		if(found) {
+			Value callable = valueContainer.value;
+
+			if(IS_FUNCTION(callable) || IS_CLOSURE(callable)) {
+				stack_push(vm, callable);
+
+				if(callValue(vm, callable, 0u)) {
+					vm -> stack[vm -> stackTop - 1u] = *value;
+
+					if(run(vm) != INTERPRET_RUNTIME_ERROR) {
+						callable = stack_pop(vm);
+
+						return vmToNumberRaw(vm, &callable);
+					}
+
+					data.hadError = true;
+
+					return data;
+				}
+
+				data.hadError = true;
+
+				return data;
+			}
+			else if(IS_NATIVE(callable)) {
+				NativeFn native = VALUE_NATIVE(callable) -> function;
+
+				NativePack pack = native(vm, 1, (Value*) value);
+
+				if(!pack.hadError) 
+					return vmToNumberRaw(vm, &pack.value);
+				
+				data.hadError = true;
+				
+				return data;
+			}
+		}
+	}
+
+	return vmToNumberRaw(vm, value);
 }
 
 #define BITWISE(value1, value2, op) \
