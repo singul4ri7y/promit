@@ -155,7 +155,7 @@ Current **Promit Test Suit** (Located under ``/test`` relative to current direct
 ## Install
 <p>Promit comes with compiled interpreter binary with each release, which you can use to run your programs from the command line. With some tweaking with IDE's like <b>NetBeans</b>, <b>VS Code</b>, <b>Atom</b> etc. you can integrate the <b>promit</b> interpreter binary to run programs directly from the IDE.</p>
 
-**Supported Platforms:** Currently Promit only supports **Linux**, **Windows** and in some point <b>*BSD's</b>. As I do not have a Mac, I could not test the code in MacOS 😅. So, for that reason, **Promit does not support MacOS and current release won't be having any MacOS binary** (Mac users don't hate me). Tested on <b>Windows 7/10/11</b> and <b>Debian 10 (Buster)/ 11 (Bullseye)</b>, <b>Arch Linux</b>, <b>Ubuntu 22.04 LTS</b> and other <b>GNU/Linux</b>.</p>
+**Supported Platforms:** Currently Promit supports **Linux**, **Windows**, **Darwin** and in some point <b>*BSD's</b>. Tested on <b>Windows 7/10/11</b> and <b>Debian 10 (Buster)/ 11 (Bullseye)</b>, <b>Arch Linux</b>, <b>Ubuntu 22.04 LTS</b> and other <b>GNU/Linux</b> and <b>MacOS Catelina, BigSur</b>.</p>
 
 **Download the binary releases at:** https://github.com/singul4ri7y/promit/releases
 
@@ -165,6 +165,7 @@ Current **Promit Test Suit** (Located under ``/test`` relative to current direct
  3. Under the ``bin/`` folder the the Promit Interpreter binary resides. Move it to any location which is in the **system path** variable.
      - For Windows users, my recommendation is create a folder named ``MyBIN`` on the disk your Windows is installed on and add the folder location to system path variable (How to add folder location to system path variable? Well it's 21'st century. Google it).
      - For Linux users, you probably already know what to do. My preference is to move the binary to ``/usr/local/bin`` where every user can use it. Or create a new folder to store the binary and add it to system path (Make changes to ``$PATH`` adding your folder location. To make it permanent in do it in the  ``/etc/environment`` file).
+     - For MacOS/Darwin users, move the downloaded binary to ``/usr/local/bin``.
  4. Now run any Promit program in the terminal or command prompt using ``promit MyProgram.promit``.
 
 <b><i>Done.</i></b>
