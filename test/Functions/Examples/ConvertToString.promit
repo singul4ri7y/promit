@@ -21,7 +21,7 @@ const fn to_string(number, base) {
 		return '';
 	}
 
-	number |= 0;    // Simple way to conver it to string.
+	number |= 0;    // Convert it to an integer. All the bitwise operations in promit forces a number to be integer.
 
 	if(number < base) 
 		return numbers[number];
