@@ -49,5 +49,5 @@ Function::call(a.any_method, dummy, 'Very dummy!');
 showl dummy.prop;    // Output : Very dummy!
 
 // Function::pass(bound_method, receiver, [args...]) has similar manner as Function::call(...).
-// Only difference is you pass the arguments as an array in Function::pas rather
+// Only difference is you pass the arguments as a list in Function::pass() rather
 // than parameters.
