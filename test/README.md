@@ -1,4 +1,4 @@
-<h1 align= "center">Welcome to Promit Test Suit</h1>
+<h1 align= "center">Welcome to Promit Test Suite</h1>
 
 <p>This test suit serves as group of test files to run against Promit Programming Language. <b>This test suit also will serve as a tutorial to Promit Programming Language.</b> I tried to make it as beginner friendly as possible, so advanced users may get a little bored while reading through all the files. But, I made them quite detailed and delicate about the language features you are gonna face.</p>
 
