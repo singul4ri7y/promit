@@ -94,7 +94,7 @@ dictionary.keys()    // Returns a list.
 		showl "$key : ${dictionary[key]}";
 });
 ```
-- Has functions and closures (Yeah, I know you've already guessed).
+- Has functions and closures.
 ```dart
 const fn call() {
 	take outer = "This is outer!";
