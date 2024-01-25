@@ -7,113 +7,113 @@
 #include "chunk.h"
 
 typedef enum {
-	OBJ_STRING,
-	OBJ_FUNCTION,
-	OBJ_CLOSURE,
-	OBJ_NATIVE,
-	OBJ_UPVALUE,
-	OBJ_CLASS,
-	OBJ_INSTANCE,
-	OBJ_BOUND_METHOD,
-	OBJ_DICTIONARY,
-	OBJ_LIST,
-	OBJ_FILE,
-	OBJ_BYTELIST
+    OBJ_STRING,
+    OBJ_FUNCTION,
+    OBJ_CLOSURE,
+    OBJ_NATIVE,
+    OBJ_UPVALUE,
+    OBJ_CLASS,
+    OBJ_INSTANCE,
+    OBJ_BOUND_METHOD,
+    OBJ_DICTIONARY,
+    OBJ_LIST,
+    OBJ_FILE,
+    OBJ_BYTELIST
 } ObjType;
 
 struct Obj {
-	ObjType type;
-	bool isMarked;
-	Obj* next;
+    ObjType type;
+    bool isMarked;
+    Obj* next;
 };
 
 struct ObjString {
-	Obj obj;
-	bool heapAllocated;
-	int length;
-	char* buffer;
-	uint32_t hash;
+    Obj obj;
+    bool heapAllocated;
+    int length;
+    char* buffer;
+    uint32_t hash;
 };
 
 struct ObjFunction {
-	Obj obj;
-	uint32_t arity;    // The number of parameters.
-	Chunk chunk;
-	int upvalueCount;
-	ObjString* name;
+    Obj obj;
+    uint32_t arity;    // The number of parameters.
+    Chunk chunk;
+    int upvalueCount;
+    ObjString* name;
 };
 
 struct ObjUpvalue {
-	Obj obj;
-	Value closed;
-	bool isConst;
-	struct ObjUpvalue* next;
-	Value* location;
+    Obj obj;
+    Value closed;
+    bool isConst;
+    struct ObjUpvalue* next;
+    Value* location;
 };
 
 struct ObjClosure {
-	Obj obj;
-	ObjFunction* function;
-	ObjUpvalue** upvalues;
-	int upvalueCount;
+    Obj obj;
+    ObjFunction* function;
+    ObjUpvalue** upvalues;
+    int upvalueCount;
 };
 
 typedef struct {
-	Value value;
-	bool hadError;
+    Value value;
+    bool hadError;
 } NativePack;
 
 typedef NativePack (*NativeFn)(VM*, int, Value*);
 
 struct ObjNative {
-	Obj obj;
-	NativeFn function;
+    Obj obj;
+    NativeFn function;
 };
 
 struct ObjClass {
-	Obj obj;
-	ObjString* name;
-	Table methods;
-	Table statics;
-	struct ObjClass* superClass;
+    Obj obj;
+    ObjString* name;
+    Table methods;
+    Table statics;
+    struct ObjClass* superClass;
 };
 
 struct ObjInstance {
-	Obj obj;
-	ObjClass* klass;
-	Table fields;
+    Obj obj;
+    ObjClass* klass;
+    Table fields;
 };
 
 struct ObjBoundMethod {
-	Obj obj;
-	Value receiver;
-	
-	// Can be a function. Can be a closure if atleast one upvalue is defined.
-	
-	Obj* function;
+    Obj obj;
+    Value receiver;
+    
+    // Can be a function. Can be a closure if atleast one upvalue is defined.
+    
+    Obj* function;
 };
 
 struct ObjDictionary {
-	Obj obj;
-	Table fields;
+    Obj obj;
+    Table fields;
 };
 
 struct ObjList {
-	Obj obj;
-	int count;
-	int capacity;
-	Value* values;
+    Obj obj;
+    int count;
+    int capacity;
+    Value* values;
 };
 
 struct ObjFile {
-	Obj obj;
-	FILE* file;
+    Obj obj;
+    FILE* file;
 };
 
 struct ObjByteList {
-	Obj obj;
-	size_t size;
-	uint8_t* bytes;
+    Obj obj;
+    size_t size;
+    uint8_t* bytes;
 };
 
 #define OBJ_TYPE(value) (VALUE_OBJECT(value) -> type)

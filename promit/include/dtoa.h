@@ -18,7 +18,7 @@
 // dtoa
 
 char* dtoa(double d, int mode, int ndigits,
-            int* decept, int* sign, char** rve);
+           int* decept, int* sign, char** rve);
 
 void freedtoa(char* s);
 

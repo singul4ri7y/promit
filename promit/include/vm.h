@@ -15,58 +15,58 @@
 #define TAKE_STRING(buffer, length, heapAllocated) takeString(vm, buffer, length, heapAllocated)
 
 #define NATIVE_R_ERR(format, ...) RUNTIME_ERROR(format, ##__VA_ARGS__);\
-	pack.hadError = true;\
-	return pack;
+    pack.hadError = true;\
+    return pack;
 
 typedef struct {
-	Obj* function;
-	uint8_t* ip;
-	int slots;
+    Obj* function;
+    uint8_t* ip;
+    int slots;
 } CallFrame;
 
 typedef struct {
-	CallFrame frames[FRAMES_MAX];
-	short frameCount;
+    CallFrame frames[FRAMES_MAX];
+    short frameCount;
 
-	short includeDepth;
-	
-	Value stack[STACK_MAX];
-	int stackTop;
-	
-	Table globals;
-	Table strings;
+    short includeDepth;
+    
+    Value stack[STACK_MAX];
+    int stackTop;
+    
+    Table globals;
+    Table strings;
 
-	Obj* objects;
+    Obj* objects;
 
-	int grayCount;
-	int grayCapacity;
-	Obj** grayStack;
+    int grayCount;
+    int grayCapacity;
+    Obj** grayStack;
 
-	size_t bytesAllocated;
-	size_t nextGC;
-	
-	ObjUpvalue* openUpvalues;
-	
-	ObjString* initString;
-	
-	bool inREPL;
-	bool breaked;
+    size_t bytesAllocated;
+    size_t nextGC;
+    
+    ObjUpvalue* openUpvalues;
+    
+    ObjString* initString;
+    
+    bool inREPL;
+    bool breaked;
 } VM;
 
 typedef enum {
-	INTERPRET_OK,
-	INTERPRET_COMPILATION_ERROR,
-	INTERPRET_RUNTIME_ERROR
+    INTERPRET_OK,
+    INTERPRET_COMPILATION_ERROR,
+    INTERPRET_RUNTIME_ERROR
 } InterpretResult;
 
 typedef struct NumberData {
-	bool hadError;
-	double number;
+    bool hadError;
+    double number;
 } NumberData;
 
 typedef struct BooleanData {
-	bool hadError;
-	bool boolean;
+    bool hadError;
+    bool boolean;
 } BooleanData;
 
 bool callValue(VM*, Value, uint8_t);

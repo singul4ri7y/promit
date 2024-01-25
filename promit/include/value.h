@@ -20,20 +20,20 @@ typedef struct ObjFile ObjFile;
 typedef struct ObjByteList ObjByteList;
 
 typedef enum {
-	VAL_NUMBER,
-	VAL_BOOLEAN,
-	VAL_NULL,
-	VAL_OBJECT
+    VAL_NUMBER,
+    VAL_BOOLEAN,
+    VAL_NULL,
+    VAL_OBJECT
 } ValueType;
 
 typedef struct {
-	ValueType type;
+    ValueType type;
 
-	union {
-		double number;
-		bool boolean;
-		Obj* obj;
-	} as;
+    union {
+        double number;
+        bool boolean;
+        Obj* obj;
+    } as;
 } Value;
 
 #define BOOL_VAL(value)   ((Value) { VAL_BOOLEAN, { .boolean = value } })
@@ -53,14 +53,14 @@ typedef struct {
 #define IS_NAN(value) isnan((value).as.number)
 
 typedef struct {
-	int capacity;
-	int count;
-	Value* values;
+    int capacity;
+    int count;
+    Value* values;
 } ValueArray;
 
 typedef struct {
-	Value value;
-	bool isConst;
+    Value value;
+    bool isConst;
 } ValueContainer;
 
 void   initValueArray(ValueArray*);

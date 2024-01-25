@@ -6,15 +6,15 @@
 #include "value.h"
 
 typedef struct {
-	ObjString* key;
-	ValueContainer valueContainer;
+    ObjString* key;
+    ValueContainer valueContainer;
 } Entry;
 
 typedef struct {
-	int count;
-	int capacity;
-	int tombstones;
-	Entry* entries;
+    int count;
+    int capacity;
+    int tombstones;
+    Entry* entries;
 } Table;
 
 void initTable(Table*);
