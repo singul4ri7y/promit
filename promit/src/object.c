@@ -69,8 +69,6 @@ ObjString* takeString(VM* vm, char* buffer, size_t length, bool heapAllocated) {
 }
 
 ObjString* copyString(VM* vm, const char* start, size_t length) {
-    uint32_t hash = hashString(start, length);
-
     char* buffer = ALLOCATE(char, length + 1);
 
     register size_t len, stride;
@@ -110,16 +108,7 @@ ObjString* copyString(VM* vm, const char* start, size_t length) {
 
     buffer[length] = 0;
     
-    ObjString* interned = tableFindString(&vm -> strings, buffer, length, hash);
-
-    if(interned != NULL) {
-        // Free the buffer as we no longer need it.
-        FREE_ARRAY(char, buffer, length + 1);
-
-        return interned;
-    }
-
-    return allocateString(vm, buffer, length, true, hash);
+    return takeString(vm, buffer, length, true);
 }
 
 void printFunction(ObjFunction* function) {
