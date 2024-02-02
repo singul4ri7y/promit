@@ -1,17 +1,17 @@
 <h1 align= "center">Project Promit</h1>
 <p align= "center">A neat programming language inspired by JavaScript and Python!</p>
 <div align= "center">
-	<a href= "#introduction">Introduction</a>
-	.
-	<a href= "#learn">Learn</a>
-	.
-	<a href= "#contribution">Contribution</a>
-	.
-	<a href= "#why">Why</a>
-	.
-	<a href= "#install">Install</a>
-	.
-	<a href= "#build">Build</a>
+    <a href= "#introduction">Introduction</a>
+    .
+    <a href= "#learn">Learn</a>
+    .
+    <a href= "#contribution">Contribution</a>
+    .
+    <a href= "#why">Why</a>
+    .
+    <a href= "#install">Install</a>
+    .
+    <a href= "#build">Build</a>
 </div>
 
 ## Introduction
@@ -32,15 +32,15 @@ showl 'Your name is : $name!';
 const cities = [ 'New York', 'Constantinople', 'Sin City (Vegas)' ];
 
 const class Promit {
-	const visit(city) {
-		showl 'Promit has visited $city!';
-	}
+    const visit(city) {
+        showl 'Promit has visited $city!';
+    }
 };
 
 take promit = Promit();
 
 cities.foreach(fn(city) {
-	promit.visit(city);
+    promit.visit(city);
 });
 
 showl "The variable 'promit' is ${typeof promit} and ${promit instof Promit}.";
@@ -48,17 +48,17 @@ showl "The variable 'promit' is ${typeof promit} and ${promit instof Promit}.";
 - Supports inheritance.
 ```dart
 class Breakfast {
-	have() {
-		showl "Dalicious!";
-	}
+    have() {
+        showl "Dalicious!";
+    }
 };
 
 class Soup is Breakfast {
-	have() {
-		showl "Isn't having soup for breakfast too odd!";
-		
-		super.have();
-	}
+    have() {
+        showl "Isn't having soup for breakfast too odd!";
+        
+        super.have();
+    }
 };
 
 take breakfast = Soup();
@@ -82,32 +82,32 @@ showl 'Summation of those two numbers is : ${a + b}!';
 - Minimalist library.
 ```dart
 take dictionary = {
-	'name'(const)    :  'SD Asif Hossein',
-	'age'            :  19,    // Now, yes.
-	'passion'(const) :  'Programming'
+    'name'(const)    :  'SD Asif Hossein',
+    'age'            :  19,    // Now, yes.
+    'passion'(const) :  'Programming'
 };
 
 showl 'key-value pairs are : ';
 
 dictionary.keys()    // Returns a list.
-	.foreach(fn(key) {
-		showl "$key : ${dictionary[key]}";
+    .foreach(fn(key) {
+        showl "$key : ${dictionary[key]}";
 });
 ```
 - Has functions and closures.
 ```dart
 const fn call() {
-	take outer = "This is outer!";
+    take outer = "This is outer!";
 
-	// Closure capturing 'outer' variable.
-	return fn() {
-		showl outer;
-		showl 'Changing outer variable!';
-		
-		outer = "Now it's inner!";
-	
-		return outer;
-	}
+    // Closure capturing 'outer' variable.
+    return fn() {
+        showl outer;
+        showl 'Changing outer variable!';
+        
+        outer = "Now it's inner!";
+    
+        return outer;
+    }
 }
 
 take result = call();   // The returned closure.
@@ -121,18 +121,18 @@ showl result();         // Expected "Now it's inner!";
 take bird = 'Duck';
 
 switch(bird) {
-	case 'Koel' : {
-		showl 'The bird is Koel!';
-		break;
-	}
-	case 'Duck' : {
-		showl 'The bird is Duck (maybe)!';
-		continue;    // Code will fallthrough to next case.
-		showl 'This portion will not be executed!!';
-		break;
-	}
-	case 'Fallthrough' : showl 'Fallthrough!'; break;
-	default : break;
+    case 'Koel' : {
+        showl 'The bird is Koel!';
+        break;
+    }
+    case 'Duck' : {
+        showl 'The bird is Duck (maybe)!';
+        continue;    // Code will fallthrough to next case.
+        showl 'This portion will not be executed!!';
+        break;
+    }
+    case 'Fallthrough' : showl 'Fallthrough!'; break;
+    default : break;
 }
 ```
  - Has loops (``while``, ``for``, ```do ... while```), control flow (``if``, ``else`` and ternary operator ```condition ? expr : else_expr```) and many more!
