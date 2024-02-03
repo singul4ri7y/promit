@@ -103,12 +103,9 @@ static size_t jumpInstruction(const char* opcode, Chunk* chunk, size_t offset, c
 static size_t increamentInstruction(const char* opcode, Chunk* chunk, size_t offset) {
 	uint8_t type = getParameter(chunk, offset, false);
 
-	if(type < 2) 
-		return type == 0 ? constantInstruction(opcode, chunk, offset + 1u) : constantLongInstruction(opcode, chunk, offset + 1u);
-	else if(type < 4) return type == 2 ? byteInstruction(opcode, chunk, offset + 1u) : byteLongInstruction(opcode, chunk, offset + 1u);
-	else if(type < 6) type == 4 ? byteInstruction(opcode, chunk, offset + 1u) : byteLongInstruction(opcode, chunk, offset + 1u);
+    printf("     %-16s 0x%06x     ", opcode, type);
 
-	return simpleInstruction(opcode, offset) + 1u;
+    return offset + 1u;
 }
 
 static size_t closureInstruction(const char* opcode, Chunk* chunk, size_t offset, bool isLong) {

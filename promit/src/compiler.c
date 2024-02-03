@@ -79,10 +79,16 @@ typedef struct ClassCompiler {
     bool inStatic;
 } ClassCompiler;
 
+typedef struct Flow {
+    struct Flow* enclosing;
+    int scopeDepth;
+} Flow;
+
 static Parser parser;
 
 static Compiler* current = NULL;
 static ClassCompiler* currentClass = NULL;
+static Flow* currentFlow = NULL;        // Innermost loop scope. For 'continue' and 'break'.
 
 typedef enum {
     PREC_NONE, 
@@ -1432,6 +1438,15 @@ static void patchContinues(int depth) {
     patchRequest(&current -> continueRequests, depth);
 }
 
+static void addFlow(Flow* flow) {
+    flow -> enclosing = currentFlow;
+    currentFlow = flow;
+}
+
+static void removeFlow() {
+    currentFlow = currentFlow -> enclosing;
+}
+
 static int startFlow() {
     return ++current -> flowDepth;
 }
@@ -1440,8 +1455,8 @@ static void endFlow() {
     current -> flowDepth--;
 }
 
-static void beginScope() {
-    current -> scopeDepth++;
+static int beginScope() {
+    return ++current -> scopeDepth;
 }
 
 static void endScope() {
@@ -1519,8 +1534,14 @@ static void whileStatement() {
     consume(TOKEN_RIGHT_PAREN, "Expected ')' after condition!");
     
     uint32_t exitJump = emitJump(OP_JUMP_IF_FALSE);
+
+    Flow flow = { .scopeDepth = beginScope() };
+    addFlow(&flow);
     
     statement();
+
+    endScope();
+    removeFlow();
     
     patchContinues(depth);
     emitLoop(loopStart);
@@ -1536,14 +1557,20 @@ static void doStatement() {
     
     uint32_t loopStart = currentChunk() -> count;
     
-    statement(true);
+    Flow flow = { .scopeDepth = beginScope() };
+    addFlow(&flow);
+
+    statement();
     
+    endScope();
+    removeFlow();
+
     consume(TOKEN_WHILE, "Expected 'while' after 'do' statement!");
     
     consume(TOKEN_LEFT_PAREN, "Expected a '(' after 'while'!");
     
     expression();
-    
+
     consume(TOKEN_RIGHT_PAREN, "Expected a ')' at end of the loop!");
     
     uint32_t thenJump = emitJump(OP_JUMP_IF_FALSE);
@@ -1560,8 +1587,19 @@ static void doStatement() {
 static void breakStatement() {
     semicolon("Expected ';' after break statement!");
     
-    if(current -> flowDepth == 0) 
+    if(current -> flowDepth == 0) {
         error("Attempt to call break outside of loop or switch!");
+
+        return;
+    }
+
+    for(int i = current -> localCount - 1; i >= 0; i--) {
+        Local* local = current -> locals + i;
+
+        if(local -> depth >= currentFlow -> scopeDepth) 
+            emitByte(OP_SILENT_POP);
+        else break;
+    }
 
     pushBreakRequest(emitJump(OP_JUMP));
 }
@@ -1569,8 +1607,19 @@ static void breakStatement() {
 static void continueStatement() {
     semicolon("Expected ';' after continue statement!");
     
-    if(current -> flowDepth == 0) 
+    if(current -> flowDepth == 0) {
         error("Attempt to call continue outside of loop or switch!");
+
+        return;
+    }
+
+    for(int i = current -> localCount - 1; i >= 0; i--) {
+        Local* local = current -> locals + i;
+
+        if(local -> depth >= currentFlow -> scopeDepth) 
+            emitByte(OP_SILENT_POP);
+        else break;
+    }
     
     pushContinueRequest(emitJump(OP_JUMP));
 }
@@ -1592,6 +1641,9 @@ static void switchStatement() {
 
     while(!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) {
         if(match(TOKEN_CASE)) {
+            Flow flow = { .scopeDepth = beginScope() };
+            addFlow(&flow);
+
             if(foundDefault) 
                 error("Add cases before default case!");
             
@@ -1623,8 +1675,14 @@ static void switchStatement() {
                 declaration();
 
             fallthroughCase = emitJump(OP_JUMP);
+
+            removeFlow();
+            endScope();
         }
         else if(match(TOKEN_DEFAULT)) {
+            Flow flow = { .scopeDepth = beginScope() };
+            addFlow(&flow);
+
             if(foundDefault) 
                 error("Multiple default case in switch!");
 
@@ -1641,6 +1699,9 @@ static void switchStatement() {
 
             while(!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) 
                 declaration(false);
+            
+            removeFlow();
+            endScope();
         } else {
             advance();
             error("Unexpected statement inside switch!");
@@ -1781,33 +1842,13 @@ static void forStatement() {
         patchJump(bodyJump);
     }
     
-    beginScope();
+    Flow flow = { .scopeDepth = beginScope() };
+    addFlow(&flow);
     
-    if(match(TOKEN_SHOW)) 
-        showStatement(false);
-    else if(match(TOKEN_SHOWL)) 
-        showStatement(true);
-    else if(match(TOKEN_IF)) 
-        ifStatement(true);
-    else if(match(TOKEN_WHILE)) 
-        whileStatement();
-    else if(match(TOKEN_FOR)) 
-        forStatement();
-    else if(match(TOKEN_DO)) 
-        doStatement();
-    else if(match(TOKEN_BREAK)) 
-        breakStatement();
-    else if(match(TOKEN_CONTINUE)) 
-        continueStatement(true);
-    else if(match(TOKEN_SWITCH)) 
-        switchStatement();
-    else if(match(TOKEN_RETURN)) 
-        returnStatement();
-    else if(match(TOKEN_LEFT_BRACE)) 
-        block();
-    else expressionStatement();
+    statement();
     
     endScope();
+    removeFlow();
     
     patchContinues(depth);
     emitLoop(loopStart);
@@ -2196,9 +2237,6 @@ static void constDeclaration() {
 #undef VARIABLE
 
 static void declaration() {
-    if(match(TOKEN_SEMICOLON)) 
-        return;
-
     if(match(TOKEN_TAKE)) 
         takeDeclaration(false);
     else if(match(TOKEN_CONST)) 
