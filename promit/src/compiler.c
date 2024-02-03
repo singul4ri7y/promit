@@ -4,6 +4,10 @@
 #include "scanner.h"
 #include "object.h"
 
+#ifdef DEBUG
+#include "debug.h"
+#endif
+
 #define UINT24_MAX 0xFFFFFF
 #define UINT24_COUNT (UINT24_MAX + 1u)
 
@@ -25,7 +29,6 @@ typedef struct {
 
 typedef struct {
     uint32_t codePoint;
-    uint32_t stride;
     int depth;
 } PointData;
 
@@ -43,6 +46,12 @@ typedef struct {
     uint32_t index:24;
 } Upvalue;
 
+typedef struct {
+    PointData* data;
+    size_t count;
+    size_t capacity;
+} Requests;
+
 typedef struct Compiler {
     struct Compiler* enclosing;
 
@@ -58,13 +67,10 @@ typedef struct Compiler {
 
     Upvalue upvalues[512u];
 
-    struct {
-        PointData* data;
-        size_t count;
-        size_t capacity;
-    } requests;
+    Requests breakRequests;
+    Requests continueRequests;
 
-    int loopDepth;
+    int flowDepth;
 } Compiler;
 
 typedef struct ClassCompiler {
@@ -116,28 +122,28 @@ static VM* getVM() {
     return globalVM;
 }
 
-static void pushRequest(uint32_t codePoint) {
+static void pushRequest(Requests* req, uint32_t codePoint) {
     PointData pointData;
 
     pointData.codePoint = codePoint;
-    pointData.depth     = current -> loopDepth;
-    pointData.stride    = 0u;
+    pointData.depth     = current -> flowDepth;
     
-    if(current -> localCount > 0u) {
-        for(int i = current -> localCount - 1u; i >= 0; i--) {
-            if(current -> locals[i].depth == current -> scopeDepth) 
-                pointData.stride++;
-        }
+    if(req -> count + 1u > req -> capacity) {
+        size_t oldCapacity = req -> capacity;
+
+        req -> capacity = GROW_CAPACITY(req -> capacity);
+        req -> data     = GROW_ARRAY(PointData, req -> data, oldCapacity, req -> capacity);
     }
 
-    if(current -> requests.count + 1u > current -> requests.capacity) {
-        size_t oldCapacity = current -> requests.capacity;
+    req -> data[req -> count++] = pointData;
+}
 
-        current -> requests.capacity = GROW_CAPACITY(current -> requests.capacity);
-        current -> requests.data     = GROW_ARRAY(PointData, current -> requests.data, oldCapacity, current -> requests.capacity);
-    }
+static void pushBreakRequest(uint32_t codePoint) {
+    pushRequest(&current -> breakRequests, codePoint);
+}
 
-    current -> requests.data[current -> requests.count++] = pointData;
+static void pushContinueRequest(uint32_t codePoint) {
+    pushRequest(&current -> continueRequests, codePoint);
 }
 
 // Forward declaration of addLocal.
@@ -155,15 +161,18 @@ static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
     compiler -> localCapacity = 0u;
     compiler -> scopeDepth    = 0;
     compiler -> locals        = NULL;
+    
+    compiler -> continueRequests.data     = NULL;
+    compiler -> continueRequests.count    = 0u;
+    compiler -> continueRequests.capacity = 0u;
 
-    compiler -> requests.data     = NULL;
-    compiler -> requests.count    = 0u;
-    compiler -> requests.capacity = 0u;
+    compiler -> breakRequests.data     = NULL;
+    compiler -> breakRequests.count    = 0u;
+    compiler -> breakRequests.capacity = 0u;
 
-    compiler -> loopDepth = 0;
+    compiler -> flowDepth = 0;
 
     compiler -> function = newFunction(getVM());
-    
     compiler -> function -> upvalueCount = 0u;
 
     current = compiler;
@@ -204,7 +213,8 @@ static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
 
 static void freeCompiler(Compiler* compiler) {
     FREE_ARRAY(Local, compiler -> locals, compiler -> localCapacity);
-    FREE_ARRAY(PointData, compiler -> requests.data, compiler -> requests.capacity);
+    FREE_ARRAY(PointData, compiler -> breakRequests.data, compiler -> breakRequests.capacity);
+    FREE_ARRAY(PointData, compiler -> continueRequests.data, compiler -> continueRequests.capacity);
 }
 
 static void errorAt(Token* token, const char* message) {
@@ -298,6 +308,19 @@ static ObjFunction* endCompiler() {
 
     ObjFunction* function = current -> function;
 
+#if defined(DEBUG) && defined(DEBUG_PRINT_CODE)
+    const char* type = "PROGRAM";
+
+    switch(current -> type) {
+        case TYPE_FUNCTION:    type = "FUNCTION"; break;
+        case TYPE_METHOD:      type = "METHOD"; break;
+        case TYPE_INITIALIZER: type = "INITIALIZER"; break;
+        case TYPE_STATIC:      type = "STATIC"; break;
+    }
+
+    disassembleChunk(currentChunk(), function -> name != NULL ? function -> name -> buffer : "anonymous", type);
+#endif
+
     freeCompiler(current);
 
     current = current -> enclosing;
@@ -325,9 +348,9 @@ static ParseRule* getRule(const TokenType);
 static void binary(bool canAssign);
 static void and(bool canAssign);
 static void or(bool canAssign);
-static void statement(bool canAssign);
+static void statement();
 static void takeDeclaration(bool canAssign);
-static void declaration(bool canAssign);
+static void declaration();
 static void fnExpr(bool canAssign);
 static void globalInterpolation(bool canAssign);
 static void ternary();
@@ -374,12 +397,9 @@ static void expression() {
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
-static void semicolon(const char* message, bool multiple) {
-    if(!check(TOKEN_RIGHT_BRACE)) {
+static void semicolon(const char* message) {
+    if(!check(TOKEN_RIGHT_BRACE))
         consume(TOKEN_SEMICOLON, message);
-
-        while(multiple && match(TOKEN_SEMICOLON));
-    }
 }
 
 static void literal(bool canAssign) {
@@ -412,31 +432,30 @@ static void grouping(bool canAssign) {
     consume(TOKEN_RIGHT_PAREN, "Expeced a ')' after end of expression!");
 }
 
-#define NEEDLE_BYTES(n) \
-    int b4 = (int) n;\
-    uint8_t c = b4 & 0xFF;\
-    b4 >>= 0x8;\
-    uint8_t b = b4 & 0xFF;\
-    b4 >>= 0x8;\
-    uint8_t a = b4 & 0xFF;\
-    emitByte(a);\
-    emitByte(b);\
-    emitByte(c);\
+#define NEEDLE_BYTES(n)                             \
+    int b4 = (int) n;                               \
+    uint8_t c = b4 & 0xFF;                          \
+    b4 >>= 0x8;                                     \
+    uint8_t b = b4 & 0xFF;                          \
+    b4 >>= 0x8;                                     \
+    uint8_t a = b4 & 0xFF;                          \
+    emitBytes(a, b);                                \
+    emitByte(c);                                    \
 
-#define SET_N_GET(code, global) \
-    if(global > 255) {\
-        emitByte(code##_LONG);\
-        NEEDLE_BYTES(global)\
-    }\
+#define SET_N_GET(code, global)                     \
+    if(global > 255) {                              \
+        emitByte(code##_LONG);                      \
+        NEEDLE_BYTES(global)                        \
+    }                                               \
     emitBytes(code, (uint8_t) global);
 
-#define DEFINE(code, global, cnst) \
-    if(global > 255) {\
-        emitByte(code##_LONG);\
-        emitByte((uint8_t) cnst);\
-        NEEDLE_BYTES(global)\
-    }\
-    emitByte(code);\
+#define DEFINE(code, global, cnst)                  \
+    if(global > 255) {                              \
+        emitByte(code##_LONG);                      \
+        emitByte((uint8_t) cnst);                   \
+        NEEDLE_BYTES(global)                        \
+    }                                               \
+    emitByte(code);                                 \
     emitBytes((uint8_t) cnst, (uint8_t) global);
     
 static void checkConstantPoolOverflow(const char* errorMessage) {
@@ -452,7 +471,7 @@ static void checkConstantPoolOverflow(const char* errorMessage) {
 
 static void addLocal(const Token* token, bool isConst) {
     if(current -> localCount + 1u > UINT24_COUNT) {
-        error("Too many locals in a scope! Please be gentle!");
+        error("Too many locals in a scope! Be nice.");
         return;
     }
 
@@ -494,7 +513,6 @@ static void declareVariable(bool isConst) {
                 sprintf(buffer, "Redefinition of local variable '%.*s' in same scope!", token -> length, token -> start);
 
                 error(buffer);
-
                 free(buffer);
             }
         }
@@ -529,11 +547,11 @@ static int resolveLocal(Compiler* compiler, Token* token) {
     return -1;
 }
 
-#define INC_DC(code, type, arg) \
-    emitByte(code);\
-    if(arg > 255) {\
-        emitByte((uint8_t) (type + 1));\
-        NEEDLE_BYTES(arg);\
+#define INC_DC(code, type, arg)                \
+    emitByte(code);                            \
+    if(arg > 255) {                            \
+        emitByte((uint8_t) (type + 1));        \
+        NEEDLE_BYTES(arg);                     \
     } else emitBytes(type, (uint8_t) arg);
 
 
@@ -606,7 +624,7 @@ static int resolveUpvalue(Compiler* compiler, Token* name) {
 
     if(local != -1) {
         compiler -> enclosing -> locals[local].isCaptured = true;
-        
+
         return addUpvalue(compiler, local, true, compiler -> enclosing -> locals[local].isConst);
     }
 
@@ -622,6 +640,7 @@ static int identifierConstant(Token* token) {
     return writeValueArray(&currentChunk() -> constants, OBJECT_VAL(copyString(getVM(), token -> start, token -> length)));
 }
 
+// Bypass OP_GET_LOCAL_LONG (add 2)
 #define SET_N_GET_OPT(code, arg) \
     if(arg <= 20) \
         emitByte(code + 2 + arg);\
@@ -766,7 +785,7 @@ static void defaultVariable(bool canAssign) {
 
 static void globalVariable(bool canAssign) {
     consume(TOKEN_IDENTIFIER, "Expected a global variable name!");
-    
+
     variable(canAssign, true);
 }
 
@@ -1056,6 +1075,8 @@ static void _this(bool canAssign) {
     }
     else if(currentClass -> inStatic) {
         error("Cannot use 'this' inside of a static method!");
+
+        return;
     }
     
     variable(false, false);
@@ -1350,20 +1371,19 @@ static void binary(bool canAssign) {
     binaryOpcode(operatorType);
 }
 
-static void expressionStatement(bool inLoop) {
+static void expressionStatement() {
     expression();
 
-    semicolon("Expected a nice ';' at the end of expression!", true);
+    semicolon("Expected a nice ';' at the end of expression!");
 
-    if(parser.current.type == TOKEN_EOF && !inLoop) 
+    if(parser.current.type == TOKEN_EOF && current -> flowDepth == 0) 
         emitByte(OP_POP);
     else emitByte(OP_SILENT_POP);
 }
 
-static void block(bool inLoop) {
-    while(!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) {
-        declaration(inLoop);
-    }
+static void block() {
+    while(!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) 
+        declaration();
 
     consume(TOKEN_RIGHT_BRACE, "Expeced a '}' at end of block!");
 }
@@ -1383,41 +1403,41 @@ static void patchJump(int stride) {
     if(jump > UINT24_MAX) 
         error("Too many intructions to jump over!");
     
-    currentChunk() -> code[stride]      = (jump >> 16) & 0xFF;
+    currentChunk() -> code[stride]     = (jump >> 16) & 0xFF;
     currentChunk() -> code[stride + 1] = (jump >> 8) & 0XFF;
     currentChunk() -> code[stride + 2] = jump & 0xFF;
 }
 
-static void patchRequestJump(uint32_t distance, uint32_t localStride) {
-    uint32_t jump = currentChunk() -> count - distance - 3u - localStride;
-    
-    if(jump > UINT24_MAX) 
-        error("Too many intructions to jump over!");
-    
-    currentChunk() -> code[distance]      = (jump >> 16) & 0xFF;
-    currentChunk() -> code[distance + 1u] = (jump >> 8) & 0XFF;
-    currentChunk() -> code[distance + 2u] = jump & 0xFF;
-}    
-
-static void startLoop() {
-    current -> loopDepth++;
-}
-
-static void endLoop() {
-    current -> loopDepth--;
-}
-
-static void patchRequests() {
-    if(!current -> requests.count) 
+static void patchRequest(Requests* req, int depth) {
+    if(!req -> count) 
         return;
 
-    while(current -> requests.count) {
-        PointData pointData = current -> requests.data[--current -> requests.count];
+    while(req -> count) {
+        PointData data = req -> data[req -> count - 1];
 
-        if(pointData.depth == current -> loopDepth) 
-            patchRequestJump(pointData.codePoint, pointData.stride);
-        else break;
+        if(data.depth < depth) 
+            break;
+
+        patchJump(data.codePoint);
+
+        req -> count--;
     }
+}
+
+static void patchBreaks(int depth) {
+    patchRequest(&current -> breakRequests, depth);
+}
+
+static void patchContinues(int depth) {
+    patchRequest(&current -> continueRequests, depth);
+}
+
+static int startFlow() {
+    return ++current -> flowDepth;
+}
+
+static void endFlow() {
+    current -> flowDepth--;
 }
 
 static void beginScope() {
@@ -1452,7 +1472,7 @@ static void ternary() {
     patchJump(elseJump);
 }
 
-static void ifStatement(bool inLoop) {
+static void ifStatement() {
     consume(TOKEN_LEFT_PAREN, "Expected '(' after 'if'!");
     
     expression();
@@ -1461,14 +1481,14 @@ static void ifStatement(bool inLoop) {
     
     int thenJump = emitJump(OP_JUMP_IF_FALSE);
     
-    statement(inLoop);
+    statement();
     
     int elseJump = -1;
     
     if(match(TOKEN_ELSE)) {
         elseJump = emitJump(OP_JUMP);
         patchJump(thenJump);
-        statement(inLoop);
+        statement();
     } else patchJump(thenJump);
     
     if(elseJump != -1) 
@@ -1488,7 +1508,7 @@ static void emitLoop(uint32_t loopStart) {
 }
 
 static void whileStatement() {
-    startLoop();
+    int depth = startFlow();
 
     uint32_t loopStart = currentChunk() -> count;
     
@@ -1500,19 +1520,19 @@ static void whileStatement() {
     
     uint32_t exitJump = emitJump(OP_JUMP_IF_FALSE);
     
-    statement(true);
+    statement();
     
-    patchRequests();
-    
+    patchContinues(depth);
     emitLoop(loopStart);
     
     patchJump(exitJump);
+    patchBreaks(depth);
 
-    endLoop();
+    endFlow();
 }
 
 static void doStatement() {
-    startLoop();
+    int depth = startFlow();
     
     uint32_t loopStart = currentChunk() -> count;
     
@@ -1528,121 +1548,99 @@ static void doStatement() {
     
     uint32_t thenJump = emitJump(OP_JUMP_IF_FALSE);
     
-    patchRequests();
-    
+    patchContinues(depth);
     emitLoop(loopStart);
     
     patchJump(thenJump);
+    patchBreaks(depth);
     
-    endLoop();
+    endFlow();
 }
 
-static void breakStatement(bool inLoop) {
-    semicolon("Expected ';' after break statement!", true);
+static void breakStatement() {
+    semicolon("Expected ';' after break statement!");
     
-    if(!inLoop) 
+    if(current -> flowDepth == 0) 
         error("Attempt to call break outside of loop or switch!");
 
-    pushRequest(emitJump(OP_BREAK_JUMP));
+    pushBreakRequest(emitJump(OP_JUMP));
 }
 
-static void continueStatement(bool inLoop) {
-    semicolon("Expected ';' after continue statement!", true);
+static void continueStatement() {
+    semicolon("Expected ';' after continue statement!");
     
-    if(!inLoop) 
+    if(current -> flowDepth == 0) 
         error("Attempt to call continue outside of loop or switch!");
     
-    pushRequest(emitJump(OP_JUMP));
+    pushContinueRequest(emitJump(OP_JUMP));
 }
 
 static void switchStatement() {
     consume(TOKEN_LEFT_PAREN, "Expected a '(' after keyword 'switch'!");
-
+    
     expression();
 
     consume(TOKEN_RIGHT_PAREN, "Expected a ')' after switch statements expression!");
     consume(TOKEN_LEFT_BRACE, "Expected a '{' at the beginning of switch block!");
 
-    bool foundDefault = false;
-    int previousJumpSkip = -1;
-    int fallthroughJump = -1;
+    int depth = startFlow();
 
-    int caseEnds[MAX_CASES];
-    int caseCount = 0;
+    bool foundDefault = false;
+    
+    int prevCase = -1;
+    int fallthroughCase = -1;
 
     while(!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) {
         if(match(TOKEN_CASE)) {
             if(foundDefault) 
-                error("Attempt to add new case after default case in switch!");
-
-            if(previousJumpSkip != -1) {
-                patchJump(previousJumpSkip);
-                previousJumpSkip = -1;
+                error("Add cases before default case!");
+            
+            if(prevCase != -1) {
+                patchJump(prevCase);
+                prevCase = -1;
             }
-
+            
             emitByte(OP_DUP);
-
             expression();
-
             emitByte(OP_EQUAL);
 
-            previousJumpSkip = emitJump(OP_JUMP_IF_FALSE);
-            
-            if(fallthroughJump != -1) {
-                patchJump(fallthroughJump);
-                fallthroughJump = -1;
+            prevCase = emitJump(OP_JUMP_IF_FALSE);
+
+            emitByte(OP_SILENT_POP);
+
+            if(fallthroughCase != -1) {
+                patchJump(fallthroughCase);
+                fallthroughCase = -1;
             }
+
+            patchContinues(depth);
 
             consume(TOKEN_COLON, "Expected a ':' after case expression!");
 
-            if(check(TOKEN_LEFT_BRACE)) 
-                statement(true);
-            else {
-                beginScope();
+            while(!check(TOKEN_CASE) && !check(TOKEN_DEFAULT) && 
+            !check(TOKEN_RIGHT_BRACE) && 
+            !check(TOKEN_EOF)) 
+                declaration();
 
-                while(!check(TOKEN_CASE) && !check(TOKEN_DEFAULT) && !check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) 
-                    declaration(true);
-
-                endScope();
-            }
-
-            patchRequests();
-
-            if(caseCount > 512) 
-                error("Maximum case number exceeded in switch!");
-            else caseEnds[caseCount++] = emitJump(OP_SWITCH_JUMP);
-            
-            fallthroughJump = emitJump(OP_JUMP);
+            fallthroughCase = emitJump(OP_JUMP);
         }
         else if(match(TOKEN_DEFAULT)) {
             if(foundDefault) 
-                error("Attempt to add multiple default statements in switch!");
-            else foundDefault = true;
+                error("Multiple default case in switch!");
 
-            if(previousJumpSkip != -1) {
-                patchJump(previousJumpSkip);
-                previousJumpSkip = -1;
-            }
-            
-            if(fallthroughJump != -1) {
-                patchJump(fallthroughJump);
-                fallthroughJump = -1;
+            emitByte(OP_SILENT_POP);
+
+            if(fallthroughCase != -1) {
+                patchJump(fallthroughCase);
+                fallthroughCase = -1;
             }
 
-            consume(TOKEN_COLON, "Expected a ':' after default!");
+            patchContinues(depth);
 
-            if(check(TOKEN_LEFT_BRACE)) 
-                statement(true);
-            else {
-                beginScope();
+            consume(TOKEN_COLON, "Expectd a ':' after default!");
 
-                while(!check(TOKEN_CASE) && !check(TOKEN_DEFAULT) && !check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) 
-                    declaration(true);
-
-                endScope();
-            }
-
-            patchRequests();
+            while(!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) 
+                declaration(false);
         } else {
             advance();
             error("Unexpected statement inside switch!");
@@ -1650,17 +1648,19 @@ static void switchStatement() {
     }
 
     consume(TOKEN_RIGHT_BRACE, "Expected a '}' at the end of switch statement!");
-    
-    if(previousJumpSkip != -1) 
-        patchJump(previousJumpSkip);
-    
-    if(fallthroughJump != -1) 
-        patchJump(fallthroughJump);
 
-    for(int i = 0; i < caseCount; i++) 
-        patchJump(caseEnds[i]);
+    if(prevCase != -1) 
+        patchJump(prevCase);
 
-    emitByte(OP_SILENT_POP);
+    if(!foundDefault)
+        emitByte(OP_SILENT_POP);
+
+    if(fallthroughCase != -1) 
+        patchJump(fallthroughCase);
+
+    patchBreaks(depth);
+
+    endFlow();
 }
 
 static void showStatement(bool nl) {
@@ -1702,7 +1702,7 @@ static void showStatement(bool nl) {
 
         expression();
 
-        semicolon("Expected a ';' at end of show/showl statement!", true);
+        semicolon("Expected a ';' at end of show/showl statement!");
     }
 
     emitByte(nl ? OP_SHOWL : (loopShow ? OP_RAW_SHOW : OP_SHOW));
@@ -1732,7 +1732,7 @@ static void returnStatement() {
         
         expression();
         
-        semicolon("Expected a nice ';' after return value!", true);
+        semicolon("Expected a nice ';' after return value!");
         
         emitByte(OP_RETURN);
     }
@@ -1742,14 +1742,14 @@ static void forStatement() {
     // To bound the variable declaration to local.
     beginScope();
     
-    startLoop();
+    int depth = startFlow();
     
     consume(TOKEN_LEFT_PAREN, "Expected a '(' after keyword 'for'!");
     
     if(match(TOKEN_SEMICOLON)) ; // Do nothing.
     else if(match(TOKEN_TAKE)) 
         takeDeclaration(true);
-    else expressionStatement(true);
+    else expressionStatement();
     
     int loopStart = currentChunk() -> count;
     
@@ -1796,7 +1796,7 @@ static void forStatement() {
     else if(match(TOKEN_DO)) 
         doStatement();
     else if(match(TOKEN_BREAK)) 
-        breakStatement(true);
+        breakStatement();
     else if(match(TOKEN_CONTINUE)) 
         continueStatement(true);
     else if(match(TOKEN_SWITCH)) 
@@ -1804,20 +1804,20 @@ static void forStatement() {
     else if(match(TOKEN_RETURN)) 
         returnStatement();
     else if(match(TOKEN_LEFT_BRACE)) 
-        block(true);
-    else expressionStatement(true);
+        block();
+    else expressionStatement();
     
     endScope();
     
-    patchRequests();
-    
+    patchContinues(depth);
     emitLoop(loopStart);
-    
-    if(exitJump != -1) {
+
+    if(exitJump != -1) 
         patchJump(exitJump);
-    }
+
+    patchBreaks(depth);
     
-    endLoop();
+    endFlow();
     endScope();
 }
 
@@ -1885,16 +1885,16 @@ static void delStatement() {
         emitByte(isStatic ? 1u : 0u);
     } else emitByte(OP_DNM_DELETE_PROPERTY);
     
-    semicolon("Expected a ';' after del statement!", true);
+    semicolon("Expected a ';' after del statement!");
 }
 
-static void statement(bool inLoop) {
+static void statement() {
     if(match(TOKEN_SHOW)) 
         showStatement(false);
     else if(match(TOKEN_SHOWL)) 
         showStatement(true);
     else if(match(TOKEN_IF)) 
-        ifStatement(inLoop);
+        ifStatement();
     else if(match(TOKEN_WHILE)) 
         whileStatement();
     else if(match(TOKEN_FOR)) 
@@ -1903,9 +1903,9 @@ static void statement(bool inLoop) {
         doStatement();
     else if(match(TOKEN_SEMICOLON)) { /* Do nothing. */ }
     else if(match(TOKEN_BREAK)) 
-        breakStatement(inLoop);
+        breakStatement();
     else if(match(TOKEN_CONTINUE)) 
-        continueStatement(inLoop);
+        continueStatement();
     else if(match(TOKEN_SWITCH)) 
         switchStatement();
     else if(match(TOKEN_RETURN)) 
@@ -1915,10 +1915,10 @@ static void statement(bool inLoop) {
     else if(match(TOKEN_LEFT_BRACE)) {
         beginScope();
 
-        block(inLoop);
+        block();
 
         endScope();
-    } else expressionStatement(inLoop);    // It's an expression acting as a statement or the source code is starting with an expression.
+    } else expressionStatement();    // It's an expression acting as a statement or the source code is starting with an expression.
 }
 
 static void markInitialized() {
@@ -1938,20 +1938,20 @@ static void defineVariable(size_t var, bool isConst) {
     DEFINE(OP_DEFINE_GLOBAL, var, isConst);
 }
 
-#define VARIABLE(cnst, inLoop) \
-    while(!check(TOKEN_SEMICOLON) && !check(TOKEN_EOF) && !parser.hadError) {\
-        size_t var = parseVariable("Expected a variable name!", cnst);\
-        if(match(TOKEN_EQUAL)) \
-            expression();\
-        else emitByte(OP_NULL);\
-        defineVariable(var, cnst);\
-        if(!check(TOKEN_SEMICOLON)) \
-            consume(TOKEN_COMMA, "Expected a ';' or ',' after variable declaration!");\
-    }\
-    semicolon("Expected a ';' after variable declaration!", !inLoop);\
+#define VARIABLE(cnst)                                                                      \
+    while(!check(TOKEN_SEMICOLON) && !check(TOKEN_EOF) && !parser.hadError) {               \
+        size_t var = parseVariable("Expected a variable name!", cnst);                      \
+        if(match(TOKEN_EQUAL))                                                              \
+            expression();                                                                   \
+        else emitByte(OP_NULL);                                                             \
+        defineVariable(var, cnst);                                                          \
+        if(!check(TOKEN_SEMICOLON))                                                         \
+            consume(TOKEN_COMMA, "Expected a ';' or ',' after variable declaration!");      \
+    }                                                                                       \
+    semicolon("Expected a ';' after variable declaration!");                                \
 
-static void takeDeclaration(bool inLoop) {        // In loop specially for 'for'.
-    VARIABLE(false, inLoop);
+static void takeDeclaration() {
+    VARIABLE(false);
 }
 
 static void and(bool canAssign) {
@@ -2068,7 +2068,7 @@ static void method(bool isConst, bool isStatic) {
         }
         
         if(check(TOKEN_SEMICOLON)) 
-            semicolon("Expected a ';' at the end of static field!", true);
+            semicolon("Expected a ';' at the end of static field!");
         
         return;
     }
@@ -2099,7 +2099,7 @@ static void method(bool isConst, bool isStatic) {
     emitByte((uint8_t) isConst ? 1u : 0u);
 }
 
-static void classDeclaration(bool inLoop, bool isConst) {
+static void classDeclaration(bool isConst) {
     consume(TOKEN_IDENTIFIER, "Expected a class name!");
     
     Token className = parser.previous;
@@ -2170,7 +2170,7 @@ static void classDeclaration(bool inLoop, bool isConst) {
     
     consume(TOKEN_RIGHT_BRACE, "Expected a nice '}' at the end of class body!");
     
-    emitByte(check(TOKEN_EOF) && !inLoop ? OP_POP : OP_SILENT_POP);
+    emitByte(OP_SILENT_POP);
 
     if(classCompiler.hasSuperClass == true) 
         endScope();
@@ -2178,33 +2178,36 @@ static void classDeclaration(bool inLoop, bool isConst) {
     currentClass = currentClass -> enclosing;
 }
 
-static void constDeclaration(bool inLoop) {
+static void constDeclaration() {
     if(match(TOKEN_FUNCTION)) {
         functionDeclaration(true);
         
         return;
     }
     else if(match(TOKEN_CLASS)) {
-        classDeclaration(inLoop, true);
+        classDeclaration(true);
         
         return;
     }
     
-    VARIABLE(true, false);
+    VARIABLE(true);
 }
 
 #undef VARIABLE
 
-static void declaration(bool inLoop) {
+static void declaration() {
+    if(match(TOKEN_SEMICOLON)) 
+        return;
+
     if(match(TOKEN_TAKE)) 
         takeDeclaration(false);
     else if(match(TOKEN_CONST)) 
-        constDeclaration(inLoop);
+        constDeclaration();
     else if(match(TOKEN_FUNCTION)) 
         functionDeclaration(false);
     else if(match(TOKEN_CLASS)) 
-        classDeclaration(inLoop, false);
-    else statement(inLoop);
+        classDeclaration(false);
+    else statement();
 
     // if(parser.panicMode) synchronize();
 }
@@ -2238,7 +2241,7 @@ ObjFunction* compile(VM* vm, const char* source, bool included) {
     
     freeScanner(&scanner);
     
-    if(parser.hadError && vm -> bytesAllocated > vm -> nextGC) 
+    if(parser.hadError && vm -> bytesAllocated >= vm -> nextGC) 
         garbageCollector();
 
     return parser.hadError ? NULL : function;

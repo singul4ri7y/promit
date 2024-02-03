@@ -50,7 +50,6 @@ typedef struct {
     ObjString* initString;
     
     bool inREPL;
-    bool breaked;
 } VM;
 
 typedef enum {

@@ -103,8 +103,6 @@ typedef enum {
     
     OP_JUMP_IF_FALSE,
     OP_JUMP_OPR,
-    OP_SWITCH_JUMP,
-    OP_BREAK_JUMP,
     OP_JUMP,
     OP_LOOP,
     
