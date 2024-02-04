@@ -1686,6 +1686,11 @@ static void switchStatement() {
             if(foundDefault) 
                 error("Multiple default case in switch!");
 
+            if(prevCase != -1) {
+                patchJump(prevCase);
+                prevCase = -1;
+            }
+
             emitByte(OP_SILENT_POP);
 
             if(fallthroughCase != -1) {
