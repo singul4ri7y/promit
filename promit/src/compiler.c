@@ -546,7 +546,7 @@ static int resolveLocal(Compiler* compiler, Token* token) {
     for(int i = compiler -> localCount - 1u; i >= 0; i--) {
         Local* local = compiler -> locals + i;
         
-        if(local -> depth != -1 && local -> depth <= current -> scopeDepth && identifiersEqual(&local -> name, token)) 
+        if(local -> depth != -1 && local -> depth <= compiler -> scopeDepth && identifiersEqual(&local -> name, token)) 
             return i;
     }
     
