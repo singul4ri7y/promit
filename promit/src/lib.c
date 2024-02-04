@@ -803,6 +803,10 @@ static NativePack _fileReadAll(VM* vm, int argCount, Value* values) {
 
     (void) fread(buffer, 1u, size, file);
 
+    // Termination character.
+
+    buffer[size] = 0;
+
     ObjString* buff = TAKE_STRING(buffer, size, true);
 
     pack.value = OBJECT_VAL(buff);
