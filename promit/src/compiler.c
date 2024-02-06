@@ -355,7 +355,7 @@ static void binary(bool canAssign);
 static void and(bool canAssign);
 static void or(bool canAssign);
 static void statement();
-static void takeDeclaration(bool canAssign);
+static void takeDeclaration();
 static void declaration();
 static void fnExpr(bool canAssign);
 static void globalInterpolation(bool canAssign);
@@ -1814,7 +1814,7 @@ static void forStatement() {
     
     if(match(TOKEN_SEMICOLON)) ; // Do nothing.
     else if(match(TOKEN_TAKE)) 
-        takeDeclaration(true);
+        takeDeclaration();
     else expressionStatement();
     
     int loopStart = currentChunk() -> count;
@@ -2277,7 +2277,7 @@ ObjFunction* compile(VM* vm, const char* source, bool included) {
     advance();
 
     while(!match(TOKEN_EOF)) {
-        declaration(false);
+        declaration();
     }
 
     ObjFunction* function = endCompiler();
