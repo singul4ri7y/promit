@@ -1307,9 +1307,7 @@ static vmNumberData vmToNumberRaw(VM* vm, Value* value) {
                                          VALUE_CLOSURE(callable) -> function -> arity;
                             
                             if(arity >= 1) {
-                                stack_push(vm, *value);
-
-                                for(uint8_t i = 0u; i < arity - 1; i++) 
+                                for(uint8_t i = 0u; i < arity; i++) 
                                     stack_push(vm, NULL_VAL);
                             }
 
@@ -1340,7 +1338,11 @@ static vmNumberData vmToNumberRaw(VM* vm, Value* value) {
                     break;
                 }
                 
-                case OBJ_STRING: data.number = pstrtod(VALUE_CSTRING(*value)); break;
+                case OBJ_STRING: {
+                    data.number = pstrtod(VALUE_CSTRING(*value));
+
+                    if(!isnan(data.number)) break;
+                }
 
                 // And for all other object types, they are not representable 
                 // in numbers.
@@ -1949,6 +1951,14 @@ InterpretResult run(VM* vm) {
                             PUSH(NUMBER_VAL(data.number));
                         } else { NRM_ADD("null"); }
                     }
+                }
+                else if(IS_STRING(value1)) {
+                    char* result = toString(vm, &value2);
+                    char* string = CONCATENATE(VALUE_CSTRING(value1), result);
+
+                    PUSH(OBJECT_VAL(TAKE_STRING(string, strlen(string), true)));
+
+                    free(result);
                 }
                 else if(IS_OBJECT(value1)) {
                     vmNumberData data = vmToNumber(vm, &value1);

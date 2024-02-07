@@ -380,9 +380,7 @@ bool printObject(const Value* value) {
                                 VALUE_CLOSURE(callable) -> function -> arity;
                 
                 if(arity >= 1) {
-                    stack_push(currentVM, *value);
-
-                    for(uint8_t i = 0u; i < arity - 1u; i++) 
+                    for(uint8_t i = 0u; i < arity; i++) 
                         stack_push(currentVM, NULL_VAL);
                 }
 

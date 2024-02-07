@@ -5843,9 +5843,7 @@ char* toStringRaw(VM* vm, Value* const value) {
                                             VALUE_CLOSURE(callable) -> function -> arity;
                             
                             if(arity >= 1) {
-                                stack_push(vm, *value);
-
-                                for(uint8_t i = 0u; i < arity - 1u; i++) 
+                                for(uint8_t i = 0u; i < arity; i++) 
                                     stack_push(vm, NULL_VAL);
                             }
 
