@@ -3753,7 +3753,8 @@ static NativePack numberStringify(VM* vm, int argCount, Value* values) {
 
     // Special case for base 10.
 
-    if((base == 10 && number > MAX_SAFE_INTEGER) || number < MIN_SAFE_INTEGER || fabs(number) < 1e-6) {
+    if(base == 10 && (number > MAX_SAFE_INTEGER || number < MIN_SAFE_INTEGER || 
+      (fabs(number) < 1e-6 && number != 0))) {
         // Then do scientific representation.
         // Simply call numberScientific.
 

@@ -1344,7 +1344,11 @@ static vmNumberData vmToNumberRaw(VM* vm, Value* value) {
 
                 // And for all other object types, they are not representable 
                 // in numbers.
+
+                default: data.isRepresentable = false;
             }
+
+            break;
         }
 
         default: data.isRepresentable = false;
@@ -1365,15 +1369,15 @@ static vmNumberData vmToNumber(VM* vm, Value* value) {
 
         ValueContainer valueContainer;
 
-        ObjString* stringify = TAKE_STRING("stringify", 9u, false);
         ObjString* represent = TAKE_STRING("__represent__", 13u, false);
+        ObjString* stringify = TAKE_STRING("stringify", 9u, false);
 
         bool found = false;
 
-        if((found = tableGet(&instance -> fields, stringify, &valueContainer))) {}
-        else if((found = tableGet(&instance -> klass -> methods, stringify, &valueContainer))) {}
-        else if((found = tableGet(&instance -> fields, represent, &valueContainer))) {}
+        if((found = tableGet(&instance -> fields, represent, &valueContainer))) {}
         else if((found = tableGet(&instance -> klass -> methods, represent, &valueContainer))) {}
+        else if((found = tableGet(&instance -> fields, stringify, &valueContainer))) {}
+        else if((found = tableGet(&instance -> klass -> methods, stringify, &valueContainer))) {}
 
         if(found) {
             Value callable = valueContainer.value;
