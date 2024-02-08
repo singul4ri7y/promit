@@ -1568,6 +1568,8 @@ static void doStatement() {
     consume(TOKEN_WHILE, "Expected 'while' after 'do' statement!");
     
     consume(TOKEN_LEFT_PAREN, "Expected a '(' after 'while'!");
+
+    patchContinues(depth);
     
     expression();
 
@@ -1575,7 +1577,6 @@ static void doStatement() {
     
     uint32_t thenJump = emitJump(OP_JUMP_IF_FALSE);
     
-    patchContinues(depth);
     emitLoop(loopStart);
     
     patchJump(thenJump);

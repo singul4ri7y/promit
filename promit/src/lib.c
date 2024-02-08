@@ -3586,12 +3586,15 @@ static NativePack numberToLocaleBD(VM* vm, int argCount, Value* values) {
 #define MAX_VALUE 1.7976931348623157e+308
 #define MIN_VALUE 5e-324
 
+static uint8_t mess[] = { 73,  32, 117, 115, 101, 100,  32,
+    116, 111,  32, 108, 105, 107, 101, 32,  65, 114, 
+    112, 105,  32,  68, 101, 121,  32,  80, 117, 106,  
+    97, 33, 0 };
+
 static NativePack numberBlooper(VM* vm, int argCount, Value* values) {
     initNativePack;
-
-    // You probably know who she is.
-
-    ObjString* string = TAKE_STRING("I used to love Arpi Dey Puja!", 29u, false);
+    
+    ObjString* string = TAKE_STRING((char*) mess, 29u, false);
 
     pack.value = OBJECT_VAL(string);
 

@@ -17,8 +17,8 @@ take dict = { a : 10, b : 20 };
 
 showl dict;    // Output : { b : 20, a : 10 }
 
-dict.__represent__ = fn(d) {
-	return typeof d;
+dict.__represent__ = fn() {
+	return 'This is a dictionary!';
 };
 
-showl dict;    // Output : dictionary
+showl dict;    // Output : This is a dictionary!
