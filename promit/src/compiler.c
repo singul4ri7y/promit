@@ -2242,6 +2242,37 @@ static void constDeclaration() {
 
 #undef VARIABLE
 
+static void synchronize() {
+    parser.panicMode = false;
+
+    while(parser.current.type != TOKEN_EOF) {
+        if(parser.current.type == TOKEN_SEMICOLON) return;
+
+        switch(parser.current.type) {
+            case TOKEN_TAKE:
+            case TOKEN_CONST:
+            case TOKEN_FUNCTION:
+            case TOKEN_CLASS:
+            case TOKEN_SHOW:
+            case TOKEN_SHOWL:
+            case TOKEN_IF:
+            case TOKEN_WHILE:
+            case TOKEN_FOR:
+            case TOKEN_DO:
+            case TOKEN_SWITCH:
+            case TOKEN_RETURN:
+            case TOKEN_DEL:
+            case TOKEN_BREAK:
+            case TOKEN_CONTINUE:
+                return;
+
+            default: /* Do nothing */ ;
+        }
+
+        advance();
+    }
+}
+
 static void declaration() {
     if(match(TOKEN_TAKE)) 
         takeDeclaration(false);
@@ -2253,7 +2284,7 @@ static void declaration() {
         classDeclaration(false);
     else statement();
 
-    // if(parser.panicMode) synchronize();
+    if(parser.panicMode) synchronize();
 }
 
 ObjFunction* compile(VM* vm, const char* source, bool included) {
