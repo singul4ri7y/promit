@@ -2246,7 +2246,7 @@ static void synchronize() {
     parser.panicMode = false;
 
     while(parser.current.type != TOKEN_EOF) {
-        if(parser.current.type == TOKEN_SEMICOLON) return;
+        if(parser.previous.type == TOKEN_SEMICOLON) return;
 
         switch(parser.current.type) {
             case TOKEN_TAKE:
