@@ -6,8 +6,8 @@
 #include "table.h"
 #include "value.h"
 
-#define FRAMES_MAX 64u
-#define STACK_MAX (FRAMES_MAX * 256u)
+#define FRAMES_MAX 256
+#define STACK_MAX (FRAMES_MAX * 256)
 
 #define MAX_SAFE_INTEGER 9007199254740991
 #define MIN_SAFE_INTEGER -9007199254740992
