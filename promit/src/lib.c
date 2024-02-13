@@ -46,7 +46,7 @@ static ObjString* deniedStdin;
 static ObjString* deniedStdout;
 static ObjString* deniedStderr;
 
-static char* fileModes[] = { "r", "w", "r+", "w+", "a", "a+" };
+static char* fileModes[] = { "rb", "wb", "rb+", "wb+", "ab", "ab+" };
 
 static size_t fileOpened = 0u;
 
@@ -779,7 +779,7 @@ static NativePack _fileReadAll(VM* vm, int argCount, Value* values) {
 
     ObjString* string = VALUE_STRING(values[1]);
 
-    FILE* file = fopen(string -> buffer, "r");
+    FILE* file = fopen(string -> buffer, "rb");
 
     if(file == NULL) {
         pack.value = OBJECT_VAL(TAKE_STRING("", 0u, false));

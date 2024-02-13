@@ -1,4 +1,3 @@
-#include <memory.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>

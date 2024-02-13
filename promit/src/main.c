@@ -108,7 +108,7 @@ void repl(VM* vm) {
 }
 
 void runFile(VM* vm, const char* path) {
-    FILE* file = fopen(path, "r");
+    FILE* file = fopen(path, "rb");
 
     if(file == NULL) {
         fprintf(stderr, "[Error][VM]: Could not open file '%s'!\n", path);
