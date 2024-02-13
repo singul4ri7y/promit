@@ -1,0 +1,25 @@
+/**
+ * Demonstration of setting file include directory in Promit.
+ *
+ * Part of Promit Test Suit, location /test/IncludeFile/SetIncludePath.promit
+ *
+ * Created by SD Asif Hossein in 13th February, 2024 (Tuesday) at 07:13 PM (UTC +06).
+ */
+
+// You can specify a root directory where Promit can start looking 
+// files to include using the a System static function.
+// Use 'System::set_include_path(path)' to set a root include path.
+
+## Note: You can use 'System::get_include_path()' to get current root
+##       include path.
+
+showl 'Current include path: ${System::get_include_path()}';    // Output: 'Current include path: ./'
+
+// Now change the include path.
+System::set_include_path('directory');
+
+showl 'Include path after change: ${System::get_include_path()}';    // Output: 'Include path after change: directory/'
+
+// Now include.
+
+showl include('YetAnotherInclude');    // Output: 'Included with just the directory path!'

@@ -48,6 +48,7 @@ typedef struct {
     ObjUpvalue* openUpvalues;
     
     ObjString* initString;
+    ObjString* includePath;
     
     bool inREPL;
 } VM;

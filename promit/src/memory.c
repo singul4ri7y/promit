@@ -335,17 +335,16 @@ static void sweep() {
     }
 }
 
-// From lib.c
-
-extern void gcLibIgnore();
-
 void garbageCollector() {
     // Mark-sweep garbage collector.
     // First mark the roots and add them to gray stack for further references.
 
     markRoots();
     markCompilerRoots();
+
+    /* Ignore some VM and Library objects. */
     gcLibIgnore();
+    gcVMIgnore(currentVM);
 
     // Then trace the references of the roots in the gray stack.
     

@@ -1021,6 +1021,50 @@ static NativePack systemGetEnv(VM* vm, int argCount, Value* values) {
     return pack;
 }
 
+static NativePack systemSetIncludePath(VM* vm, int argCount, Value* values) {
+    initNativePack;
+
+    if(argCount < 2) return pack;
+
+    if(!IS_STRING(values[1])) {
+        NATIVE_R_ERR("Expected the first argument to be a string in System::set_include_path(path)!");
+    }
+
+    ObjString* value = VALUE_STRING(values[1]);
+
+    if(value -> length == 0) {
+        vm -> includePath = NULL;
+
+        return pack;
+    }
+
+    char* buffer = NULL;
+
+    // If we don't find any forward slash '/' in the path.
+    if(value -> buffer[value -> length - 1] != '/') {
+        buffer = ALLOCATE(char, value -> length + 2);
+
+        strcpy(buffer, value -> buffer);
+        strcpy(buffer + value -> length, "/");
+    }
+
+    if(buffer == NULL) 
+        vm -> includePath  = value;
+    else vm -> includePath = TAKE_STRING(buffer, strlen(buffer), true);
+
+    return pack;
+}
+
+static NativePack systemGetIncludePath(VM* vm, int argCount, Value* values) {
+    initNativePack;
+
+    if(vm -> includePath == NULL) 
+        pack.value = OBJECT_VAL(TAKE_STRING("./", 2, false));
+    else pack.value = OBJECT_VAL(vm -> includePath);
+
+    return pack;
+}
+
 extern ObjFile* vm_stdin;
 extern ObjFile* vm_stdout;
 
@@ -1038,6 +1082,8 @@ void initSystemLib(VM* vm) {
     defineStaticMethod(systemClass, TAKE_STRING("gc", 2u, false), systemGC);
     defineStaticMethod(systemClass, TAKE_STRING("pause", 5u, false), systemPause);
     defineStaticMethod(systemClass, TAKE_STRING("get_env", 7u, false), systemGetEnv);
+    defineStaticMethod(systemClass, TAKE_STRING("set_include_path", 16, false), systemSetIncludePath);
+    defineStaticMethod(systemClass, TAKE_STRING("get_include_path", 16, false), systemGetIncludePath);
     
     ObjInstance* systemStdin  = newInstance(vm, fileClass);
     ObjFile* fileStdin = newFile(vm);

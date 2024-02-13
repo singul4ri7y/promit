@@ -26,5 +26,7 @@ void markObject(Obj*);
 void garbageCollector();
 void freeObject(Obj* obj);
 void freeObjects();
+void gcLibIgnore();
+void gcVMIgnore(VM*);
 
 #endif

@@ -1,3 +1,4 @@
+#include <memory.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
@@ -7,6 +8,7 @@
 
 #include "object.h"
 #include "compiler.h"
+#include "memory.h"
 #include "lib.h"
 
 #ifdef DEBUG
@@ -46,8 +48,16 @@ static NativePack include(VM* vm, int argCount, Value* args) {
         NATIVE_R_ERR("Expected a full file name/path in include(promit_file)!");
     }
 
-    if(string -> buffer[0] == '.') {
+    if(string -> length >= 2 && string -> buffer[0] == '.' && string -> buffer[1] == '.') {
         NATIVE_R_ERR("Including files directly from parent directory is forbidden! Try using absolute path.");
+    }
+
+    char* inc_path = NULL;
+    size_t inc_siz = 0;
+
+    if(vm -> includePath != NULL) {
+        inc_path = vm -> includePath -> buffer;
+        inc_siz  = vm -> includePath -> length;
     }
 
     char* filepath = malloc((string -> length + 1) * sizeof(char));
@@ -66,10 +76,9 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
         strcpy(alternate_path, filepath);
 
-        free(filepath);
+        filepath = realloc(filepath, (string -> length + 8) * sizeof(char));
 
-        filepath = malloc((string -> length + 8) * sizeof(char));
-
+        /* Just to be sure. */
         strcpy(filepath, alternate_path);
 
         strcpy(alternate_path + string -> length, "/main.promit");
@@ -81,21 +90,43 @@ static NativePack include(VM* vm, int argCount, Value* args) {
         }
     }
 
+    char* buffer = NULL;
+
+    if(inc_path != NULL) {
+        buffer = malloc((strlen(filepath) + inc_siz + 1) * sizeof(char));
+
+        strcpy(buffer, inc_path);
+        strcpy(buffer + inc_siz, filepath);
+
+        free(filepath);
+        filepath = buffer;
+        
+        if(alternate_path != NULL) {
+            buffer = malloc((strlen(alternate_path) + inc_siz + 1) * sizeof(char));
+
+            strcpy(buffer, inc_path);
+            strcpy(buffer + inc_siz, alternate_path);
+
+            free(alternate_path);
+            alternate_path = buffer;
+        }
+    }
+
     FILE* file = fopen(filepath, "r");
 
     // Try alternate_path if filepath does not exist.
 
     if(file == NULL) {
-        file = fopen(alternate_path, "r");
+        if(alternate_path != NULL) {
+            file = fopen(alternate_path, "r");
 
-        if(file == NULL) {
-            free(filepath);
-
-            if(alternate_path != NULL) 
+            if(file == NULL) {
+                free(filepath);
                 free(alternate_path);
 
-            NATIVE_R_ERR("Failed to include file '%s'!", string -> buffer);
-        }
+                NATIVE_R_ERR("Failed to include module '%s'!", string -> buffer);
+            }
+        } else { NATIVE_R_ERR("Failed to include module '%s'!", string -> buffer); }
     }
 
     fseek(file, 0, SEEK_END);
@@ -104,7 +135,7 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
     rewind(file);
 
-    char* buffer = malloc((size + 1) * sizeof(char));
+    buffer = malloc((size + 1) * sizeof(char));
 
     if(buffer == NULL) {
         free(filepath);
@@ -142,22 +173,15 @@ static NativePack include(VM* vm, int argCount, Value* args) {
     if(result != INTERPRET_OK) {
         if(vm -> includeDepth == 0) 
             fprintf(stderr, "\nFailed to include file '%s' due to error!\n", string -> buffer);
-
-        free(filepath);
-
-        if(alternate_path != NULL) 
-            free(alternate_path);
-
-        free(buffer);
-        fclose(file);
-
+        
         pack.hadError = true;
 
-        return pack;
+        goto out;
     }
 
     pack.value = POP();
 
+out: 
     free(filepath);
 
     if(alternate_path != NULL) 
@@ -324,6 +348,13 @@ typedef struct WrapperStatus {
     bool hadError;
 } WrapperStatus;
 
+void gcVMIgnore(VM* vm) {
+    markObject((Obj*) vm -> initString);
+
+    if(vm -> includePath != NULL) 
+        markObject((Obj*) vm -> includePath);
+}
+
 ObjFile* vm_stdin;
 ObjFile* vm_stdout;
 
@@ -346,7 +377,8 @@ void initVM(VM* vm) {
     
     setMemoryVM(vm);
     
-    vm -> initString = TAKE_STRING("init", 4u, false);
+    vm -> initString  = TAKE_STRING("init", 4u, false);
+    vm -> includePath = NULL;
     
     resetStack(vm);
     
