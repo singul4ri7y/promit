@@ -46,7 +46,7 @@ static ObjString* deniedStdin;
 static ObjString* deniedStdout;
 static ObjString* deniedStderr;
 
-static char* fileModes[] = { "rb", "wb", "rb+", "wb+", "ab", "ab+" };
+static char* fileModes[] = { "r", "w", "r+", "w+", "a", "a+", "rb", "rb+", "wb", "wb+", "ab", "ab+" };
 
 static size_t fileOpened = 0u;
 
@@ -869,6 +869,12 @@ void initFileLib(VM* vm) {
     setStatic(fileClass, TAKE_STRING("MODE_HYPER_WRITE", 16u, false), NUMBER_VAL(3));
     setStatic(fileClass, TAKE_STRING("MODE_APPEND", 11u, false), NUMBER_VAL(4));
     setStatic(fileClass, TAKE_STRING("MODE_HYPER_APPEND", 17u, false), NUMBER_VAL(5));
+    setStatic(fileClass, TAKE_STRING("MODE_READ_RAW", 13u, false), NUMBER_VAL(6));
+    setStatic(fileClass, TAKE_STRING("MODE_HYPER_READ_RAW", 19u, false), NUMBER_VAL(7));
+    setStatic(fileClass, TAKE_STRING("MODE_WRITE_RAW", 14u, false), NUMBER_VAL(8));
+    setStatic(fileClass, TAKE_STRING("MODE_HYPER_WRITE_RAW", 20u, false), NUMBER_VAL(9));
+    setStatic(fileClass, TAKE_STRING("MODE_APPEND_RAW", 15u, false), NUMBER_VAL(10));
+    setStatic(fileClass, TAKE_STRING("MODE_HYPER_APPEND_RAW", 21u, false), NUMBER_VAL(11));
     setStatic(fileClass, TAKE_STRING("SEEK_BEGIN", 10u, false), NUMBER_VAL(SEEK_SET));
     setStatic(fileClass, TAKE_STRING("SEEK_CURSOR", 11u, false), NUMBER_VAL(SEEK_CUR));
     setStatic(fileClass, TAKE_STRING("SEEK_END", 8u, false), NUMBER_VAL(SEEK_END));

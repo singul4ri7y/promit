@@ -13,6 +13,12 @@
 // File::MODE_HYPER_READ -> Read and write mode
 // File::MODE_HYPER_WRITE -> Write and read mode
 // File::MODE_HYPER_APPEND -> Append and read mode
+// File::MODE_READ_RAW -> Read in binary mode.
+// File::MODE_WRITE_RAW -> Write in binary mode.
+// File::MODE_APPEND_RAW -> Append in binary mode.
+// File::MODE_HYPER_READ_RAW -> Read and write in binary mode.
+// File::MODE_HYPER_WRITE_RAW -> Write and read in binary mode.
+// file::MODE_HYPER_APPEND_RAW -> Append and read in binary mode.
 
 take file = File('common_file.txt', File::MODE_APPEND);
 
