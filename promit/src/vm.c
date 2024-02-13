@@ -111,13 +111,13 @@ static NativePack include(VM* vm, int argCount, Value* args) {
         }
     }
 
-    FILE* file = fopen(filepath, "r");
+    FILE* file = fopen(filepath, "rb");
 
     // Try alternate_path if filepath does not exist.
 
     if(file == NULL) {
         if(alternate_path != NULL) {
-            file = fopen(alternate_path, "r");
+            file = fopen(alternate_path, "rb");
 
             if(file == NULL) {
                 free(filepath);
