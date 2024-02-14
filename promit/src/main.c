@@ -4,7 +4,11 @@
 #include "vm.h"
 #include "object.h"
 
-void repl(VM* vm) {
+static void setVersionString(VM* vm) {
+    vm -> version = "Promit v0.5.0 (beta 4)";
+}
+
+static void repl(VM* vm) {
     char line[2048];
 
     puts("Welcome to Promit v0.5.0 (beta)\n"
@@ -172,6 +176,10 @@ int main(int argc, char** argv) {
 
     initVM(&vm);
 
+    // Set the version string.
+    
+    setVersionString(&vm);
+
     // If number of arguments is 1, then start read-eval-print loop.
     
     if(argc == 1) {
@@ -183,7 +191,7 @@ int main(int argc, char** argv) {
     }
     else if(argc > 1) {
         if(!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v")) 
-            printf("Promit v0.5.0 (beta 3)\n");
+            printf("%s\n", vm.version);
         else if(!strcmp(argv[1], "-c") || !strcmp(argv[1], "--command")) {
             if(argc < 3) {
                 fprintf(stderr, "Promit : No command string specified");

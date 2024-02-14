@@ -1071,6 +1071,14 @@ static NativePack systemGetIncludePath(VM* vm, int argCount, Value* values) {
     return pack;
 }
 
+static NativePack systemGetVersion(VM* vm, int argCount, Value* values) {
+    initNativePack;
+
+    pack.value = OBJECT_VAL(TAKE_STRING((char*) vm -> version, strlen(vm -> version), false));
+
+    return pack;
+}
+
 extern ObjFile* vm_stdin;
 extern ObjFile* vm_stdout;
 
@@ -1090,6 +1098,7 @@ void initSystemLib(VM* vm) {
     defineStaticMethod(systemClass, TAKE_STRING("get_env", 7u, false), systemGetEnv);
     defineStaticMethod(systemClass, TAKE_STRING("set_include_path", 16, false), systemSetIncludePath);
     defineStaticMethod(systemClass, TAKE_STRING("get_include_path", 16, false), systemGetIncludePath);
+    defineStaticMethod(systemClass, TAKE_STRING("get_version", 11, false), systemGetVersion);
     
     ObjInstance* systemStdin  = newInstance(vm, fileClass);
     ObjFile* fileStdin = newFile(vm);

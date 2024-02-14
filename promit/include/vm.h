@@ -28,6 +28,9 @@ typedef struct {
     CallFrame frames[FRAMES_MAX];
     short frameCount;
 
+    // The version string.
+    const char* version;
+
     short includeDepth;
     
     Value stack[STACK_MAX];
