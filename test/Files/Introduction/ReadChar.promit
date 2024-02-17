@@ -14,8 +14,8 @@
 take file = File('common_file.txt', File::MODE_READ);
 
 if(!file.is_opened()) {
-	System::print_error("Could not open file 'common_file.txt'");
-	System::exit(System::EXIT_FAILURE);
+    System::print_error("Could not open file 'common_file.txt'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 showl "Reading the whole 'common_file.txt' with 'File.readc()'...\n";
@@ -23,7 +23,7 @@ showl "Reading the whole 'common_file.txt' with 'File.readc()'...\n";
 take ch;
 
 while((ch = file.readc()) != File::EOF) 
-	show ch;
+    show ch;
 
 // Close the file.
 

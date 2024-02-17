@@ -14,9 +14,9 @@ show 'Enter the size of the triangle: ';
 take size = receive(num);
 
 for(take i = 0; i < size; i++) {
-	// Show loops.
+    // Show loops.
 
-	show(size - i) ' ';
-	show(i * 2 + 1) '*';
-	showl;
+    show(size - i) ' ';
+    show(i * 2 + 1) '*';
+    showl;
 }

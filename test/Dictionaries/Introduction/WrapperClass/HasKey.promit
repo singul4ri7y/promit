@@ -10,7 +10,7 @@
 // the dictionary or not.
 
 take dict = {
-	'exists' : 'Hell yeah!'
+    'exists' : 'Hell yeah!'
 };
 
 showl dict.has_key('does_not_exist');    // Output : false

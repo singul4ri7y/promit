@@ -10,9 +10,9 @@
 // pairs of a dictionary.
 
 take dict = {
-	a : 10,
-	b : 20,
-	c : 30
+    a : 10,
+    b : 20,
+    c : 30
 };
 
 showl len(dict);    // Output : 3

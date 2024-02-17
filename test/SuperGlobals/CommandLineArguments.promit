@@ -13,7 +13,7 @@
 showl 'Fetching all the command line arguments passed to this program...';
 
 for(take i = 0; i < len($_ARGS); i++) 
-	showl 'Command line argument at index $i is : ${$_ARGS[i]}';
+    showl 'Command line argument at index $i is : ${$_ARGS[i]}';
 
 
 showl "If you only see one argument, try passing several arguments by 'promit CommandLineArguments.promit arg1 arg2 arg3...'.";

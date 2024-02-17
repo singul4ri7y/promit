@@ -14,7 +14,7 @@
 take bird = 'Kuckoo';
 
 switch(bird) {
-	case 'Koel': showl 'The bird is Koel!'; break;
-	case 'Kuckoo': showl 'The bird is Kuckoo!'; break;
-	default: showl 'Donno.';
+    case 'Koel': showl 'The bird is Koel!'; break;
+    case 'Kuckoo': showl 'The bird is Kuckoo!'; break;
+    default: showl 'Donno.';
 }

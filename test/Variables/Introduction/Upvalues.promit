@@ -13,27 +13,27 @@
 // For example...
 
 fn callme() {
-	// This is a random local variable.
+    // This is a random local variable.
 
-	take name = 'SD Asif Hossein';
+    take name = 'SD Asif Hossein';
 
-	// Returning any random function.
+    // Returning any random function.
 
-	return fn x() {
-		// Now, we are printing the 'name' variable, which
-		// is defined in parent scope.
+    return fn x() {
+        // Now, we are printing the 'name' variable, which
+        // is defined in parent scope.
 
-		// But, as the function will be returned, 'callme'
-		// would have already been called. So, theres no way
-		// we can access 'name' variable, as due to be a local
-		// variable it will be destoryed/cleaned.
+        // But, as the function will be returned, 'callme'
+        // would have already been called. So, theres no way
+        // we can access 'name' variable, as due to be a local
+        // variable it will be destoryed/cleaned.
 
-		// In this scenerio, this function 'x' will capture the
-		// variable 'name' as an upvalue so that we can access
-		// the variable in absense of the actual vairable.
+        // In this scenerio, this function 'x' will capture the
+        // variable 'name' as an upvalue so that we can access
+        // the variable in absense of the actual vairable.
 
-		showl name;
-	};
+        showl name;
+    };
 }
 
 take func = callme();

@@ -22,14 +22,14 @@ take time1 = Time();
 take time2 = Time(445299453);    // Totally arbitrary.
 take time3 = Time(time1);        // Fork of another time object.
 take time4 = Time({
-	year  : 1963,
-	month : 3,
-	date  : 13,
-	hour  : 23,
-	min   : 59,
-	sec   : 59,
-	msec  : 444,    // Milliseconds
-	usec  : 333     // Microseocnds
+    year  : 1963,
+    month : 3,
+    date  : 13,
+    hour  : 23,
+    min   : 59,
+    sec   : 59,
+    msec  : 444,    // Milliseconds
+    usec  : 333     // Microseocnds
 });
 
 showl 'Simple time representations: ';

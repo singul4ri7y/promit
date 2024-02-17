@@ -17,16 +17,16 @@
 // Time::PREFER_UTC
 
 // {
-//	yea r -> The year
-//	month -> The month index
-//	date  -> The date
-//	day   -> The weekday index
-//	hour  -> The hour
-//	min   -> The minute
-//	sec   -> The second
-//	msec  -> The millisecond
-//	usec  -> The microsecond
-//	dls   -> Daylight saving details, 0 -> No DLS, 1 -> DLS is on.
+//    yea r -> The year
+//    month -> The month index
+//    date  -> The date
+//    day   -> The weekday index
+//    hour  -> The hour
+//    min   -> The minute
+//    sec   -> The second
+//    msec  -> The millisecond
+//    usec  -> The microsecond
+//    dls   -> Daylight saving details, 0 -> No DLS, 1 -> DLS is on.
 // }
 
 take time = Time();

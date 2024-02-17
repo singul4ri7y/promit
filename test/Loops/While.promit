@@ -12,10 +12,10 @@
 take num = 10;
 
 while(num--) 
-	showl 'Hello Promit!';
+    showl 'Hello Promit!';
 
 take i = 0;
 
 while(i++ < 10) {
-	showl 'Case #$i : Your solve!';
+    showl 'Case #$i : Your solve!';
 }

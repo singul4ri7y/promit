@@ -19,8 +19,8 @@ take file = File(name, File::MODE_WRITE);
 // error message and exit.
 
 if(!file.is_opened()) {
- 	System::print_error("Failed to create the file '$name'!");
-	System::exit(System::EXIT_FAILURE);
+     System::print_error("Failed to create the file '$name'!");
+    System::exit(System::EXIT_FAILURE);
 }
 
 // If the file is opened, receive every string input and write it to the file.
@@ -30,11 +30,11 @@ if(!file.is_opened()) {
 showl "Write '.done' to finish...";
 
 while((name = receive) != '.done') {
-	if(file.write_line(name) == File::EOF) {
-		System::stderr.write_line("An error occured while writing the line '$name'!");
+    if(file.write_line(name) == File::EOF) {
+        System::stderr.write_line("An error occured while writing the line '$name'!");
 
-		break;
-	}
+        break;
+    }
 }
 
 // Now close the file.

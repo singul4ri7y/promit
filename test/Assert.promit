@@ -15,9 +15,9 @@
 showl "If assertion is true, 'assert' function will return : ${assert(true)}";
 
 const class A {
-	__represent__() {
-		return false;
-	}
+    __represent__() {
+        return false;
+    }
 };
 
 showl 'This is an assertion error : ';

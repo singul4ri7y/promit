@@ -9,14 +9,14 @@
 // Base/super class.
 
 const class Base {
-	// Define any random field/property.
+    // Define any random field/property.
 
-	init() {
-		this.base_prop = "'Sup, from Base!";
-	}
+    init() {
+        this.base_prop = "'Sup, from Base!";
+    }
 
-	method1() {};
-	method2() {};
+    method1() {};
+    method2() {};
 };
 
 // In Promit, while defining a class, you can only
@@ -28,23 +28,23 @@ const class Base {
 // have to do that with 'this' keyword.
 
 const class Derived is Base {
-	get_method1() {
-		return super.method1;
-	}
+    get_method1() {
+        return super.method1;
+    }
 
-	get_method2() {
-		return super['method2'];
-	}
+    get_method2() {
+        return super['method2'];
+    }
 
-	print_super_value() {
-		// The right way to get superclass fields.
+    print_super_value() {
+        // The right way to get superclass fields.
 
-		showl this.base_prop;
+        showl this.base_prop;
 
-		// The wrong way.
+        // The wrong way.
 
-		showl super.base_prop;
-	}
+        showl super.base_prop;
+    }
 };
 
 // Intantiation.

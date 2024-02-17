@@ -24,8 +24,8 @@ showl file;    // Output : <File closed>
 file.reopen(File::MODE_APPEND);
 
 if(file.is_opened()) {
-	showl 'The file is now opened with append mode!';
-	showl "The 'file' variable : $file";
+    showl 'The file is now opened with append mode!';
+    showl "The 'file' variable : $file";
 }
 
 // Don't forget to close the file.

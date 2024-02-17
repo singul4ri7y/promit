@@ -12,61 +12,61 @@
 // Class to hold the matrix and calculate the summation. OOP style.
 
 class NumMatrix {
-	const init(matrix) {
-		// Number of matrix rows and columns.
+    const init(matrix) {
+        // Number of matrix rows and columns.
 
-		take row = len(matrix),
-		     col = len(matrix[0]);
+        take row = len(matrix),
+             col = len(matrix[0]);
 
-		// Create an empty matrix with equal number of rows and 
-		// columns.
+        // Create an empty matrix with equal number of rows and 
+        // columns.
 
-		this.p_Matrix = List(row);
+        this.p_Matrix = List(row);
 
-		// Cannot use 'List(row).fill(List(col));'.
-		// Cause fill() uses the same parameter (In this case 'List(col)')
-		// to fill in all the fields. So, if I am to make change to any of
-		// of the row, all the rows will be affected, as Objects are pass by
-		// reference in Promit.
+        // Cannot use 'List(row).fill(List(col));'.
+        // Cause fill() uses the same parameter (In this case 'List(col)')
+        // to fill in all the fields. So, if I am to make change to any of
+        // of the row, all the rows will be affected, as Objects are pass by
+        // reference in Promit.
 
-		// To fix this problem, creating seperate lists for each of the row.
+        // To fix this problem, creating seperate lists for each of the row.
 
-		this.p_Matrix.foreach(fn _(elem, index, matrix) {
-			matrix[index] = List(col);
-		});
+        this.p_Matrix.foreach(fn _(elem, index, matrix) {
+            matrix[index] = List(col);
+        });
 
-		// Now 2D prefix summation.
+        // Now 2D prefix summation.
 
-		take entry;
+        take entry;
 
-		for(take i = 0; i < row; i++) {
-			for(take j = 0; j < col; j++) {
-				entry = matrix[i][j];
+        for(take i = 0; i < row; i++) {
+            for(take j = 0; j < col; j++) {
+                entry = matrix[i][j];
 
-				if(i > 0) entry += this.p_Matrix[i - 1][j];
-				if(j > 0) entry += this.p_Matrix[i][j - 1];
+                if(i > 0) entry += this.p_Matrix[i - 1][j];
+                if(j > 0) entry += this.p_Matrix[i][j - 1];
 
-				if(i > 0 && j > 0) 
-					entry -= this.p_Matrix[i - 1][j - 1];
+                if(i > 0 && j > 0) 
+                    entry -= this.p_Matrix[i - 1][j - 1];
 
-				this.p_Matrix[i][j] = entry;
-			}
-		}
-	}
+                this.p_Matrix[i][j] = entry;
+            }
+        }
+    }
 
-	const sum_region(row1, col1, row2, col2) {
-		// Now just do the calculations without recursion.
+    const sum_region(row1, col1, row2, col2) {
+        // Now just do the calculations without recursion.
 
-		take sum = this.p_Matrix[row2][col2];
+        take sum = this.p_Matrix[row2][col2];
 
-		if(row1 > 0) sum -= this.p_Matrix[row1 - 1][col2];
-		if(col1 > 0) sum -= this.p_Matrix[row2][col1 - 1];
+        if(row1 > 0) sum -= this.p_Matrix[row1 - 1][col2];
+        if(col1 > 0) sum -= this.p_Matrix[row2][col1 - 1];
 
-		if(row1 > 0 && col1 > 0) 
-			sum += this.p_Matrix[row1 - 1][col1 - 1];
+        if(row1 > 0 && col1 > 0) 
+            sum += this.p_Matrix[row1 - 1][col1 - 1];
 
-		return sum;
-	}
+        return sum;
+    }
 }
 
 take raw_matrix = [ [3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5] ];
@@ -74,7 +74,7 @@ take raw_matrix = [ [3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0,
 showl 'The matrix we are using : ';
 
 raw_matrix.foreach(fn _(row) {
-	showl '   ->  ${row.join(', ')}';
+    showl '   ->  ${row.join(', ')}';
 });
 
 showl; /** Blank line. */

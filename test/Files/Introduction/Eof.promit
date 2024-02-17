@@ -12,8 +12,8 @@
 take file = File('common_file.txt', File::MODE_READ);
 
 if(!file.is_opened()) {
-	System::print_error("Could not open file 'common_file.txt'");
-	System::exit(System::EXIT_FAILURE);
+    System::print_error("Could not open file 'common_file.txt'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 showl 'File is at EOF : ${file.eof()}';    // Output : File is at EOF : false
@@ -26,7 +26,7 @@ showl "Now reading the whole 'common_file.txt' file...";
 take line;
 
 while((line = file.read_line(false)) != File::EOF) 
-	show line;
+    show line;
 
 showl 'After reading the whole file : ${file.eof()}';    // Output : After reading the whole file : true
 

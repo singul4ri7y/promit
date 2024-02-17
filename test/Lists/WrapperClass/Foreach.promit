@@ -13,13 +13,13 @@
 take list = ['Yo, ', 'this ', 'is ', 'a ', 'list', '!!'];
 
 list.foreach(fn(elem) {
-	show elem;
+    show elem;
 
-	// And do other stuff.
+    // And do other stuff.
 });    // Output : Yo, this is a list!!
 
 showl;
 
 // It's equivalent to :
 // for(take i = 0; i < len(list); i++) 
-// 	show list[i];
+//     show list[i];

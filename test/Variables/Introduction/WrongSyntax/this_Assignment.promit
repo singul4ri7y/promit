@@ -9,9 +9,9 @@
 // Assignment to 'this' is a method/bound-method is forbidden.
 
 const class Foo {
-	bar() {
-		this = 'Shut upp...!??';    // Error : [Error][Compilation][Line 13] at '=': Invalid left-hand assignment target!
-	}
+    bar() {
+        this = 'Shut upp...!??';    // Error : [Error][Compilation][Line 13] at '=': Invalid left-hand assignment target!
+    }
 };
 
 Foo().bar();

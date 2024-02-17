@@ -32,11 +32,11 @@ showl 'This is generated expression within a string : ${(100 - 1) / 77}';    // 
 showl 'This is a identifer interpolation : $global';
 
 {
-	take global = "But it's actually local!";
+    take global = "But it's actually local!";
 
-	showl 'Getting \$global : $global';      // Output : Getting $global : But it's actually local!
+    showl 'Getting \$global : $global';      // Output : Getting $global : But it's actually local!
 
-	showl 'Getting \$:global : $:global';    // Output : Getting $:global : A simple global!
+    showl 'Getting \$:global : $:global';    // Output : Getting $:global : A simple global!
 }
 
 // Nested string interpolation.

@@ -9,9 +9,9 @@
 // 'Dictionary.keys()' returns all the keys within a dictionary as a list.
 
 take dict = {
-	'Company' : 'BMW',
-	'Model'   : 'M3 GTR',
-	'Mileage' : 55.55
+    'Company' : 'BMW',
+    'Model'   : 'M3 GTR',
+    'Mileage' : 55.55
 };
 
 showl "All the keys of 'dict' are : ${dict.keys().join(', ')}";

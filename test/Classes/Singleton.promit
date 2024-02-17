@@ -11,19 +11,19 @@
 // Sorry for the weird naming.
 
 const class FryDB {
-	// Pass the database name to the constructor.
+    // Pass the database name to the constructor.
 
-	const init(db_name) {
-		this.db_name = db_name;
-	}
+    const init(db_name) {
+        this.db_name = db_name;
+    }
 
-	const query() {
-		showl 'Queried from ${this.db_name}!';
-	}
+    const query() {
+        showl 'Queried from ${this.db_name}!';
+    }
 
-	const static get_db() {
-		return FryDB('new_fry_database');
-	}
+    const static get_db() {
+        return FryDB('new_fry_database');
+    }
 };
 
 // Use of singleton method.

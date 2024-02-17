@@ -27,7 +27,7 @@ showl !!'';          // Output : false
 showl !![];          // Output : false
 showl !!{};          // Output : true
 showl !!{
-	__represent__: fn() { return false }
+    __represent__: fn() { return false }
 };                   // Ouptut : false
 showl !!System();    // Output : true
 showl !!File('dummy', File::MODE_READ);    // Output : true

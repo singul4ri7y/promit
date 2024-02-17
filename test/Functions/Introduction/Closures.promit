@@ -18,11 +18,11 @@
 // which also got closed in a local scope environment.
 
 const fn callme() {
-	take close_me = 'This value will be closed by another function!';
+    take close_me = 'This value will be closed by another function!';
 
-	return fn _() {
-		showl close_me;
-	};
+    return fn _() {
+        showl close_me;
+    };
 }
 
 take func = callme();

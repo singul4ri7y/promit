@@ -7,9 +7,9 @@
  */
 
 const class Foo {
-	say_hello() {
-		showl 'Foo said hello!';
-	}
+    say_hello() {
+        showl 'Foo said hello!';
+    }
 };
 
 const class Bar is Foo { /** Empty */ };

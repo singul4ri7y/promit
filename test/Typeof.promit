@@ -10,21 +10,21 @@
 // The 'typeof' keyword returns the type of a variable.
 
 const class A {
-	const hello() {}
+    const hello() {}
 
-	// Singleton.
+    // Singleton.
 
-	const static getA() { return A() }
+    const static getA() { return A() }
 };
 
 const fn callme() {
-	take x = 'XValue';
+    take x = 'XValue';
 
-	return fn x() {
-		showl typeof x;
+    return fn x() {
+        showl typeof x;
 
-		return true;
-	}
+        return true;
+    }
 }
 
 // Now all the types.

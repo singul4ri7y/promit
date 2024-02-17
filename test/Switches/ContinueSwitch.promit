@@ -14,17 +14,17 @@
 take number = 10;
 
 switch(number) {
-	case 10: {
-		showl 'This will print!';
-		continue;
-		showl 'This will not!';
-	}
+    case 10: {
+        showl 'This will print!';
+        continue;
+        showl 'This will not!';
+    }
 
-	case 20: {
-		showl 'The number is 20. Exiting from fallthrough!';
-		break;
-	}
+    case 20: {
+        showl 'The number is 20. Exiting from fallthrough!';
+        break;
+    }
 
-	case 30: showl 'A number!'; break;
-	default: showl 'Default!';
+    case 30: showl 'A number!'; break;
+    default: showl 'Default!';
 }

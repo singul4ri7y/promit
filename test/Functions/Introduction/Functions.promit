@@ -10,9 +10,9 @@
 // Use 'const' to make it constant.
 
 const fn any_function() {
-	showl "Printing from 'any_function'!";
+    showl "Printing from 'any_function'!";
 
-	return 'Returning from any function!';
+    return 'Returning from any function!';
 }
 
 // Here 'any_function' is just a variable of function

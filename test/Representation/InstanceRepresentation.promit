@@ -14,7 +14,7 @@
 // Take this example.
 
 const class RandomClass {
-	init() { this.random_prop = 'Random Value!' }
+    init() { this.random_prop = 'Random Value!' }
 };
 
 take random_instance = RandomClass();
@@ -29,10 +29,10 @@ showl random_instance;    // Output : <instance of 'RandomClass'>
 #        it's return value is going to be the representation.
 
 const class AnotherRandomClass {
-	init() { this.another_random_value = 'Another Random Value!' }
-	__represent__() {
-		return "An instance of 'Another Random Class' with '${this.another_random_value}' as value";
-	}
+    init() { this.another_random_value = 'Another Random Value!' }
+    __represent__() {
+        return "An instance of 'Another Random Class' with '${this.another_random_value}' as value";
+    }
 };
 
 const another_random_instance = AnotherRandomClass();
@@ -64,9 +64,9 @@ showl "The '__represent__' method comes in handy in other ways to, as it's ".app
 show 'Calculation with instance representation : ';
 
 const class A {
-	__represent__() {
-		return 101;
-	}
+    __represent__() {
+        return 101;
+    }
 };
 
 showl A() + 99;    // Output : 200

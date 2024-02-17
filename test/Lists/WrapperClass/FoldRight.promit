@@ -21,7 +21,7 @@ showl "Reversing the list, using 'List.fold'...";
 
 show 'Now list is : ';
 showl list.fold_right(fn _(acc, elem) {
-	acc.insert(elem);
+    acc.insert(elem);
 
-	return acc;
+    return acc;
 }, []).join(', ');

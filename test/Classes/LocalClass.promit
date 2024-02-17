@@ -9,11 +9,11 @@
 // I love 'const' :).
 
 const fn localize() {
-	const class Return {
-		feelings() { return 'Feels great to be a local!' }
-	};
+    const class Return {
+        feelings() { return 'Feels great to be a local!' }
+    };
 
-	return Return;
+    return Return;
 }
 
 // Now call the function, get the class and call

@@ -17,41 +17,41 @@
  */
 
 fn Combinations(list, r) {
-	// To clear the Object Reference.
+    // To clear the Object Reference.
 
-	list = list && list.slice() || [];
+    list = list && list.slice() || [];
 
-	take length = len(list);
+    take length = len(list);
 
-	// Base criteria 1.
+    // Base criteria 1.
 
-	if(!length || r > length || !r) 
-		return [ [] ];
+    if(!length || r > length || !r) 
+        return [ [] ];
 
-	// Base criteria 2.
+    // Base criteria 2.
 
-	else if(r == length) 
-		return [ list ];
-	
-	// Base criteria 3.
+    else if(r == length) 
+        return [ list ];
+    
+    // Base criteria 3.
 
-	if(r == 1) return list.fold(fn(x, elem) {
-		x.insert([ elem ]);
+    if(r == 1) return list.fold(fn(x, elem) {
+        x.insert([ elem ]);
 
-		return x;
-	}, []);
+        return x;
+    }, []);
 
-	// Get the first element from the list.
+    // Get the first element from the list.
 
-	take head = list.pop();
+    take head = list.pop();
 
-	// Generate the first set combinations and insert the head to the front.
+    // Generate the first set combinations and insert the head to the front.
 
-	return Combinations(list, r - 1).map(fn(x) {
-		x.insert_front(head);
+    return Combinations(list, r - 1).map(fn(x) {
+        x.insert_front(head);
 
-		return x;
-	}).append(Combinations(list, r));    // Append the second set of combinations.
+        return x;
+    }).append(Combinations(list, r));    // Append the second set of combinations.
 }
 
 // Calculate time for benchmarking.
@@ -63,7 +63,7 @@ take combinations = Combinations([ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 
 take length = len(combinations);
 
 for(take i = 0; i < length; i++) 
-	showl combinations[i];
+    showl combinations[i];
 
 showl 'Generated $length combinations!';
 showl 'Took ${Time::snap() - start_time} seconds (CPU)!';

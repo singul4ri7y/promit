@@ -15,7 +15,7 @@
 take global = 'This is a global variable!';
 
 {    // Creating a scope.
-	
-	// Show the variable.
-	showl global;
+    
+    // Show the variable.
+    showl global;
 }

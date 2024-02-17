@@ -17,8 +17,8 @@ take file = File('openme.txt', File::MODE_READ);
 // otherwise false.
 
 if(!file.is_opened()) {
-	System::print_error("Could not open file 'openme.txt'");
-	System::exit(System::EXIT_FAILURE);
+    System::print_error("Could not open file 'openme.txt'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 // Now read the first line and print it.
@@ -31,8 +31,8 @@ if(!file.is_opened()) {
 take read = file.read_line();
 
 if(read == File::EOF) {
-	System::stderr.write_line("Failed to read file 'openme.txt'");
-	System::exit(System::EXIT_FAILURE);
+    System::stderr.write_line("Failed to read file 'openme.txt'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 showl read;

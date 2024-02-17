@@ -10,19 +10,19 @@
 // Declaring fields within class is forbidden.
 
 const class AnyClass {
-	any_field = String(10149);    // Error : Fields only can be static in classes!
+    any_field = String(10149);    // Error : Fields only can be static in classes!
 };
 
 // The right way is,
 
 const class AnyClass {
-	init() {
-		this.any_field = String(10149);
-	}
+    init() {
+        this.any_field = String(10149);
+    }
 };
 
 // or, alternatively make it a static.
 
 const class AnyClass {
-	static any_static_field = String(10149);
+    static any_static_field = String(10149);
 };

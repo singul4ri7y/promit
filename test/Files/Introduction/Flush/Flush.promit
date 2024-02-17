@@ -11,13 +11,13 @@
 take file = File('flush_me.txt', File::MODE_WRITE);
 
 if(!file.is_opened()) {
-	Sysem::print_error("Failed to open file 'flush_me.txt'");
-	System::exit(System::EXIT_FAILURE);
+    Sysem::print_error("Failed to open file 'flush_me.txt'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 if(file.write_line('Contents wrote!') == File::EOF) {
-	System::stderr.write_line('Failed to write lines!');
-	System::exit(System::EXIT_FAILURE);
+    System::stderr.write_line('Failed to write lines!');
+    System::exit(System::EXIT_FAILURE);
 }
 
 // But if you open the file 'flush_me.txt',

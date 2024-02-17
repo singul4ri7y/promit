@@ -13,7 +13,7 @@
 take list = [];
 
 for(take i = 1; i <= 5; i++)
-	list.insert_front(i);
+    list.insert_front(i);
 
 showl 'List length after insertion : ${list.insert_front('A', 'B', 'C')}';    // Output : List length after insertion : 8
 showl list;    // Output : [ 'A', 'B', 'C', 5, 4, 3, 2, 1 ]

@@ -20,8 +20,8 @@ take file = File('binary', File::MODE_WRITE);
 // Check for file opening errors.
 
 if(!file.is_opened()) {
-	System::print_error("Could not open file 'binary'");
-	System::exit(System::EXIT_FAILURE);
+    System::print_error("Could not open file 'binary'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 take wrote;
@@ -31,8 +31,8 @@ take wrote;
 #        File.write(content)
 
 if((wrote = file.write(bytelist)) == File::EOF) {
-	System::stderr.write_line('Failed to write binary file!');
-	System::exit(System::EXIT_FAILURE);
+    System::stderr.write_line('Failed to write binary file!');
+    System::exit(System::EXIT_FAILURE);
 }
 
 showl 'Successfully wrote $wrote bytes!';

@@ -545,11 +545,20 @@ static size_t parseVariable(const char* errorMessage, bool isConst) {
 static int resolveLocal(Compiler* compiler, Token* token) {
     for(int i = compiler -> localCount - 1u; i >= 0; i--) {
         Local* local = compiler -> locals + i;
-        
-        if(local -> depth != -1 && local -> depth <= compiler -> scopeDepth && identifiersEqual(&local -> name, token)) 
-            return i;
+
+        if(identifiersEqual(&local -> name, token)) {
+            if(local -> depth == -1) {
+                error("Can't populate local with it's own initializer!");
+
+                goto out;
+            }
+
+            if(local -> depth <= compiler -> scopeDepth) 
+                return i;
+        }
     }
     
+out: 
     return -1;
 }
 

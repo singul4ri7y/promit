@@ -20,5 +20,5 @@ show 'Input a new filename : ';
 // Now renaming the file.
 
 if(System::rename(filename, receive)) 
-	showl 'File renaming successful!';
+    showl 'File renaming successful!';
 else System::stderr.write_line('File renaming failed!');

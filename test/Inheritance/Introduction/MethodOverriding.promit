@@ -7,23 +7,23 @@
  */
 
 const class Foo {
-	say_hello() {
-		showl 'Foo said hello!';
-	}
+    say_hello() {
+        showl 'Foo said hello!';
+    }
 };
 
 const class Bar is Foo {
-	// Overriding Foo's 'say_hello' method.
+    // Overriding Foo's 'say_hello' method.
 
-	say_hello() {
-		// Use 'super' keyword to access the superclass methods.
-		// Methods only, classes do not have regular fields unless
-		// it's been instantiated, which clearly, superclass is not.
+    say_hello() {
+        // Use 'super' keyword to access the superclass methods.
+        // Methods only, classes do not have regular fields unless
+        // it's been instantiated, which clearly, superclass is not.
 
-		super.say_hello();
+        super.say_hello();
 
-		showl 'So do Bar!';
-	}
+        showl 'So do Bar!';
+    }
 };
 
 // Instantiate the child class.

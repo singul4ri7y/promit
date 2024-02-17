@@ -11,32 +11,32 @@
 // But hey, atleast it can benchmark.
 
 const class Tree {
-	init(value, depth) {
-		// Set the value and depth.
+    init(value, depth) {
+        // Set the value and depth.
 
-		this.depth = depth;
-		this.value = value;
+        this.depth = depth;
+        this.value = value;
 
-		if(depth > 0) {
-			// Create left and right nodes.
+        if(depth > 0) {
+            // Create left and right nodes.
 
-			this.left  = Tree(value - 1, depth - 1);
-			this.right = Tree(2 * value + 1, depth - 1);
-		} else {
-			this.left  = null;
-			this.right = null;
-		}
-	}
+            this.left  = Tree(value - 1, depth - 1);
+            this.right = Tree(2 * value + 1, depth - 1);
+        } else {
+            this.left  = null;
+            this.right = null;
+        }
+    }
 
-	const check() {
-		// If current tree/node is a leaf node, just
-		// return the value.
+    const check() {
+        // If current tree/node is a leaf node, just
+        // return the value.
 
-		if(!this.left) 
-			return this.value;
-		
-		return this.value + this.right.check() - this.left.check();
-	}
+        if(!this.left) 
+            return this.value;
+        
+        return this.value + this.right.check() - this.left.check();
+    }
 };
 
 take minDepth = 4;
@@ -60,21 +60,21 @@ take long_lived_tree = Tree(0, maxDepth);
 take trees = 1;
 
 for(take i = 0; i < maxDepth; i++) 
-	trees *= 2;
+    trees *= 2;
 
 take check_count = 2;
 
 for(take i = minDepth ; i < maxDepth; i += 2) {
-	take check = 0;
+    take check = 0;
 
-	for(take j = 0; j < trees; j++) 
-		check += Tree(j, i).check() + Tree(-j, i).check();
-	
-	showl 'Number of trees : ${trees * 2}';
-	showl 'Current running depth : $i';
-	showl 'Check ${check_count++} : $check';
+    for(take j = 0; j < trees; j++) 
+        check += Tree(j, i).check() + Tree(-j, i).check();
+    
+    showl 'Number of trees : ${trees * 2}';
+    showl 'Current running depth : $i';
+    showl 'Check ${check_count++} : $check';
 
-	trees /= 4;
+    trees /= 4;
 }
 
 // Checking long_lived_tree, which been there for long.

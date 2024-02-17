@@ -16,17 +16,17 @@ take numbers = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 // The function we are going to use.
 
 const fn to_string(number, base) {
-	if(base < 2 || base > 36) {
-		System::stderr.write_line('Provided base should be in range of [2-36]!');
-		return '';
-	}
+    if(base < 2 || base > 36) {
+        System::stderr.write_line('Provided base should be in range of [2-36]!');
+        return '';
+    }
 
-	number |= 0;    // Convert it to an integer. All the bitwise operations in promit forces a number to be integer.
+    number |= 0;    // Convert it to an integer. All the bitwise operations in promit forces a number to be integer.
 
-	if(number < base) 
-		return numbers[number];
-	
-	return to_string(number / base, base) + numbers[number % base];
+    if(number < base) 
+        return numbers[number];
+    
+    return to_string(number / base, base) + numbers[number % base];
 }
 
 show 'Enter any integer number to be converted to string : ';

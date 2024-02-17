@@ -9,11 +9,11 @@
 // This is a class without constructor.
 
 class Constructorless {
-	// No constructor.
+    // No constructor.
 
-	grief() {
-		showl 'But I am not constructorless!';
-	}
+    grief() {
+        showl 'But I am not constructorless!';
+    }
 };
 
 // The above class is equivalent to :

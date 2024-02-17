@@ -11,9 +11,9 @@
 // with difference that it will return the values instead of the keys.
 
 take dict = {
-	'Company' : 'BMW',
-	'Model'   : 'M3 GTR',
-	'Mileage' : 55.55
+    'Company' : 'BMW',
+    'Model'   : 'M3 GTR',
+    'Mileage' : 55.55
 };
 
 showl "The values of 'dict' dictionary are : ${dict.values().join(', ')}";

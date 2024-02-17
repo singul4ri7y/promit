@@ -12,9 +12,9 @@
 take list = [];
 
 for(take i = 1; i <= 100; i++) 
-	list.insert(i);
+    list.insert(i);
 
 showl list;
 
 for(; len(list); ) 
-	showl 'The last element of list : ${list.shift()}';
+    showl 'The last element of list : ${list.shift()}';

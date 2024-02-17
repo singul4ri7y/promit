@@ -11,11 +11,11 @@
 // using the keyword 'static'.
 
 const class Dog {
-	const static type = 'German Shepherd';
+    const static type = 'German Shepherd';
 
-	const static show_type(type) {
-		showl type;
-	}
+    const static show_type(type) {
+        showl type;
+    }
 };
 
 // Access static fields using a double colon '::'.
@@ -25,7 +25,7 @@ Dog::show_type(Dog::type);    // Output : German Shepherd
 // Define a static property outside of class.
 
 Dog::bark = fn() {
-	showl 'Bark, bark!';
+    showl 'Bark, bark!';
 };
 
 Dog::bark();    // Output : Bark, bark!

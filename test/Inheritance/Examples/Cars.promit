@@ -9,36 +9,36 @@
 // A basic Car class will be used as a superclass.
 
 const class Car {
-	init(name, mileage) {
-		this.name    = name;
-		this.mileage = mileage;
-	}
+    init(name, mileage) {
+        this.name    = name;
+        this.mileage = mileage;
+    }
 
-	const description() {
-		// this.model will be defined by the child classes.
-		
-		showl 'Name : ${this.name}, Model : ${this.model} and Mileage : ${this.mileage}.';
-	}
+    const description() {
+        // this.model will be defined by the child classes.
+        
+        showl 'Name : ${this.name}, Model : ${this.model} and Mileage : ${this.mileage}.';
+    }
 };
 
 class BMW is Car {
-	const init(model) {
-		// Call the superclass constructor.
+    const init(model) {
+        // Call the superclass constructor.
 
-		super.init("BMW", 39.5);
+        super.init("BMW", 39.5);
 
-		this.model = model;
-	}
+        this.model = model;
+    }
 };
 
 class Audi is Car {
-	const init(model) {
-		// Call the superclass constructor.
+    const init(model) {
+        // Call the superclass constructor.
 
-		super.init("Audi", 14);
+        super.init("Audi", 14);
 
-		this.model = model;
-	}
+        this.model = model;
+    }
 };
 
 // Instantiate them.

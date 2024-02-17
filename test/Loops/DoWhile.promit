@@ -9,10 +9,10 @@
 // Promit also supports do.. while.. loops.
 
 do {
-	if('This condition is true') {
-		showl 'This is a very common use of do..while loop. Very useful though!';
-		break;
-	}
-	
-	showl 'Will not print!';
+    if('This condition is true') {
+        showl 'This is a very common use of do..while loop. Very useful though!';
+        break;
+    }
+    
+    showl 'Will not print!';
 } while(false);

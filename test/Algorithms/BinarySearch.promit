@@ -40,27 +40,27 @@ take left = 0, right = len(numbers) - 1, mid = Math::floor((left + right) / 2),
     count = 0;
 
 while(left != right) {
-	take number = numbers[mid];
+    take number = numbers[mid];
 
-	if(number == target) 
-		break;
-	
-	// Shrink according to the numbers position relative to the target
-	// number.
+    if(number == target) 
+        break;
+    
+    // Shrink according to the numbers position relative to the target
+    // number.
 
-	if(number > target) 
-		right = mid - 1;
-	else left = mid + 1;
+    if(number > target) 
+        right = mid - 1;
+    else left = mid + 1;
 
-	mid = Math::floor((left + right) / 2);
+    mid = Math::floor((left + right) / 2);
 
-	count++;
+    count++;
 }
 
 // If the number is found, print it.
 
 if(left != right || right == mid) 
-	showl 'The target number $target is found on index $mid!';
+    showl 'The target number $target is found on index $mid!';
 else showl 'The number not found!';
 
 // Print how many iteration occured.

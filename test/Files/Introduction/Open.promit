@@ -12,10 +12,10 @@
 take file = File('any_file.txt', File::MODE_READ);
 
 if(!file.is_opened()) {    // Which will be true
-	file.open('common_file.txt', File::MODE_READ);
+    file.open('common_file.txt', File::MODE_READ);
 
-	if(file.is_opened()) 
-		showl 'The new file is now opened!';
+    if(file.is_opened()) 
+        showl 'The new file is now opened!';
 }
 
 file.close();

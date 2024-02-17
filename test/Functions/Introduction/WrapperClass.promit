@@ -13,11 +13,11 @@
 // Function::pass(bound_method, receiver, [ args...]);
 
 const class A {
-	any_method(prop) {
-		showl "'this' is : $this";
+    any_method(prop) {
+        showl "'this' is : $this";
 
-		this.prop = prop;
-	}
+        this.prop = prop;
+    }
 };
 
 // Instantiation.

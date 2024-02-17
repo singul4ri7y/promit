@@ -17,30 +17,30 @@ take any_var = 'This is a global variable!';
 // Creating a scope, depth : 1.
 
 {
-	take any_var = 'This is same identifier local variable, depth : 1';
-	take local1  = 'Local variable 1';
+    take any_var = 'This is same identifier local variable, depth : 1';
+    take local1  = 'Local variable 1';
 
-	// Creating another scope, depth : 2.
+    // Creating another scope, depth : 2.
 
-	{
-		take any_var = 'This is a same identifier local variable, depth : 2';
-		take local2  = 'Local variable 2';
-	
-		// Creating scope, depth : 3.
+    {
+        take any_var = 'This is a same identifier local variable, depth : 2';
+        take local2  = 'Local variable 2';
+    
+        // Creating scope, depth : 3.
 
-		{
-			take any_var = 'This is a same identifier local variable, depth : 3';
-			take local3  = 'Local variable 3';
+        {
+            take any_var = 'This is a same identifier local variable, depth : 3';
+            take local3  = 'Local variable 3';
 
-			showl any_var;
+            showl any_var;
 
-			showl 'Local variables local1 : $local1, local2 : $local2 and local3 : $local3!';
-		}
+            showl 'Local variables local1 : $local1, local2 : $local2 and local3 : $local3!';
+        }
 
-		showl any_var;
-	}
+        showl any_var;
+    }
 
-	showl any_var;
+    showl any_var;
 }
 
 // The one and only global scope.

@@ -14,8 +14,8 @@
 take file = File('common_file.txt', File::MODE_READ);
 
 if(!file.is_opened()) {
-	System::print_error("Could not open file 'common_file.txt'");
-	System::exit(System::EXIT_FAILURE);
+    System::print_error("Could not open file 'common_file.txt'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 showl 'Reading a line from file...';

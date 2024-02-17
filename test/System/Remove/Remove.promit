@@ -13,5 +13,5 @@ showl "Try removing the 'delete_me' for example...";
 show 'Enter the filename to be removed : ';
 
 if(System::remove(receive)) 
-	showl 'File removed!';
+    showl 'File removed!';
 else System::stderr.write_line('Failed to remove file!');

@@ -26,10 +26,10 @@ take prime_data = List(range).fill(true);
 // index.
 
 for(take i = 2; i - 1 < range; i++) {
-	if(prime_data[i - 1] != false) {
-		for(take j = i * i; j - 1 < range; j += i) 
-			prime_data[j - 1] = false;
-	}
+    if(prime_data[i - 1] != false) {
+        for(take j = i * i; j - 1 < range; j += i) 
+            prime_data[j - 1] = false;
+    }
 }
 
 showl 'Identified all the prime numbers between the provided range.';
@@ -42,11 +42,11 @@ take count = 0;
 // Now print all the prime numbers, which are finally marked 
 
 prime_data.foreach(fn e(elem, i) {
-	if(elem) {
-		showl i + 1;
+    if(elem) {
+        showl i + 1;
 
-		count++;
-	}
+        count++;
+    }
 });
 
 showl '\n$count prime numbers printed!';

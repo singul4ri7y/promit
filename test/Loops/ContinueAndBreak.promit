@@ -13,12 +13,12 @@
 take i = 0;
 
 while(++i) {
-	if(i == 9) 
-		continue;    // Start from the very beginning of the loop.
-	
-	if(i == 20) break;
+    if(i == 9) 
+        continue;    // Start from the very beginning of the loop.
+    
+    if(i == 20) break;
 
-	showl "Now 'i' is : $i";
+    showl "Now 'i' is : $i";
 }
 
 showl "Notice no \"Now 'i' is : 9\"?";

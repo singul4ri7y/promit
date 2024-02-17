@@ -12,13 +12,13 @@
 // superclass's constructor will be called.
 
 class Base {
-	init(value) {
-		this.base_prop(const) = value;
-	}
+    init(value) {
+        this.base_prop(const) = value;
+    }
 
-	print_base_prop() {
-		showl this['base_prop'];
-	}
+    print_base_prop() {
+        showl this['base_prop'];
+    }
 };
 
 class Derived is Base { /** No constructor */ };

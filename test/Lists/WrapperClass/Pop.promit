@@ -14,10 +14,10 @@ take list = ['Pop me!', 'Not me!', 'Please, not me!!'];
 show 'The list we are using : ';
 
 list.foreach(fn _(elem, i) {
-	show "'$elem'";
+    show "'$elem'";
 
-	if(i + 1 < len(list)) 
-		show ', ';
+    if(i + 1 < len(list)) 
+        show ', ';
 });
 
 showl;
@@ -27,10 +27,10 @@ showl 'The first element of that list : ${list.pop()}';
 show 'Now the list is : ';
 
 list.foreach(fn(elem, i) {
-	show "'$elem'";
+    show "'$elem'";
 
-	if(i + 1 < len(list)) 
-		show ', ';
+    if(i + 1 < len(list)) 
+        show ', ';
 });
 
 // Creates just a new line.

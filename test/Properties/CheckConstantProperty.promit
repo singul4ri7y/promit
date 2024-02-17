@@ -13,8 +13,8 @@
 // Returns : Boolean | NaN
 
 take dict = {
-	request_time   : Time(),
-	in_sync(const) : false
+    request_time   : Time(),
+    in_sync(const) : false
 };
 
 showl is_const_prop(dict, 'request_time');    // Output : false
@@ -28,13 +28,13 @@ showl is_const_prop(dict, 'does_not_exist');    // Output : NaN
 // This also applies with instances the same way.
 
 class SomeClass {
-	init(num) {
-		this.num(const) = num;
-	}
+    init(num) {
+        this.num(const) = num;
+    }
 
-	const static print_num(num) {
-		showl num;
-	}
+    const static print_num(num) {
+        showl num;
+    }
 };
 
 showl is_const_prop(SomeClass(), 'num');    // Output : true

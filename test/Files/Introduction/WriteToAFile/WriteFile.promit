@@ -13,8 +13,8 @@
 take file = File('write_to_me.txt', File::MODE_WRITE);
 
 if(!file.is_opened()) {
-	System::print_error("Could not open file 'write_to_me.txt'");
-	System::exit(System::EXIT_FAILURE);
+    System::print_error("Could not open file 'write_to_me.txt'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 // Now write to the file.

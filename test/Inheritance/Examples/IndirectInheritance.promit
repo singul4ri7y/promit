@@ -10,18 +10,18 @@
 // presentable.
 
 const class Grandfather {
-	stick() {
-		showl 'My grandfather had a stick!';
-	}
+    stick() {
+        showl 'My grandfather had a stick!';
+    }
 };
 
 // Kinda, doesn't make sense.
 // But it's inheritance.
 
 const class Father is Grandfather {
-	glasses() {
-		showl 'My father loves those glasses!';
-	}
+    glasses() {
+        showl 'My father loves those glasses!';
+    }
 };
 
 const class Son is Father { /** Empty */ };

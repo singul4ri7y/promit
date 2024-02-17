@@ -9,9 +9,9 @@
 // Learn more about __represent__ in Representation section.
 
 const class Anything {
-	__represent__() {
-		return 501;
-	}
+    __represent__() {
+        return 501;
+    }
 };
 
 const dict   = { __represent__: fn() { return 100 } };

@@ -9,15 +9,15 @@
 // The default sorting function.
 
 fn sort(list, predicate) {
-	for(take i = 1; i < len(list); i++) {
-		for(take j = 0; j < len(list) - i; j++) {
-			if(predicate(list[j], list[j + 1])) {
-				take temp = list[j];
-				list[j] = list[j + 1];
-				list[j + 1] = temp;
-			}
-		}
-	}
+    for(take i = 1; i < len(list); i++) {
+        for(take j = 0; j < len(list) - i; j++) {
+            if(predicate(list[j], list[j + 1])) {
+                take temp = list[j];
+                list[j] = list[j + 1];
+                list[j + 1] = temp;
+            }
+        }
+    }
 }
 
 // The list to be sorted.

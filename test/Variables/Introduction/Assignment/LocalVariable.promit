@@ -10,9 +10,9 @@
 // Every variable inside any scope is a local variable.
 
 {
-	take local = 'This is a local variable!';
+    take local = 'This is a local variable!';
 
-	showl local;
+    showl local;
 }
 
 // The following will trigger an error.

@@ -23,8 +23,8 @@
 take file = File('common_file.txt', File::MODE_APPEND);
 
 if(!file.is_opened()) {
-	System::print_error("Could not open file 'common_file.txt'");
-	System::exit(System::EXIT_FAILURE);
+    System::print_error("Could not open file 'common_file.txt'");
+    System::exit(System::EXIT_FAILURE);
 }
 
 file.write_line('This is an appended line.');

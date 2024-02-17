@@ -11,7 +11,7 @@
 // name to make it a constant property.
 
 take dict = {
-	'name'(const) : 'SD Asif Hossein'
+    'name'(const) : 'SD Asif Hossein'
 };
 
 // Read more about constant properties at Properties section.

@@ -16,15 +16,15 @@
 // (3) Alwyas has instance bounded within it.
 
 const class A {
-	any_method(prop) {
-		// Characteristic 1.
+    any_method(prop) {
+        // Characteristic 1.
 
-		this.prop = prop;    // Where 'this' denotes current instance.
+        this.prop = prop;    // Where 'this' denotes current instance.
 
-		# Note : 'super' denotes super class. Not super instance.
+        # Note : 'super' denotes super class. Not super instance.
 
-		return prop;
-	}
+        return prop;
+    }
 };
 
 // Characteristic 2.

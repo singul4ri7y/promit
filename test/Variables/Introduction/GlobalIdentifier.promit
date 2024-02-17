@@ -16,13 +16,13 @@ take your_name = 'Your name (global)!';
 // Scope.
 
 {
-	take your_name = 'Your name (local)!';
+    take your_name = 'Your name (local)!';
 
-	// This will show local 'your_name'.
-	
-	showl your_name;
+    // This will show local 'your_name'.
+    
+    showl your_name;
 
-	// But this will show global 'your_name'.
+    // But this will show global 'your_name'.
 
-	showl :your_name;
+    showl :your_name;
 }

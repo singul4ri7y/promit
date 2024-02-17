@@ -9,7 +9,7 @@
 // Use the del keyword to delete a static property.
 
 const class Car {
-	const static model = 'BMW M3 GTR';
+    const static model = 'BMW M3 GTR';
 };
 
 del Car::model;

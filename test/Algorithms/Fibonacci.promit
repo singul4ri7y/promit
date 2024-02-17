@@ -11,22 +11,22 @@
 // and 'data' as tabulation table to find existing calculated fibonaccis.
 
 fn fib(n, data) {
-	if(n < len(data)) 
-		return data[n];
-	
-	return (data[n] = fib(n - 1, data) + fib(n - 2, data));
+    if(n < len(data)) 
+        return data[n];
+    
+    return (data[n] = fib(n - 1, data) + fib(n - 2, data));
 }
 
 // To find the position string like st, nd, rd etc.
 
 fn position(n) {
-	switch(n % 10) {
-		case 1: return 'st';
-		case 2: return 'nd';
-		case 3: return 'rd';
-	}
+    switch(n % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+    }
 
-	return 'th';
+    return 'th';
 }
 
 // Take input about which number of fibonacci user wish to identify.

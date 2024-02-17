@@ -15,5 +15,5 @@
 take list = [101, 202, 303, 404, 505];
 
 showl list.map(fn _(elem) {
-	return elem * 2;
+    return elem * 2;
 }).join(', ');    // Output : 202, 404, 606, 808, 1010
