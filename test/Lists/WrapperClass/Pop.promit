@@ -3,36 +3,14 @@
  *
  * Part of Promit Test Suit, location /test/Lists/Introduction/WrapperClass/Pop.promit
  *
- * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 12:05 AM (UTC +06).
+ * Created by SD Asif Hossein in 30th June, 2022 (Thursday) at 12:48 AM (UTC +06).
  */
 
-// 'List.pop()' pops the very first element out of the list
-// and returns it.
+// 'List.pop' pops out the very last element
+// of the list. The list acts as a stack.
 
-take list = ['Pop me!', 'Not me!', 'Please, not me!!'];
+take list = [ 1, 2, 3, 4, 5 ];
 
-show 'The list we are using : ';
-
-list.foreach(fn _(elem, i) {
-    show "'$elem'";
-
-    if(i + 1 < len(list)) 
-        show ', ';
-});
-
-showl;
-
-showl 'The first element of that list : ${list.pop()}';
-
-show 'Now the list is : ';
-
-list.foreach(fn(elem, i) {
-    show "'$elem'";
-
-    if(i + 1 < len(list)) 
-        show ', ';
-});
-
-// Creates just a new line.
-
-showl;
+showl 'The list we are using : ${list.join(', ')}';
+showl 'The last element after shift : ${list.pop()}';
+showl 'The list now : ${list.join(', ')}';

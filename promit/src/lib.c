@@ -4507,7 +4507,7 @@ static NativePack listAppend(VM* vm, int argCount, Value* values) {
     return pack;
 }
 
-static NativePack listPop(VM* vm, int argCount, Value* values) {
+static NativePack listShift(VM* vm, int argCount, Value* values) {
     initNativePack;
 
     listInstanceList;
@@ -4667,7 +4667,7 @@ static NativePack listSlice(VM* vm, int argCount, Value* values) {
     return pack;
 }
 
-static NativePack listShift(VM* vm, int argCount, Value* values) {
+static NativePack listPop(VM* vm, int argCount, Value* values) {
     initNativePack;
 
     listInstanceList;
