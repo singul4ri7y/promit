@@ -134,7 +134,7 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
     rewind(file);
 
-    buffer = malloc((size + 1) * sizeof(char));
+    buffer = ALLOCATE(char, size + 1);
 
     if(buffer == NULL) {
         free(filepath);
@@ -152,6 +152,25 @@ static NativePack include(VM* vm, int argCount, Value* args) {
     fread(buffer, size, sizeof(char), file);
 
     buffer[size] = 0;
+
+    // Check whether the module has already been included or not.
+    
+    string = TAKE_STRING(buffer, strlen(buffer), true);
+
+    // Save the 'string' from GC.
+
+    PUSH(OBJECT_VAL(string));
+
+    ValueContainer valueContainer;
+
+    if(tableGet(&vm -> modules, string, &valueContainer)) {
+        // The module exists. Now return the value.
+        pack.value = valueContainer.value;
+
+        goto out;
+    }
+
+    /* NOW LOAD AND ADD THE MODULE TO THE MODULES TABLE. */
 
     // Update include depth.
 
@@ -180,13 +199,16 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
     pack.value = POP();
 
+    tableInsert(&vm -> modules, string, (ValueContainer) { pack.value, true });
+
+    POP();    // The saved 'string'.
+
 out: 
     free(filepath);
 
     if(alternate_path != NULL) 
         free(alternate_path);
 
-    free(buffer);
     fclose(file);
 
     return pack;
@@ -352,6 +374,10 @@ void gcVMIgnore(VM* vm) {
 
     if(vm -> includePath != NULL) 
         markObject((Obj*) vm -> includePath);
+
+    // Mark the modules table.
+    
+    markTable(&vm -> modules);
 }
 
 ObjFile* vm_stdin;
@@ -373,6 +399,7 @@ void initVM(VM* vm) {
     
     initTable(&vm -> globals);
     initTable(&vm -> strings);
+    initTable(&vm -> modules);
     
     setMemoryVM(vm);
     
@@ -409,6 +436,7 @@ void freeVM(VM* vm) {
     
     freeTable(&vm -> globals);
     freeTable(&vm -> strings);
+    freeTable(&vm -> modules);
 }
 
 // Search through the opened upvalues in the vm structure and capture one.
@@ -530,8 +558,15 @@ bool callValue(VM* vm, Value callee, uint8_t argCount) {
                 ObjNative* native = VALUE_NATIVE(callee);
                 
                 NativeFn function = native -> function;
+
+                // Save the previous stack location, so that it can be restored to 
+                // pop out the pushed stack values if something goes wrong.
+
+                int current_stack = vm -> stackTop;
                 
                 NativePack result = function(vm, argCount + 1, vm -> stack + vm -> stackTop - argCount - 1u);
+
+                vm -> stackTop = current_stack;
                 
                 if(!result.hadError) {
                     vm -> stackTop -= argCount + 1u;

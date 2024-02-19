@@ -38,6 +38,7 @@ typedef struct {
     
     Table globals;
     Table strings;
+    Table modules;
 
     Obj* objects;
 
