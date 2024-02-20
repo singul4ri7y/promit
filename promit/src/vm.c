@@ -155,15 +155,15 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
     // Check whether the module has already been included or not.
     
-    string = TAKE_STRING(buffer, strlen(buffer), true);
+    ObjString* content = TAKE_STRING(buffer, strlen(buffer), true);
 
-    // Save the 'string' from GC.
+    // Save the 'content' from GC.
 
-    PUSH(OBJECT_VAL(string));
+    PUSH(OBJECT_VAL(content));
 
     ValueContainer valueContainer;
 
-    if(tableGet(&vm -> modules, string, &valueContainer)) {
+    if(tableGet(&vm -> modules, content, &valueContainer)) {
         // The module exists. Now return the value.
         pack.value = valueContainer.value;
 
@@ -199,9 +199,9 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
     pack.value = POP();
 
-    tableInsert(&vm -> modules, string, (ValueContainer) { pack.value, true });
+    tableInsert(&vm -> modules, content, (ValueContainer) { pack.value, true });
 
-    POP();    // The saved 'string'.
+    POP();    // The saved 'content'.
 
 out: 
     free(filepath);
