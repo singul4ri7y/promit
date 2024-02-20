@@ -5,7 +5,7 @@
 #include "object.h"
 
 static void setVersionString(VM* vm) {
-    vm -> version = "Promit v0.5.0 (beta 4)";
+    vm -> version = "Promit v0.5.0 (Beta 5)";
 }
 
 static void repl(VM* vm) {
