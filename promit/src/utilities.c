@@ -150,6 +150,14 @@ double pstrtod(const char* str) {
 
 #ifdef _WIN32
 
+char* p_abs_path(const char* r_path) {
+    char* resolve = ALLOCATE(char, FILEPATH_MAX);
+
+    (void) GetFullPathNameA(r_path, FILEPATH_MAX, resolve, NULL);
+
+    return resolve;
+}
+
 int gettimeofday(struct timeval* tp, struct timeval* tzp) {
     // EPOCH from 00:00:00 January 1, 1970. Windows epoch is 
     // different from Unix.
@@ -172,6 +180,16 @@ int gettimeofday(struct timeval* tp, struct timeval* tzp) {
 }
 
 #elif defined(__unix__) || defined(__MACH__)
+#define __USE_XOPEN_EXTENDED 1
+#include <stdlib.h>
+
+char* p_abs_path(const char* r_path) {
+    char* resolved = ALLOCATE(char, FILEPATH_MAX + 1);
+
+    (void) realpath(r_path, resolved);
+
+    return resolved;
+}
 
 void getch() {
     struct termios old, current;

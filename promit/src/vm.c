@@ -111,6 +111,8 @@ static NativePack include(VM* vm, int argCount, Value* args) {
         }
     }
 
+    char* used_path = filepath;
+
     FILE* file = fopen(filepath, "rb");
 
     // Try alternate_path if filepath does not exist.
@@ -125,6 +127,8 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
                 NATIVE_R_ERR("Failed to include module '%s'!", string -> buffer);
             }
+
+            used_path = alternate_path;
         } else { NATIVE_R_ERR("Failed to include module '%s'!", string -> buffer); }
     }
 
@@ -154,20 +158,26 @@ static NativePack include(VM* vm, int argCount, Value* args) {
     buffer[size] = 0;
 
     // Check whether the module has already been included or not.
+
+    used_path = p_abs_path(used_path);
+
+    if(used_path == NULL) {
+        NATIVE_R_ERR("Failed to get the absolute path of the module! Aborting include.");
+    }
     
-    ObjString* content = TAKE_STRING(buffer, strlen(buffer), true);
+    ObjString* resolver = TAKE_STRING(used_path, strlen(used_path), true);
 
-    // Save the 'content' from GC.
+    // Save the 'resolver' from GC.
 
-    PUSH(OBJECT_VAL(content));
+    PUSH(OBJECT_VAL(resolver));
 
     ValueContainer valueContainer;
 
-    if(tableGet(&vm -> modules, content, &valueContainer)) {
+    if(tableGet(&vm -> modules, resolver, &valueContainer)) {
         // The module exists. Now return the value.
         pack.value = valueContainer.value;
 
-        goto out;
+        goto got_it;
     }
 
     /* NOW LOAD AND ADD THE MODULE TO THE MODULES TABLE. */
@@ -199,8 +209,9 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
     pack.value = POP();
 
-    tableInsert(&vm -> modules, content, (ValueContainer) { pack.value, true });
+    tableInsert(&vm -> modules, resolver, (ValueContainer) { pack.value, true });
 
+got_it:
     POP();    // The saved 'content'.
 
 out: 
@@ -208,6 +219,8 @@ out:
 
     if(alternate_path != NULL) 
         free(alternate_path);
+
+    free(buffer);
 
     fclose(file);
 

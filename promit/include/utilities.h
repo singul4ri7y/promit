@@ -8,11 +8,11 @@
  * Implementations can be found on: https://github.com/lattera/freebsd/blob/master/contrib/file/getline.c
  */
 
-// Only for non-POSIX operating system such as Windows.
-
-
 #ifndef _promit_utilites_
 #define _promit_utilites_
+
+// Maximum file path length Promit will allow.
+#define FILEPATH_MAX    1024
 
 #include <stdlib.h>
 
@@ -33,6 +33,9 @@ extern char* get_string();
 // String to double.
 
 extern double pstrtod(const char*);
+
+// Get the absolute path of a file.
+char* p_abs_path(const char*);
 
 #ifdef _WIN32
 #include <conio.h>

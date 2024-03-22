@@ -43,7 +43,7 @@ fn Combinations(list, r) {
 
     // Get the first element from the list.
 
-    take head = list.pop();
+    take head = list.shift();
 
     // Generate the first set combinations and insert the head to the front.
 
