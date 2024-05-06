@@ -6348,6 +6348,8 @@ static NativePack stringUppercase(VM* vm, int argCount, Value* values) {
         buffer[i] = ch >= 97 && ch <= 123 ? ch & 0xDF : ch;
     }
 
+    buffer[string -> length] = '\0';
+
     pack.value = OBJECT_VAL(TAKE_STRING(buffer, string -> length, true));
 
     return pack;
@@ -6365,6 +6367,8 @@ static NativePack stringLowercase(VM* vm, int argCount, Value* values) {
 
         buffer[i] = ch >= 65 && ch <= 91 ? ch | 0x20 : ch;
     }
+
+    buffer[string -> length] = '\0';
 
     pack.value = OBJECT_VAL(TAKE_STRING(buffer, string -> length, true));
 
