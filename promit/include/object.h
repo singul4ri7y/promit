@@ -41,6 +41,9 @@ struct ObjFunction {
     Chunk chunk;
     int upvalueCount;
     ObjString* name;
+
+    /* The module where the function belong. */
+    const char* module;
 };
 
 struct ObjUpvalue {

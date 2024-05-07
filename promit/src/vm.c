@@ -192,7 +192,7 @@ static NativePack include(VM* vm, int argCount, Value* args) {
 
     vm -> inREPL = false;
 
-    InterpretResult result = interpret(vm, buffer, true);
+    InterpretResult result = interpret(vm, buffer, resolver -> buffer);
 
     vm -> inREPL = repl;
 
@@ -491,7 +491,7 @@ static ObjFunction* getFunction(Obj* callee) {
 }
 
 void runtimeError(VM* vm, const char* format, ...) {
-    fprintf(stderr, "[Error][Runtime]: ");
+    fprintf(stderr, "Runtime error: ");
 
     va_list args;
 
@@ -513,7 +513,8 @@ void runtimeError(VM* vm, const char* format, ...) {
             
             size_t instruction = frame -> ip - function -> chunk.code - 1;
             
-            fprintf(stderr, "  [line %d] in ", getLine(&function -> chunk, instruction));
+            fprintf(stderr, "  on module '%s':\n", function -> module ? function -> module : "host");
+            fprintf(stderr, "    in line %d at ", getLine(&function -> chunk, instruction));
             
             if(function -> name == NULL) 
                 fprintf(stderr, "function anonymous()\n");
@@ -6272,8 +6273,8 @@ InterpretResult run(VM* vm) {
 
 #undef READ_BYTE
 
-InterpretResult interpret(VM* vm, const char* source, bool included) {
-    ObjFunction* function = compile(vm, source, included);
+InterpretResult interpret(VM* vm, const char* source, const char* module) {
+    ObjFunction* function = compile(vm, source, module);
     
     if(function == NULL) 
         return INTERPRET_COMPILATION_ERROR;

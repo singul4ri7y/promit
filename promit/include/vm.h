@@ -78,7 +78,7 @@ bool callValue(VM*, Value, uint8_t);
 void initVM(VM*); 
 void freeVM(VM*);
 InterpretResult run(VM*);
-InterpretResult interpret(VM*, const char*, bool);
+InterpretResult interpret(VM*, const char*, const char*);
 void runtimeError(VM*, const char*, ...);
 
 void resetStack(VM*);

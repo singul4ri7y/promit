@@ -18,6 +18,7 @@ typedef struct {
     Token current;
     bool hadError;
     bool panicMode;
+    bool modulePrint;
 } Parser;
 
 typedef struct {
@@ -55,7 +56,8 @@ typedef struct {
 typedef struct Compiler {
     struct Compiler* enclosing;
 
-    bool included;
+    /* The module we are currently compiling. */
+    const char* module;
     
     ObjFunction* function;
     FunctionType type;
@@ -86,9 +88,9 @@ typedef struct Flow {
 
 static Parser parser;
 
-static Compiler* current = NULL;
+static Compiler* current           = NULL;
 static ClassCompiler* currentClass = NULL;
-static Flow* currentFlow = NULL;        // Innermost loop scope. For 'continue' and 'break'.
+static Flow* currentFlow           = NULL;        // Innermost loop scope. For 'continue' and 'break'.
 
 typedef enum {
     PREC_NONE, 
@@ -157,7 +159,7 @@ static void pushContinueRequest(uint32_t codePoint) {
 static void advance();
 static void addLocal(const Token*, bool);
 
-static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
+static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr, const char* module) {
     compiler -> enclosing = current;
     
     compiler -> function = NULL;
@@ -181,6 +183,8 @@ static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
     compiler -> function = newFunction(getVM());
     compiler -> function -> upvalueCount = 0u;
 
+    compiler -> module = module;
+
     current = compiler;
 
     Token token;
@@ -193,8 +197,6 @@ static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
     if(!inExpr) {
         if(type != TYPE_PROGRAM) 
             compiler -> function -> name = copyString(getVM(), parser.previous.start, parser.previous.length);
-        else if(compiler -> included) 
-            compiler -> function -> name = takeString(getVM(), "__include_wrapper__", 19u, false);
         else compiler -> function -> name = takeString(getVM(), "main", 4u, false);
     }
     else if(parser.current.type == TOKEN_IDENTIFIER) {
@@ -202,6 +204,9 @@ static void initCompiler(Compiler* compiler, FunctionType type, bool inExpr) {
 
         compiler -> function -> name = copyString(getVM(), parser.previous.start, parser.previous.length);
     }
+
+    /* Set the function module. */
+    compiler -> function -> module = module;
     
     Local* local = &current -> locals[current -> localCount - 1u];
     
@@ -226,12 +231,18 @@ static void freeCompiler(Compiler* compiler) {
 static void errorAt(Token* token, const char* message) {
     if(parser.panicMode) return;
 
-    parser.panicMode = true;
+    parser.panicMode   = true;
 
-    fprintf(stderr, "[Error][Compilation][Line %d]", token -> line);
+    if(!parser.modulePrint) {
+        fprintf(stderr, "Compilation error in module '%s':\n", current -> module ? 
+                current -> module : "host");
+        parser.modulePrint = true;
+    }
+
+    fprintf(stderr, "    In line %d", token -> line);
 
     if(token -> type == TOKEN_EOF) 
-        fprintf(stderr, " in the end");
+        fprintf(stderr, " at the end");
     else if(token -> type != TOKEN_ERROR) 
         fprintf(stderr, " at '%.*s'", token -> length, token -> start);
 
@@ -1668,8 +1679,6 @@ static void switchStatement() {
 
             prevCase = emitJump(OP_JUMP_IF_FALSE);
 
-            emitByte(OP_SILENT_POP);
-
             if(fallthroughCase != -1) {
                 patchJump(fallthroughCase);
                 fallthroughCase = -1;
@@ -1701,8 +1710,6 @@ static void switchStatement() {
                 prevCase = -1;
             }
 
-            emitByte(OP_SILENT_POP);
-
             if(fallthroughCase != -1) {
                 patchJump(fallthroughCase);
                 fallthroughCase = -1;
@@ -1728,13 +1735,12 @@ static void switchStatement() {
     if(prevCase != -1) 
         patchJump(prevCase);
 
-    if(!foundDefault)
-        emitByte(OP_SILENT_POP);
-
     if(fallthroughCase != -1) 
         patchJump(fallthroughCase);
 
     patchBreaks(depth);
+
+    emitByte(OP_SILENT_POP);
 
     endFlow();
 }
@@ -1797,7 +1803,7 @@ static void showStatement(bool nl) {
 }
 
 static void returnStatement() {
-    if(current -> type == TYPE_PROGRAM && !current -> included) 
+    if(current -> type == TYPE_PROGRAM && current -> module == NULL) 
         error("Cannot return from top level program unless it's included!");
     
     if (match(TOKEN_SEMICOLON)) 
@@ -2034,7 +2040,7 @@ static void or(bool canAssign) {
 static void function(FunctionType type, bool inExpr) {
     Compiler compiler;
     
-    initCompiler(&compiler, type, inExpr);
+    initCompiler(&compiler, type, inExpr, current -> module);
     
     beginScope();
     
@@ -2296,24 +2302,18 @@ static void declaration() {
     if(parser.panicMode) synchronize();
 }
 
-ObjFunction* compile(VM* vm, const char* source, bool included) {
+ObjFunction* compile(VM* vm, const char* source, const char* module) {
     Scanner scanner;
 
     initScanner(&scanner, source);
 
-    parser.hadError = parser.panicMode = false;
+    parser.hadError = parser.panicMode = parser.modulePrint = false;
     
     globalScanner = &scanner;
     globalVM      = vm;
 
     Compiler compiler;
-
-    // It is important to set 'included' property
-    // before calling initCompiler().
-
-    compiler.included = included;
-
-    initCompiler(&compiler, TYPE_PROGRAM, false);
+    initCompiler(&compiler, TYPE_PROGRAM, false, module);
 
     advance();
 

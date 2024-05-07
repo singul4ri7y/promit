@@ -4,15 +4,17 @@
 #include "vm.h"
 #include "object.h"
 
+const char* const VERSION = "Promit v0.5.0 (Beta 6)";
+
 static void setVersionString(VM* vm) {
-    vm -> version = "Promit v0.5.0 (Beta 5)";
+    vm -> version = VERSION;
 }
 
 static void repl(VM* vm) {
     char line[2048];
 
-    puts("Welcome to Promit v0.5.0 (beta)\n"
-         "Type '.help' for more information.\n");
+    printf("Welcome to %s\n"
+         "Type '.help' for more information.\n\n", VERSION);
 
     while(true) {
         printf("[promit] => ");
@@ -71,7 +73,7 @@ static void repl(VM* vm) {
 
                             editorMode = false;
 
-                            interpret(vm, buffer, false);
+                            interpret(vm, buffer, NULL);
                             
                             puts("");
                             
@@ -93,7 +95,7 @@ static void repl(VM* vm) {
                         strcpy(buffer + top, line);
 
                         top += len;
-                    } else interpret(vm, buffer, false);
+                    } else interpret(vm, buffer, NULL);
                 }
                 
                 free(buffer);
@@ -107,7 +109,7 @@ static void repl(VM* vm) {
                 exit(EXIT_SUCCESS);
             } else puts("\nInvalid REPL command.\n");
         }
-        else if(len > 1) interpret(vm, line, false);
+        else if(len > 1) interpret(vm, line, NULL);
     }
 }
 
@@ -138,7 +140,7 @@ void runFile(VM* vm, const char* path) {
 
     buffer[fileSize] = 0;
 
-    InterpretResult result = interpret(vm, buffer, false);
+    InterpretResult result = interpret(vm, buffer, NULL);
 
     free(buffer);
     fclose(file);

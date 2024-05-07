@@ -1,0 +1,21 @@
+/**
+ * The 'host' module.
+ *
+ * Part of Promit Test Suit, location /test/IncludeFile/WrongSyntax/HostModule.promit
+ *
+ * Created by SD Asif Hossein in 7th May, 2024 (Tuesday) at 04:25 PM (UTC +06).
+ */
+
+## Note: Every single file in Promit is a module. The 'host' module is the module
+##       which initally got ran by Promit interpreter. The 'host' can be considered
+##       as the root node of the include tree.
+
+// For example this module will be ran by the interpreter directly, so this will be
+// a 'host' module. This module may include other modules as well.
+
+## Note: If this module were included, it will not be the host module.
+
+showl 'A deliberate runtime error would be triggered for showcasing.';
+showl "Demostration of 'host' module: ";
+
+showl xy;
