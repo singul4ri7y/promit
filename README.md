@@ -198,7 +198,9 @@ Promit comes pre-compiled in GitHub Release. You can grab a release from there.
 
 ### Supported and Tested Platforms 💻:
 **Linux**: ArchLinux, Debian 10 (Buster) and Debian 11 (Bullseye), Ubuntu 24.04  <b>*BSD's</b> (Not officially supported 😬). 
+
 **Windows:** Windows 7, 10 and 11 (🤢🤢)
+
 **MacOS:** Catelina, BigSur and Ventura
 
 ### Download 📥:
