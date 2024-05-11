@@ -1,17 +1,17 @@
 <h1 align= "center">Project Promit 🚀</h1>
 <p align= "center">A neat programming language inspired by JavaScript and Python 👨🏻‍💻</p>
 <div align= "center">
-    <a href= "#introduction">Introduction</a>
+    <a href= "#introduction-">Introduction</a>
     .
-    <a href= "#learn">Learn</a>
+    <a href= "#learn-">Learn</a>
     .
-    <a href= "#contribution">Contribution</a>
+    <a href= "#contribution-">Contribution</a>
     .
-    <a href= "#why">Why</a>
+    <a href= "#why-">Why</a>
     .
-    <a href= "#install">Install</a>
+    <a href= "#install-">Install</a>
     .
-    <a href= "#build">Build</a>
+    <a href= "#build-">Build</a>
 </div>
 
 ## Introduction 👾
