@@ -26,9 +26,9 @@ DEPENDENCY_DIR   := $(PRE_OBJ_DIR)deps/
 # Default variable delclaration for default target 'build_debug_64bit'.
 
 LFLAGS       = -DDEBUG -g -Wall -Wextra $(PRE_LFLAGS)
-OUTPUT_DIR   = $(PRE_OUTPUT_DIR)Debug-x64/
-OBJ_DIR      = $(PRE_OBJ_DIR)Debug-x64/
-CONFIG      := Debug-x64
+OUTPUT_DIR   = $(PRE_OUTPUT_DIR)Debug-64bit/
+OBJ_DIR      = $(PRE_OBJ_DIR)Debug-64bit/
+CONFIG      := Debug-64bit
 ARCH        := -m64
 
 # Variable declaration for different targets.
@@ -38,24 +38,24 @@ ifneq ($(findstring build_debug_32bit, $(MAKECMDGOALS)), )
 	ARCH         := -m32
 
 	LFLAGS        = -DDEBUG -DM32 -Wall -Wextra -g $(ARCH) $(PRE_LFLAGS)
-	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Debug-x86/
-	OBJ_DIR       = $(PRE_OBJ_DIR)Debug-x86/
-	CONFIG        = Debug-x86
+	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Debug-32bit/
+	OBJ_DIR       = $(PRE_OBJ_DIR)Debug-32bit/
+	CONFIG        = Debug-32bit
 else ifneq ($(findstring build_release_64bit, $(MAKECMDGOALS)), ) 
 	.DEFAULT_GOAL = build_release_64bit
 
 	LFLAGS        = -DRELEASE -s -O3 $(PRE_LFLAGS)
-	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Release-x64/
-	OBJ_DIR       = $(PRE_OBJ_DIR)Release-x64/
-	CONFIG        = Release-x64
+	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Release-64bit/
+	OBJ_DIR       = $(PRE_OBJ_DIR)Release-64bit/
+	CONFIG        = Release-64bit
 else ifneq ($(findstring build_release_32bit, $(MAKECMDGOALS)), ) 
 	.DEFAULT_GOAL = build_release_32bit
 	ARCH         := -m32
 
 	LFLAGS        = -DRELEASE -DM32 -s -O3 $(ARCH) $(PRE_LFLAGS)
-	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Release-x86/
-	OBJ_DIR       = $(PRE_OBJ_DIR)Release-x86/
-	CONFIG        = Release-x86
+	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Release-32bit/
+	OBJ_DIR       = $(PRE_OBJ_DIR)Release-32bit/
+	CONFIG        = Release-32bit
 endif
 
 # Color variable.
