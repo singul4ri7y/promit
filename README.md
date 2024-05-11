@@ -7,11 +7,11 @@
     .
     <a href= "#contribution-">Contribution</a>
     .
-    <a href= "#why-">Why</a>
+    <a href= "#install-%EF%B8%8F">Install</a>
     .
-    <a href= "#install-">Install</a>
+    <a href= "#why-to-the-author-">Why</a>
     .
-    <a href= "#build-">Build</a>
+    <a href= "#build-%EF%B8%8F">Build</a>
 </div>
 
 ## Introduction 👾
