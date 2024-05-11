@@ -173,6 +173,17 @@ void printObjectRaw(const Value* value) {
                     
                     break;
                 }
+
+                case OBJ_UPVALUE:
+                case OBJ_STRING:
+                case OBJ_INSTANCE:
+                case OBJ_DICTIONARY:
+                case OBJ_CLASS:
+                case OBJ_BOUND_METHOD:
+                case OBJ_LIST: 
+                case OBJ_FILE:
+                case OBJ_BYTELIST:
+                    break;
             }
             
             __printf(" of instance ");
@@ -205,6 +216,16 @@ void printObjectRaw(const Value* value) {
 
                             break;
                         }
+
+                        case OBJ_FUNCTION: 
+                        case OBJ_CLOSURE: 
+                        case OBJ_NATIVE:
+                        case OBJ_UPVALUE:
+                        case OBJ_CLASS:
+                        case OBJ_BOUND_METHOD:
+                        case OBJ_FILE:
+                        case OBJ_BYTELIST:
+                            break;
                     }
 
                     break;
@@ -213,6 +234,10 @@ void printObjectRaw(const Value* value) {
                 // Refers to a wrapper class.
 
                 case VAL_NUMBER: __printf("'%s'>", "Number"); break;
+                
+                case VAL_BOOLEAN:
+                case VAL_NULL:
+                    break;
             }
             
             break;

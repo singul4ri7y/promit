@@ -95,7 +95,7 @@ static size_t byteLongInstruction(const char* opcode, Chunk* chunk, size_t offse
 static size_t jumpInstruction(const char* opcode, Chunk* chunk, size_t offset, char sign) {
 	uint32_t jump = getParameter(chunk, offset, true);
 
-	printf("     %-16s 0x%06x -> 0x%06x\n", opcode, offset, offset + 4 + sign * jump);
+	printf("     %-16s 0x%06lx -> 0x%06lx\n", opcode, offset, offset + 4 + sign * jump);
 
 	return offset + 4u;
 }
@@ -125,7 +125,7 @@ static size_t closureInstruction(const char* opcode, Chunk* chunk, size_t offset
 
 		offset += 4u;
 
-		printf("0x%06x          |                                         %s %d\n", 
+		printf("0x%06lx          |                                         %s %d\n", 
 			offset - 2, isLocal ? "local" : "upvalue", index);
 	}
 
@@ -153,7 +153,7 @@ static size_t invokeInstruction(const char* opcode, Chunk* chunk, size_t offset)
 }
 
 size_t disassembleInstruction(Chunk* chunk, const size_t offset) {
-	printf("0x%06x     ", offset);
+	printf("0x%06lx     ", offset);
 
 	int line = getLine(chunk, offset);
 

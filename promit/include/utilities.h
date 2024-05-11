@@ -14,6 +14,7 @@
 // Maximum file path length Promit will allow.
 #define FILEPATH_MAX    1024
 
+#define __USE_XOPEN_EXTENDED 1
 #include <stdlib.h>
 
 #include "memory.h"

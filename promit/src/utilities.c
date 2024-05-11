@@ -180,9 +180,6 @@ int gettimeofday(struct timeval* tp, struct timeval* tzp) {
 }
 
 #elif defined(__unix__) || defined(__MACH__)
-#define __USE_XOPEN_EXTENDED 1
-#include <stdlib.h>
-
 char* p_abs_path(const char* r_path) {
     char* resolved = ALLOCATE(char, FILEPATH_MAX + 1);
 

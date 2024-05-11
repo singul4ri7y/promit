@@ -349,13 +349,13 @@ static void emitConstant(Value value) {
     writeConstant(currentChunk(), value, parser.previous.line);
 }
 
-static void number(bool canAssign) {
+static void number(__maybe_unused bool canAssign) {
     double value = strtod(parser.previous.start, NULL);
 
     emitConstant(NUMBER_VAL(value));
 }
 
-static void string(bool canAssign) {
+static void string(__maybe_unused bool canAssign) {
     emitConstant(OBJECT_VAL(copyString(getVM(), parser.previous.start, parser.previous.length)));
 }
 
@@ -419,7 +419,7 @@ static void semicolon(const char* message) {
         consume(TOKEN_SEMICOLON, message);
 }
 
-static void literal(bool canAssign) {
+static void literal(__maybe_unused bool canAssign) {
     switch(parser.previous.type) {
         case TOKEN_FALSE:    emitByte(OP_FALSE); break;
         case TOKEN_TRUE:     emitByte(OP_TRUE); break;
@@ -430,7 +430,7 @@ static void literal(bool canAssign) {
     }
 }
 
-static void unary(bool canAssign) {
+static void unary(__maybe_unused bool canAssign) {
     TokenType operatorType = parser.previous.type;
 
     parsePrecedence(PREC_UNARY);
@@ -443,7 +443,7 @@ static void unary(bool canAssign) {
     }
 }
 
-static void grouping(bool canAssign) {
+static void grouping(__maybe_unused bool canAssign) {
     expression();
 
     consume(TOKEN_RIGHT_PAREN, "Expeced a ')' after end of expression!");
@@ -833,7 +833,7 @@ static void stringContinue(bool canAssign) {
     emitByte(OP_ADD);
 }
 
-static void interpolation(bool canAssign) {
+static void interpolation(__maybe_unused bool canAssign) {
     expression();
     
     consume(TOKEN_RIGHT_BRACE, "Expected an end of string interpolation!");
@@ -842,7 +842,7 @@ static void interpolation(bool canAssign) {
 }
 
 
-static void inc(bool canAssign) {
+static void inc(__maybe_unused bool canAssign) {
     Chunk* chunk = currentChunk();
 
     checkConstantPoolOverflow("Constant pool overflow while setting variable!");
@@ -943,7 +943,7 @@ static void inc(bool canAssign) {
     }
 }
 
-static void _typeof(bool canAssign) {
+static void _typeof(__maybe_unused bool canAssign) {
     parsePrecedence(PREC_COMPARISON);
     
     emitByte(OP_TYPEOF);
@@ -967,7 +967,7 @@ static uint8_t argumentList() {
     return arg;
 }
 
-static void call(bool canAssign) {
+static void call(__maybe_unused bool canAssign) {
     uint8_t argCount = argumentList();
     
     if(argCount <= 20) {
@@ -1093,7 +1093,7 @@ static void square(bool canAssign) {
     } else emitByte(OP_DNM_GET_PROPERTY);
 }
 
-static void _this(bool canAssign) {
+static void _this(__maybe_unused bool canAssign) {
     if(currentClass == NULL) {
         error("Cannot use 'this' outside of a class!");
         
@@ -1108,7 +1108,7 @@ static void _this(bool canAssign) {
     variable(false, false);
 }
 
-static void dictionary(bool canAssign) {
+static void dictionary(__maybe_unused bool canAssign) {
     emitByte(OP_DICTIONARY);
     
     size_t key;
@@ -1217,7 +1217,7 @@ static void _static(bool canAssign) {
     }
 }
 
-static void list(bool canAssign) {
+static void list(__maybe_unused bool canAssign) {
     emitByte(OP_LIST);
     
     do {
@@ -1232,7 +1232,7 @@ static void list(bool canAssign) {
     consume(TOKEN_RIGHT_SQUARE, "Expected a ']' at the end of list!");
 }
 
-static void receive(bool canAssign) {
+static void receive(__maybe_unused bool canAssign) {
     uint8_t type = 0u;
 
     if(match(TOKEN_LEFT_PAREN)) {
@@ -1252,7 +1252,7 @@ static void receive(bool canAssign) {
     emitBytes(OP_RECEIVE, type);
 }
 
-static void _super(bool canAssign) {
+static void _super(__maybe_unused bool canAssign) {
     if(currentClass == NULL) {
         error("Cannot use 'super' outside of class!");
         return;
@@ -1387,7 +1387,7 @@ static ParseRule* getRule(const TokenType tokenType) {
     return &parseRules[tokenType];
 }
 
-static void binary(bool canAssign) {
+static void binary(__maybe_unused bool canAssign) {
     TokenType operatorType = parser.previous.type;
     
     ParseRule* rule = getRule(operatorType);
@@ -1679,6 +1679,8 @@ static void switchStatement() {
 
             prevCase = emitJump(OP_JUMP_IF_FALSE);
 
+            emitByte(OP_SILENT_POP);
+
             if(fallthroughCase != -1) {
                 patchJump(fallthroughCase);
                 fallthroughCase = -1;
@@ -1705,10 +1707,14 @@ static void switchStatement() {
             if(foundDefault) 
                 error("Multiple default case in switch!");
 
+            foundDefault = true;
+
             if(prevCase != -1) {
                 patchJump(prevCase);
                 prevCase = -1;
             }
+
+            emitByte(OP_SILENT_POP);
 
             if(fallthroughCase != -1) {
                 patchJump(fallthroughCase);
@@ -1735,12 +1741,13 @@ static void switchStatement() {
     if(prevCase != -1) 
         patchJump(prevCase);
 
+    if(!foundDefault)
+        emitByte(OP_SILENT_POP);
+
     if(fallthroughCase != -1) 
         patchJump(fallthroughCase);
 
     patchBreaks(depth);
-
-    emitByte(OP_SILENT_POP);
 
     endFlow();
 }
@@ -2016,7 +2023,7 @@ static void takeDeclaration() {
     VARIABLE(false);
 }
 
-static void and(bool canAssign) {
+static void and(__maybe_unused bool canAssign) {
     int endJump = emitJump(OP_JUMP_OPR);
     
     emitByte(OP_SILENT_POP);
@@ -2026,7 +2033,7 @@ static void and(bool canAssign) {
     patchJump(endJump);
 }
 
-static void or(bool canAssign) {
+static void or(__maybe_unused bool canAssign) {
     int elseJump = emitJump(OP_JUMP_OPR);
     int endJump  = emitJump(OP_JUMP);
 
@@ -2109,7 +2116,7 @@ static void functionDeclaration(bool isConst) {
     defineVariable(global, isConst);\
 }
 
-static void fnExpr(bool canAssign) {
+static void fnExpr(__maybe_unused bool canAssign) {
     function(TYPE_FUNCTION, true);
 }
 

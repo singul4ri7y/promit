@@ -15,9 +15,7 @@
 </div>
 
 ## Introduction
-Promit is <b>object oriented</b>, <b>bytecode interpreted</b>, <b>lightweight</b>, <b>elegant</b> and <b>fast</b> programming language. It has simple yet <b>aesthetic syntax</b> and easy, <b>condensed</b> library  which helps to tackle down any modern programs.
-
-**Key features :** 
+**Key features :** Promit is **object oriented**, **bytecode interpreted**, **lightweight**, **elegant** and **fast** programming language. It has simple yet **expressive** syntax and **easy**, **minimalist** and **condensed** library which helps to tackle down any modern programs.
 - High-Level Language with dynamically typed syntax.
 ```dart
 // Take the name as an input string.

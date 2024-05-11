@@ -19,7 +19,7 @@
 
 static void defineNative(VM*, const char*, NativeFn);
 
-static NativePack author(VM* vm, int argCount, Value* values) {
+static NativePack author(VM* vm, __maybe_unused int argCount, __maybe_unused Value* values) {
     NativePack pack;
 
     pack.hadError = false;
@@ -727,7 +727,7 @@ bool valuesEqual(const Value value1, const Value value2) {
     break;\
 }
 
-static char* concat(VM* vm, char* str1, char* str2) {
+static char* concat(char* str1, char* str2) {
     size_t len1 = strlen(str1), len2 = strlen(str2);
 
     size_t length = len1 + len2;
@@ -920,6 +920,7 @@ BooleanData toBoolean(VM* vm, Value* value) {
                 }
 
                 // Fallthrough.
+                __fallthrough;
             }
             
             default: 
@@ -1072,10 +1073,25 @@ static ObjClass* fetchClass(Value value) {
                 case OBJ_LIST: return vmListClass;
                 case OBJ_STRING: return vmStringClass;
                 case OBJ_DICTIONARY: return vmDictionaryClass;
+
+                case OBJ_INSTANCE: 
+                case OBJ_FUNCTION: 
+                case OBJ_CLOSURE: 
+                case OBJ_NATIVE:
+                case OBJ_UPVALUE:
+                case OBJ_CLASS:
+                case OBJ_BOUND_METHOD:
+                case OBJ_FILE:
+                case OBJ_BYTELIST:
+                    break;
             }
 
             break;
         }
+
+        case VAL_BOOLEAN:
+        case VAL_NULL: 
+            break;
     }
 
     return NULL;
@@ -1336,6 +1352,7 @@ static double incdc(Value* value, bool dec, bool pre) {
                     }
 
                     // No break
+                    __fallthrough;
                 }
 
                 default: value -> as.number = number = NAN;
@@ -1422,6 +1439,7 @@ static vmNumberData vmToNumberRaw(VM* vm, Value* value) {
                     data.number = pstrtod(VALUE_CSTRING(*value));
 
                     if(!isnan(data.number)) break;
+                    __fallthrough;
                 }
 
                 // And for all other object types, they are not representable 
@@ -1543,8 +1561,11 @@ InterpretResult run(VM* vm) {
         
         __continue_switch: 
 #if defined(DEBUG) && defined(DEBUG_TRACE_EXECUTION)
+        ObjFunction* fn = getFunction(frame -> function);
+
         printf("_------------------------------------------------------------------------------------------------------------------------_\n"
-                "Frame function : %s\nCurrent stack: [ ", getFunction(frame -> function) -> name -> buffer);
+                "Frame function : %s\nLine number: %d\nCurrent stack: [ ", fn -> name -> buffer, 
+                getLine(&fn -> chunk, frame -> ip - fn -> chunk.code));
 
 		for(int i = 0; i < vm -> stackTop; i++) {
 			printValue(vm -> stack + i);
@@ -1554,7 +1575,7 @@ InterpretResult run(VM* vm) {
 		}
 
 		printf(" ]\n\nIntruction: ");
-		disassembleInstruction(&getFunction(frame -> function) -> chunk, (size_t) (frame -> ip - getFunction(frame -> function) -> chunk.code));
+		disassembleInstruction(&fn -> chunk, (size_t) (frame -> ip - fn -> chunk.code));
 		printf("-________________________________________________________________________________________________________________________-\n\n");
 #endif
 
@@ -1938,7 +1959,7 @@ InterpretResult run(VM* vm) {
             }
 
             case OP_ADD: {
-#define CONCATENATE(value1, value2) concat(vm, (value1), (value2))
+#define CONCATENATE(value1, value2) concat((value1), (value2))
 
 #define NRM_ADD(value) \
     char* s = (value);\
