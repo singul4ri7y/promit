@@ -1,5 +1,5 @@
-<h1 align= "center">Project Promit</h1>
-<p align= "center">A neat programming language inspired by JavaScript and Python!</p>
+<h1 align= "center">Project Promit 🚀</h1>
+<p align= "center">A neat programming language inspired by JavaScript and Python 👨🏻‍💻</p>
 <div align= "center">
     <a href= "#introduction">Introduction</a>
     .
@@ -14,24 +14,28 @@
     <a href= "#build">Build</a>
 </div>
 
-## Introduction
-**Key features :** Promit is **object oriented**, **bytecode interpreted**, **lightweight**, **elegant** and **fast** programming language. It has simple yet **expressive** syntax and **easy**, **minimalist** and **condensed** library which helps to tackle down any modern programs.
-- High-Level Language with dynamically typed syntax.
+## Introduction 👾
+Promit is **object-oriented**, **bytecode interpreted**, **lightweight**, **elegant** and **fast** programming language. It has simple yet **expressive** syntax with **easy**, **minimalist** and **condensed** library enabling you tackle down any modern programs 🔥.
+
+**Key features 📜:** 
+- High-Level Language with dynamically typed syntax 🦾.
 ```dart
 // Take the name as an input string.
 take name = receive(string);
 
 // Now print the name.
+System::stdout.write_line('Your name is : $name!');
+
+// This is more simpler and less modular way to do it.
 showl 'Your name is : $name!';
 ```
-- Fast, stack-based bytecode interpreter with rich single-pass compiler.
-- Fully Object Oriented with classes and instances.
+- Fully Object Oriented with classes and instances 🧊.
 ```dart
-const cities = [ 'New York', 'Constantinople', 'Sin City (Vegas)' ];
+const cities = [ 'Venice', 'Constantinople', 'Tokyo', 'Dhaka' ];
 
 const class Promit {
     const visit(city) {
-        showl 'Promit has visited $city!';
+        System::stdout.write_line('Promit has visited $city!');
     }
 };
 
@@ -41,66 +45,62 @@ cities.foreach(fn(city) {
     promit.visit(city);
 });
 
-showl "The variable 'promit' is ${typeof promit} and ${promit instof Promit}.";
+System::stdout.write_line("The variable 'promit' is ${typeof promit} and ${promit instof Promit}.");
 ```
-- Supports inheritance.
+- Supports inheritance 🧬.
 ```dart
 class Breakfast {
     have() {
-        showl "Dalicious!";
+        System::stdout.write_line("Astronomical!");
     }
 };
 
 class Soup is Breakfast {
     have() {
-        showl "Isn't having soup for breakfast too odd!";
+        System::stdout.write_line("Isn't having soup for breakfast too odd!");
         
         super.have();
     }
 };
 
 take breakfast = Soup();
-
 breakfast.have();
 ```
-- Automated memory management with a swift Mark-Sweep garbage collector.
+- Automated memory management with a swift Mark-Sweep Garbage Collector ♻️.
 ```dart
-take string = "This is a string! Rest easy!";
-
+take string = "GC will do the dirty work of MM. Rest easy!";
 // GC.
 ```
-- Modern string interpolation.
+- Modern string interpolation 🧶.
 ```dart
 show "Enter two numbers : ";
-
 take a = receive(num), b = receive(num);
 
-showl 'Summation of those two numbers is : ${a + b}!';
+System::stdout.write_line('Summation of those two numbers is : ${a + b}!');
 ```
-- Minimalist library.
+- Minimalist System Library 🏛️.
 ```dart
 take dictionary = {
-    'name'(const)    :  'SD Asif Hossein',
-    'age'            :  19,    // Now, yes.
-    'passion'(const) :  'Programming'
+    'name'(const)    : 'SD Asif Hossein',
+    'age'            : 99.99,    // :3.
+    'passion'(const) : 'Programming'
 };
 
 showl 'key-value pairs are : ';
-
 dictionary.keys()    // Returns a list.
     .foreach(fn(key) {
-        showl "$key : ${dictionary[key]}";
+        System::stdout.write_line("$key : ${dictionary[key]}");
 });
 ```
-- Has functions and closures.
+- Has functions and closures 🚪.
 ```dart
 const fn call() {
     take outer = "This is outer!";
 
     // Closure capturing 'outer' variable.
     return fn() {
-        showl outer;
-        showl 'Changing outer variable!';
+        System::stdout.write_line(outer);
+        System::stdout.write_line('Changing outer variable!');
         
         outer = "Now it's inner!";
     
@@ -110,87 +110,140 @@ const fn call() {
 
 take result = call();   // The returned closure.
 
-showl typeof result;    // Expected 'closure'.
-
-showl result();         // Expected "Now it's inner!";
+System::stdout.write_line(typeof result);    // Expected 'closure'.
+System::stdout.write_line(result());         // Expected "Now it's inner!";
 ```
- - Has ```continue``` in switch.
+ - Has **``continue``** in switch 🚀.
 ```dart
-take bird = 'Duck';
+take bird = 'Mockingbird';
 
 switch(bird) {
     case 'Koel' : {
-        showl 'The bird is Koel!';
+        System::stdout.write_line('The bird is Koel!');
         break;
     }
-    case 'Duck' : {
-        showl 'The bird is Duck (maybe)!';
+    
+    case 'Mockingbird' : {
+        System::stdout.write_line('The bird is Mockingbird!');
         continue;    // Code will fallthrough to next case.
-        showl 'This portion will not be executed!!';
+        System::stdout.write_line('This portion will not be executed!!');
         break;
     }
-    case 'Fallthrough' : showl 'Fallthrough!'; break;
+    
+    case 'Fallthrough Bird!?' : System::stdout.write_line('Fallthrough!'); break;
     default : break;
 }
 ```
- - Has loops (``while``, ``for``, ```do ... while```), control flow (``if``, ``else`` and ternary operator ```condition ? expr : else_expr```) and many more!
+ - All kinds of loops ♾️: 
+```dart
+take list = [ 'Print', 'these', 'tokens', 'using', 'loopz!' ];
 
-## Learn
+for(take i = 0; i < len(list); i++) 
+    System::stdout.write(list[i] + ' ');
+    
+System::stdout.write('\nThe while loop version: ');
 
-Current **Promit Test Suit** (Located under ``/test`` relative to current directory) has comprehensive test programs to test against **Promit**. Which also can serve as a tutorial to Promit Programming Language, as those files are commented in **Teaching** style. Code more than talk, you know it.
+take value;
+while((value = list.shift()) != null) 
+   System::stdout.write(value + ' ');
 
-## Contribution
-<p>First of all it's a community project. <b>So, feel free to contribute 😀.</b> I will try to merge all the pull request I will get related to bug fixes, feature updates and improvements.</p>
+System::stdout.write_line('\nDone!');
+```
+ - Control flow 🎛️:
+```dart
+take feeling_sad = true;
+
+if(feeling_sad) 
+	System::stdout.write_line('Turn up the music if you feel low!');
+else System::stdout.write_line('Cheer up the person who is sad beside you. No one should be sad!');
+
+/* The ternary operator. */
+take happy = feeling_sad ? 'Was sad but now happy!' : 'Always happy!';
+System::stdout.write_line(happy);
+```
+ - Module support 🧩:
+```dart
+// say_hello.promit
+
+{{
+    return fn() {
+        return 'Hello from a module!';
+    };
+}}
+```
+```dart
+// main.promit
+
+const say_hello = include('say_hello');
+
+say_hello();    // Hello from a module!
+```
+
+## Learn 🎓
+
+Current **Promit Test Suite** (Located under ``/test`` relative to current directory) has comprehensive test programs to test against **Promit**. The Test Suite also serve as **_tutorials_** to Promit Programming Language. The programs are lovingly commented in **Teaching** style. Showing code examples with comments make more sense than writing lines of explanation.
+
+## Contribution 🏅
+<p>It's a community project. <b>So, feel free to PR 😀.</b> I will try to merge all the pull request related to bug fixes, feature updates and improvements.</p>
 
 **Follow the below rules of contribution:**
- - All the codes contributed in this repository must be of MIT license.
- - If you are a contributor, leave your fullname, email and your contributed GitHub account username in such manner ``(index) fullname <email> username``. In the next line, please denote your contribution or designation in one line starting with a tab.
- - Leave full details of your contribution in the commit changes log and in the pull request as well.
- - Try leaving comments, as that helps (Like I'm the one to talk).
+ - Leave your fullname, e-mail and your contributed GitHub account username in such manner ``(index) fullname <email> username``. In the next line, please denote your contribution or designation with proper indentation. See ``CONTRIBUTORS`` file for more info.
+ - Leave full details of your contribution in the commit changes log and in the pull request description as well.
+ - Try leaving comments in the code, as that helps (Like I'm the one to talk 😮‍💨).
 
 <b><i>Happy contribution.</i></b>
 
-## Install
-<p>Promit comes with compiled interpreter binary with each release, which you can use to run your programs from the command line. With some tweaking with IDE's like <b>NetBeans</b>, <b>VS Code</b>, <b>Atom</b> etc. you can integrate the <b>promit</b> interpreter binary to run programs directly from the IDE.</p>
+## Install 🛠️
+Promit comes pre-compiled in GitHub Release. You can grab a release from there.
 
-**Supported Platforms:** Currently Promit supports **Linux**, **Windows**, **Darwin** and in some point <b>*BSD's</b>. Tested on <b>Windows 7/10/11</b> and <b>Debian 10 (Buster)/ 11 (Bullseye)</b>, <b>Arch Linux</b>, <b>Ubuntu 22.04 LTS</b> and other <b>GNU/Linux</b> and <b>MacOS Catelina, BigSur</b>.</p>
+### Supported and Tested Platforms 💻:
+**Linux**: ArchLinux, Debian 10 (Buster) and Debian 11 (Bullseye), Ubuntu 24.04  <b>*BSD's</b> (Not officially supported 😬). 
+**Windows:** Windows 7, 10 and 11 (🤢🤢)
+**MacOS:** Catelina, BigSur and Ventura
 
-**Download the binary releases at:** https://github.com/singul4ri7y/promit/releases
+### Download 📥:
+Grab the binary releases at: **https://github.com/singul4ri7y/promit/releases**
 
-**How to install:**
- 1. Download your specific platform binary. For example, if I am a Windows user, my preference would be ``promit-<version>-windows-64bit.zip`` file for 64 Bit Windows or ``promit-<version>-windows-32bit.zip`` file for 32 Bit Windows (Isn't 32 bit obsolete?).
+### How to install 🔧:
+ 1. Download Promit based on your platform. For example, if you are a Windows user, it is preferable to go for ``promit-<version>-windows-64bit.zip`` for 64 Bit Windows or ``promit-<version>-windows-32bit.zip`` file for 32 Bit Windows (Isn't 32 bit obsolete?).
  2. Extract the archive ``.tar.gz`` for Linux users and ``.zip`` for Windows users.
  3. Under the ``bin/`` folder the the Promit Interpreter binary resides. Move it to any location which is in the **system path** variable.
-     - For Windows users, my recommendation is create a folder named ``MyBIN`` on the disk your Windows is installed on and add the folder location to system path variable (How to add folder location to system path variable? Well it's 21'st century. Google it).
-     - For Linux users, you probably already know what to do. My preference is to move the binary to ``/usr/local/bin`` where every user can use it. Or create a new folder to store the binary and add it to system path (Make changes to ``$PATH`` adding your folder location. To make it permanent in do it in the  ``/etc/environment`` file).
+     - For Windows users, it is recommended to create a folder named ``MyBIN`` on the disk your Windows is installed (Probably the ``C:\`` drive) on and add the folder location to system path variable (How to add folder location to system path variable? Google 🙂).
+     - For Linux users, you probably already know what to do. It would be very much preferable to move the binary to ``/usr/local/bin`` where every user can use it. Or create a arbitrary directory in your home to store the binary and add it to system path (Make changes to ``$PATH`` adding your folder location. To make it permanent do it in the  ``/etc/environment`` file).
      - For MacOS/Darwin users, move the downloaded binary to ``/usr/local/bin``.
  4. Now run any Promit program in the terminal or command prompt using ``promit MyProgram.promit``.
 
-<b><i>Done.</i></b>
+<b><i>Good job 😊.</i></b>
 
-## Why
+## Why (to the author) 🧐
 <img src= "logos/logo.jpg" type= "image/jpg" align= "right" width= "350" />
 
-<p align= "justify">Now question arises, "Why the heck would I use this language? Or prefer it over my current used language?". The answer is you don't have a particular reason! It's fast but neither due to be a bytecode interpreter it's as fast as JS nor has a huge modular library like Python. But hey, I just started out the project. If you find the project interesting or like how the language works, use the language as much as you can and support the project. Who knows, we may reach the level of JavaScript or Python one day 🙂.</p>
-<p align= "justify">And why did I bother to do this project at all? Well the idea is very simple really. I started my programming journey as a Web Developer. As I got deeper inside the computer science stuff and programming languages, I reinvented my interests in Low-Level things such as kernel development, memory managements, operating systems, compiler design, etc. At the same time, I got into high school (At the time of writing, I'm 19 BTW). I met a very fascinating person, who is one of my dearest friends named <b>Meraj Hossain Promit</b>. He was a real inspiration. A lot of thing went through. Long story short, when I was a first year at high school, I promised him that I would make a full-fledged programming language with the honor of his name under the age of 20. You can see the rest.</p>
-<b>Despite being cringy as hell, that's what really happened 🙂.</b>
+<p align= "justify"><b>Why the heck would I use this language? Or prefer it over my current used language?</b><br>
+ The answer is you don't have a particular reason! It's a hobby project. It's neither as fast as JS due to being just a bytecode interpreter nor it has a huge modular library like Python. But hey, everything has to start from somewhere, right? If you find the project interesting or like how the language works, it's specification and implementation, use the language as much as you can and support the project. Who knows, we may reach the level of JavaScript or Python one day 🙂.</p>
 
-## Build
-### Prerequisites :
- - ``gcc`` (checked with gcc-10, gcc-11 and gcc-12, any version greater than 6 will do)
+<p align= "justify"><b>Why did I bother to do this project at all?</b><br>
+ Well, the idea is very simple really. I wanted to make a Programming Language.<br> One thing always fascinated me that, how programming languages function under the hood? How much stuff is getting abstracted from us? You use programming languages to make softwares, right? But some software is directly involved with the programming language (Compilers, Interpreters). How do they work? There are tons of questions unanswered unless I get my hand dirty. So, I got my hands dirty :)</p>
+
+<p align="justify"><b>Why name "Promit"?</b><br>
+I started my programming journey by first learning JavaScript. As I got deeper inside the computer science stuff, I reinvented my interests in Low-Level things such as Kernel Development, Memory Managements, Operating Systems, Compiler design, etc. In the meantime, I got into high school and met a very fascinating person, who is one of my dearest friends named <b>Meraj Hossain Promit</b>. He was a real inspiration 💡, a bright man with a bright future, who taught me how to <b>push</b>. We went through a tons of stuff together. I remember one day when I was a first year, I promised him that I would make a full-fledged programming language before I turn 20. He became super happy 😃. When started creating one, I thought why not name after the guy who was always super supportive 😉.</p>
+
+## Build 🏗️
+### Prerequisites ✅:
+ - ``gcc`` (Tested with GCC 8, 11, 12, 13 and 14; any version greater than 6 will do)
  - ``make`` to run the ``Makefile``.
  - ``git`` to clone the repo (Optional).
  
-### Installation :
-**Arch Linux/Manjaro/Arch Based :**
+### Installation 🔨:
+
+**Arch Linux/Manjaro/Arch Based 💥:**
 ```arch
 pacman --sync git base-devel
 ```
-**Debian/Ubuntu/Debian Based :**
+**Debian/Ubuntu/Debian Based 🔥:**
 ```debian
 apt install git build-essential
 ```
-**Windows :**
+**Windows 🤮:**
 
 The only way is to switch to Linux 😁.
 
@@ -200,8 +253,8 @@ Install ``MinGW-w64``, ``Cygwin`` or ``TDM GCC`` which has ``make`` baked within
 
 Install git from : <a href= "https://git-scm.com/downloads">https://git-scm.com/downloads</a>.
 
-### The easy stuff :
-Go to any folder, clone the repo and hit ``make`` in the terminal.
+### The easy stuff 💼:
+Go to any folder where you want your build files to reside, clone the repo and hit ``make`` in the **terminal**.
 ```
 git clone https://github.com/singul4ri7y/promit
 cd promit/promit
@@ -211,10 +264,10 @@ cd ../bin/Release-x64/
 ```
 It will start Promit's REPL (Run-Evaluate-Print-Loop) mode. Enjoy the binary.
 
-**Configurations :**
-- ``make`` or ``make build_debug_x64`` builds the project in Debug configuration and x64 architecture.
-- ``make build_debug_x86`` builds the project in Debug configuration and x86 architecture.
-- ``make build_release_x64`` builds the project in Release configuration and x64 architecture.
-- ``make build_release_x86`` builds the project in Release configuration and x86 architecture.
+### Configurations ⚙️:
+- ``make`` or ``make build_debug_64bit`` builds the project in Debug configuration 64-bit architecture.
+- ``make build_debug_32bit`` builds the project in Debug configuration and 32-bit architecture.
+- ``make build_release_64bit`` builds the project in Release configuration and 64-bit architecture.
+- ``make build_release_32bit`` builds the project in Release configuration and 32-bit architecture.
 
-<i>Peace.</i>
+<i><b>Peace 😇.</b></i>

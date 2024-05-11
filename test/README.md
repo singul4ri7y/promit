@@ -1,16 +1,18 @@
-<h1 align= "center">Welcome to Promit Test Suite</h1>
+<h1 align= "center">Welcome to Promit Test Suite 🧸</h1>
 
-<p>This test suit serves as group of test files to run against Promit Programming Language. <b>This test suit also will serve as a tutorial to Promit Programming Language.</b> I tried to make it as beginner friendly as possible, so advanced users may get a little bored while reading through all the files. But, I made them quite detailed and delicate about the language features you are gonna face.</p>
+<p>This test suite serves as group of test files to run against Promit Programming Language. <b>This test suite also will serve as the introduction and tutorial to Promit Programming Language.</b> Programs are written as beginner friendly as possible, so advanced users may get a little bored while reading through all the files. But, I made them quite detailed and delicate about the language features you are gonna face.</p>
 
-<p><b>Note : If you are a beginner who do not know how to code, you are earnestly requested to learn at least any programming language before you proceed. It's Promit Programming Language tutorial, not a programming tutorial. Learning Java, JavaScript or C/C++ is recommended.</b></p>
+**📣 Important Note :** If you are a beginner who do not know how to code, you are earnestly requested to learn at least any programming language before you proceed. **It's Promit Programming Language tutorial, not a programming tutorial.** Learning JavaScript, Python or C/C++ is recommended.
 
-## Read Order
+## Read Order 📚
 
-You are requested to follow this read order in order to get the best experience and learning out of it. All the files and folder are relative to current ``/test``  directory.
+You are requested to follow this read order in order to get the best learning curve out of the suite. All the files and folder are relative to current ``/test``  directory.
 
-<b>If you face ``Examples`` and ``Introduction`` inside of a directory, try reading all the files in ``Introduction`` sub directory first. Then proceed to ``Examples``.</b>
+<b>If you face ``Examples`` and ``Introduction`` inside of a directory, try going through the  ``Introduction`` first. Then proceed to ``Examples``.</b>
 
-**Go through the ascending order :**
+**Note:** ``<directory>/all`` means go through all the files in that directory.
+
+**Go through in descending order ⬇️:**
  1. FirstProgram.promit
  2. Prints/all
  3. Variables/all
@@ -39,7 +41,7 @@ You are requested to follow this read order in order to get the best experience 
  26. IncludeFile/all
  27. System/all
  28. Times/all
- 29. Benchmarks/all (Not certainly necessary, just for benchmarking stuff)
- 30. Algorithms/all (Important! See how Promit really holds up against real life algorithms and problems)
+ 29. Benchmarks/all (Not strictly necessary)
+ 30. Algorithms/all (**Important!** See how Promit really holds up against real life algorithms and problems)
 
-<b><i>Good luck. Peace.</i><b>
+<b><i>Good luck 🎯.</i><b>

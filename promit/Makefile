@@ -1,12 +1,12 @@
 # Default target will be executed if no argument is passed on 'make'.
 
-default_target : build_debug_x64
+default_target : build_debug_64bit
 
 .PHONY : default_target
 
 # Default goal.
 
-.DEFAULT_GOAL = build_debug_x64
+.DEFAULT_GOAL = build_debug_64bit
 
 # Global variable declarations.
 
@@ -23,7 +23,7 @@ PRE_LFLAGS       := -std=c11 -MMD -MF
 PRE_OBJ_DIR      := ../bin/intermediate/
 DEPENDENCY_DIR   := $(PRE_OBJ_DIR)deps/
 
-# Default variable delclaration for default target 'build_debug_x64'.
+# Default variable delclaration for default target 'build_debug_64bit'.
 
 LFLAGS       = -DDEBUG -g -Wall -Wextra $(PRE_LFLAGS)
 OUTPUT_DIR   = $(PRE_OUTPUT_DIR)Debug-x64/
@@ -33,23 +33,23 @@ ARCH        := -m64
 
 # Variable declaration for different targets.
 
-ifneq ($(findstring build_debug_x86, $(MAKECMDGOALS)), ) 
-	.DEFAULT_GOAL = build_debug_x86
+ifneq ($(findstring build_debug_32bit, $(MAKECMDGOALS)), ) 
+	.DEFAULT_GOAL = build_debug_32bit
 	ARCH         := -m32
 
 	LFLAGS        = -DDEBUG -DM32 -Wall -Wextra -g $(ARCH) $(PRE_LFLAGS)
 	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Debug-x86/
 	OBJ_DIR       = $(PRE_OBJ_DIR)Debug-x86/
 	CONFIG        = Debug-x86
-else ifneq ($(findstring build_release_x64, $(MAKECMDGOALS)), ) 
-	.DEFAULT_GOAL = build_release_x64
+else ifneq ($(findstring build_release_64bit, $(MAKECMDGOALS)), ) 
+	.DEFAULT_GOAL = build_release_64bit
 
 	LFLAGS        = -DRELEASE -s -O3 $(PRE_LFLAGS)
 	OUTPUT_DIR    = $(PRE_OUTPUT_DIR)Release-x64/
 	OBJ_DIR       = $(PRE_OBJ_DIR)Release-x64/
 	CONFIG        = Release-x64
-else ifneq ($(findstring build_release_x86, $(MAKECMDGOALS)), ) 
-	.DEFAULT_GOAL = build_release_x86
+else ifneq ($(findstring build_release_32bit, $(MAKECMDGOALS)), ) 
+	.DEFAULT_GOAL = build_release_32bit
 	ARCH         := -m32
 
 	LFLAGS        = -DRELEASE -DM32 -s -O3 $(ARCH) $(PRE_LFLAGS)
@@ -83,20 +83,20 @@ else ifneq ($(findstring Darwin, $(shell uname -s)),)
 endif
 
 .PHONY : 
-build_debug_x64 : project_promit all
+build_debug_64bit : project_promit all
 
 all : $(OBJ_FILES)
 	@echo -e "\n$(BLUE_BOLD)Linking C translations and building $(DESCRIPTION) '$(EXE_NAME)' ($(OS_NAME)).\n$(RESET)"
 	$(CC) $^ $(ARCH) -o $(OUTPUT_DIR)$(EXE_NAME) -lm
 
 .PHONY : 
-build_debug_x86 : build_debug_x64
+build_debug_32bit : build_debug_64bit
 
 .PHONY :
-build_release_x64: build_debug_x64
+build_release_64bit: build_debug_64bit
 
 .PHONY :
-build_release_x86: build_debug_x64
+build_release_32bit: build_debug_64bit
 
 .SILENT : 
 $(OBJ_DIR)%.c.obj : $(SRC_DIR)%.c
