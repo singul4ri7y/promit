@@ -26,7 +26,7 @@ take name = receive(string);
 // Now print the name.
 System::stdout.write_line('Your name is : $name!');
 
-// This is more simpler and less modular way to do it.
+// This is simpler and less modular way to do it.
 showl 'Your name is : $name!';
 ```
 - Fully Object Oriented with classes and instances 🧊.
